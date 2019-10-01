@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Élections</title>
+	
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+	
+	<script src="./js/jquery-3.3.1.slim.min.js"></script>
+	<script src="./js/popper.min.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	
+	<script src="./js/angular.min.js"></script>
+</head>
+
+<body class="d-flex py-5">
+	
+	<div class="container">
+		
+		<form id="setup-form">
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label" for="database-name">Nom de la base de données</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" id="db-name" aria-describedby="dbName">
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label" for="number-of-voters">Nombre de voteurs</label>
+				<div class="col-sm-9">
+					<input type="number" class="form-control" id="number-of-voters" min="1" aria-describedby="numberOfVoters">
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-3 col-form-label" for="number-of-votes">Nombre de votes par voteur</label>
+				<div class="col-sm-9">
+					<input type="number" class="form-control" id="number-of-votes" min="1" aria-describedby="numberOfVotes">
+				</div>
+			</div>
+			<div id="setup-candidates" class="py-4">
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label" for="candidate1">Candidat 1</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="candidate1" aria-describedby="candidate1" placeholder="Nom">
+					</div>
+				</div>
+			</div>
+			<div class="row mb-2 mx-auto justify-content-center">
+				<button id="candidate-add" class="btn btn-secondary" data-candidateCount="1">Ajouter Candidat</button>
+				<button id="candidate-remove" class="ml-5 btn btn-danger" hidden>Enlever dernier Candidat</button>
+			</div>
+			<div class="ml-auto">
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</div>
+		</form>
+		
+	</div>
+	
+	<script src="./js/setup.js"></script>
+	
+</body>
+
+</html>
