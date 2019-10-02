@@ -15,11 +15,13 @@
 	<script src="./js/bootstrap.min.js"></script>
 </head>
 
-<body class="d-flex py-5">
+<body class="d-flex py-3">
 	
 	<div class="container">
 		
-		<div id="setup-page">
+		<div id="setup-page" class="pt-2" hidden>
+			
+			<h1 class="text-center pb-3">Préparation élections Scoutes</h1>
 			
 			<form id="setup-form">
 				<div class="form-group row">
@@ -56,6 +58,21 @@
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 			</form>
+			
+		</div>
+		
+		<div id="voting-page" class="row h-100">
+			
+			<div id="cards-container" class="w-100 mt-auto mb-5">
+				
+			</div>
+			
+			<div class="w-100">
+				<p class="lead text-center">
+					Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
+				</p>
+				<button type="button" class="btn btn-success btn-lg btn-block">Enregistrer mes votes</button>
+			</div>
 			
 		</div>
 		
