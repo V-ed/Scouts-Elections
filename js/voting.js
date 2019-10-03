@@ -116,6 +116,18 @@ function setup_voting_session(data) {
 		
 		votingOverlay.classList.add("active");
 		
+		setTimeout(function() {
+			
+			voteIndexes.forEach(voteIndex => {
+				
+				data.candidates[voteIndex].voteCount++;
+				
+			});
+			
+			voteIndexes = [];
+			
+		}, 1500);
+		
 	});
 	
 }
