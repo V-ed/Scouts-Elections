@@ -1,23 +1,6 @@
-var tempCandidates = [];
-
-tempCandidates.push({name: "candidate 1", voteCount: 0});
-tempCandidates.push({name: "candidate 2", voteCount: 0});
-tempCandidates.push({name: "candidate 3", voteCount: 0});
-tempCandidates.push({name: "candidate 4", voteCount: 0});
-tempCandidates.push({name: "candidate 5", voteCount: 0});
-tempCandidates.push({name: "candidate 6", voteCount: 0});
-tempCandidates.push({name: "candidate 7", voteCount: 0});
-
-var tempData = {
-	dbName: "TestDB",
-	numberOfVoters: 20,
-	numberOfVotePerVoter: 4,
-	candidates: tempCandidates
-}
-
-var voteIndexes = [];
-
 function setup_voting_session(data) {
+	
+	var voteIndexes = [];
 	
 	var cardsHtml = "";
 	
