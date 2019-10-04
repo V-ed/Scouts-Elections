@@ -9,10 +9,10 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	$(candidateContainer).append(`
 	<div id="candidate-controls-${number}" class="form-group row">
-	<label class="col-sm-2 col-form-label" for="candidate-${number}">Candidat ${number}</label>
-	<div class="col-sm-10">
-	<input type="text" class="form-control" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom">
-	</div>
+		<label class="col-sm-2 col-form-label" for="candidate-${number}">Candidat ${number}</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom">
+		</div>
 	</div>`);
 	
 	candidateRemoveButton.hidden = false;
