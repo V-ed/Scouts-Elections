@@ -117,6 +117,7 @@ function setup_voting_session(data) {
 	
 	submitVotesButton.addEventListener("click", function (e) {
 		
+		submitVotesButton.disabled = true;
 		votingOverlay.classList.add("active");
 		
 		setTimeout(function() {
