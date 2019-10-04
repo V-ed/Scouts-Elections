@@ -152,11 +152,18 @@ function setup_voting_session(data) {
 	document.body.onkeyup = function(e) {
 		if(e.keyCode == 32){
 			
-			votersRemainingCountToast.innerText = `${voterCountRemaining} vote(s) restant sur ${data.numberOfVoters}`;
+			if (isVoteFinished && voterCountRemaining == 0) {
+				setup_results_page(data);
+			}
+			else{
+				
+				votersRemainingCountToast.innerText = `${voterCountRemaining} vote(s) restant sur ${data.numberOfVoters}`;
+				
+				$(".toast").toast("show");
+				
+			}
 			
-			$(".toast").toast("show");
-			
-			if(isVoteFinished){
+			if (isVoteFinished) {
 				
 				isVoteFinished = false;
 				
