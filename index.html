@@ -41,7 +41,7 @@
 		</div>
 	</div>
 	
-	<div class="container py-3">
+	<div id="views" class="container py-3">
 		
 		<div id="setup-page" class="pt-2" hidden>
 			
@@ -85,7 +85,7 @@
 			
 		</div>
 		
-		<div id="voting-page" class="row h-100">
+		<div id="voting-page" class="row h-100" hidden>
 			
 			<div id="cards-container" class="w-100 mt-auto mb-5">
 				
@@ -100,8 +100,13 @@
 			
 		</div>
 		
+		<div id="results-page" class="row h-100 w-100" hidden>
+			<span class="m-auto">This is my results page</span>
+		</div>
+		
 	</div>
 	
+	<script src="./js/switcher.js"></script>
 	<script src="./js/index.js"></script>
 	<script src="./js/results.js"></script>
 	<script src="./js/voting.js"></script>
