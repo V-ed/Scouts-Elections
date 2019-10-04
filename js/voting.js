@@ -150,6 +150,8 @@ function setup_voting_session(data) {
 	var votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	
 	document.body.onkeyup = function(e) {
+		e.preventDefault();
+		
 		if(e.keyCode == 32){
 			
 			if (isVoteFinished && voterCountRemaining == 0) {
