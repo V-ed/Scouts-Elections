@@ -159,7 +159,7 @@ function setup_voting_session(data) {
 				
 				votersRemainingCountToast.innerText = `${voterCountRemaining} vote(s) restant sur ${data.numberOfVoters}`;
 				
-				$(".toast").toast("show");
+				$("#voting-toasts-container > .toast").toast("show");
 				
 			}
 			
