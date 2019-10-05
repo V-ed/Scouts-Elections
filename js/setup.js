@@ -70,8 +70,8 @@ var setupInputs = {};
 
 add_input_for_verification("db-name", data => {
 	return {
-		isValid: data == "LOL",
-		reason: "La donnée doit être \"LOL\"."
+		isValid: data != "" && data[0] === data[0].toUpperCase(),
+		reason: data == "" ? "Le nom de la base de donnée ne peut être vide." : "Le nom de la base de donnée doit commencer avec une majuscule."
 	} 
 });
 add_input_for_verification("number-of-voters");
