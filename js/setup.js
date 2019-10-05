@@ -11,7 +11,7 @@ candidateAddButton.addEventListener("click", function (e) {
 	<div id="candidate-controls-${number}" class="form-group row">
 		<label class="col-sm-2 col-form-label" for="candidate-${number}">Candidat ${number}</label>
 		<div class="col-sm-10">
-			<input type="text" class="form-control is-invalid" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom" name="candidate-${number}" data-candidatenumber="${number}" required>
+			<input type="text" class="form-control is-invalid is-popable" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom" name="candidate-${number}" data-candidatenumber="${number}" required>
 		</div>
 	</div>`);
 	
@@ -28,6 +28,7 @@ candidateRemoveButton.addEventListener("click", function (e) {
 	
 	var number = candidateAddButton.dataset.candidatecount--;
 	
+	$(document.getElementById(`candidate-${number}`)).popover("dispose");
 	document.getElementById(`candidate-controls-${number}`).remove();
 	
 	if (number == 2) {
@@ -67,7 +68,12 @@ submitSetupButton.addEventListener("click", e => {
 
 var setupInputs = {};
 
-add_input_for_verification("db-name", data => { return data == "LOL" });
+add_input_for_verification("db-name", data => {
+	return {
+		isValid: data == "LOL",
+		reason: "La donnée doit être \"LOL\"."
+	} 
+});
 add_input_for_verification("number-of-voters");
 add_input_for_verification("number-of-votes");
 add_input_for_verification("candidate-1");
@@ -110,21 +116,30 @@ function verify_input(inputElement, customValidator) {
 		return true;
 	
 	var isInvalid = false;
+	var reason = "";
 	
 	var inputValue = inputElement.value;
 	
 	if (customValidator) {
-		isInvalid = !customValidator(inputValue);
+		var customResults = customValidator(inputValue);
+		isInvalid = !customResults.isValid;
+		reason = customResults.reason;
+		
+		if(!reason){
+			reason = "La donnée n'est pas valide.";
+		}
 	}
 	else if (!inputValue) {
 		// Value is empty
 		isInvalid = true;
+		reason = "La donnée ne peut pas être vide.";
 	}
 	else if (inputElement.type == "number") {
 		
 		var numberValue = parseInt(inputValue);
 		
 		isInvalid = numberValue <= 0;
+		reason = "Le nombre doit être supérieur à 0.";
 		
 	}
 	
@@ -132,10 +147,17 @@ function verify_input(inputElement, customValidator) {
 		
 		inputElement.classList.add("is-invalid");
 		
+		inputElement.dataset.content = reason;
+		
+		$(inputElement).popover("show");
+		
 	}
 	else{
 		
 		inputElement.classList.remove("is-invalid");
+		inputElement.dataset.content = "";
+		
+		$(inputElement).popover("hide");
 		
 	}
 	
