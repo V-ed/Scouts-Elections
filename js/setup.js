@@ -48,7 +48,7 @@ submitSetupButton.addEventListener("click", e => {
 	
 	var candidateData = formData.get("candidate-1");
 	
-	for(var i = 1; candidateData != null; i++){
+	for(var i = 2; candidateData != null; i++){
 		tempCandidates.push({name: candidateData, voteCount: 0});
 		candidateData = formData.get(`candidate-${i}`);
 	}
