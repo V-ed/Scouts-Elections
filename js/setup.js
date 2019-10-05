@@ -21,8 +21,10 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	document.getElementById(`candidate-name-${number}`).focus();
 	
+	var numberOfVoteInput = document.getElementById("number-of-votes");
+	numberOfVoteInput.max = number - 1;
 	var forceNumberOfVotesEvent = new Event("input");
-	document.getElementById("number-of-votes").dispatchEvent(forceNumberOfVotesEvent);
+	numberOfVoteInput.dispatchEvent(forceNumberOfVotesEvent);
 	
 });
 
@@ -41,8 +43,10 @@ candidateRemoveButton.addEventListener("click", function (e) {
 		candidateRemoveButton.hidden = true;
 	}
 	
+	var numberOfVoteInput = document.getElementById("number-of-votes");
+	numberOfVoteInput.max = number - 2;
 	var forceNumberOfVotesEvent = new Event("input");
-	document.getElementById("number-of-votes").dispatchEvent(forceNumberOfVotesEvent);
+	numberOfVoteInput.dispatchEvent(forceNumberOfVotesEvent);
 	
 });
 
