@@ -9,17 +9,17 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	$(candidateContainer).append(`
 	<div id="candidate-controls-${number}" class="form-group row">
-		<label class="col-sm-2 col-form-label" for="candidate-${number}">Candidat ${number}</label>
+		<label class="col-sm-2 col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
 		<div class="col-sm-10">
-			<input type="text" class="form-control is-invalid is-popable" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom" name="candidate-${number}" data-candidatenumber="${number}" required>
+			<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-candidatenumber="${number}" required>
 		</div>
 	</div>`);
 	
 	candidateRemoveButton.hidden = false;
 	
-	add_input_for_verification(`candidate-${number}`);
+	add_input_for_verification(`candidate-name-${number}`);
 	
-	document.getElementById(`candidate-${number}`).focus();
+	document.getElementById(`candidate-name-${number}`).focus();
 	
 });
 
@@ -28,7 +28,7 @@ candidateRemoveButton.addEventListener("click", function (e) {
 	
 	var number = candidateAddButton.dataset.candidatecount--;
 	
-	$(document.getElementById(`candidate-${number}`)).popover("dispose");
+	$(document.getElementById(`candidate-name-${number}`)).popover("dispose");
 	document.getElementById(`candidate-controls-${number}`).remove();
 	
 	if (number == 2) {
@@ -46,11 +46,11 @@ submitSetupButton.addEventListener("click", e => {
 	
 	var tempCandidates = [];
 	
-	var candidateData = formData.get("candidate-1");
+	var candidateData = formData.get("candidate-name-1");
 	
 	for(var i = 2; candidateData != null; i++){
 		tempCandidates.push({name: candidateData, voteCount: 0});
-		candidateData = formData.get(`candidate-${i}`);
+		candidateData = formData.get(`candidate-name-${i}`);
 	}
 	
 	var data = {
@@ -76,7 +76,7 @@ add_input_for_verification("db-name", data => {
 });
 add_input_for_verification("number-of-voters");
 add_input_for_verification("number-of-votes");
-add_input_for_verification("candidate-1");
+add_input_for_verification("candidate-name-1");
 
 function add_input_for_verification(inputId, customValidator) {
 	
