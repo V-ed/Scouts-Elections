@@ -115,14 +115,14 @@ function verify_input(inputElement, customValidator) {
 	if (!inputElement.required)
 		return true;
 	
-	var isInvalid = false;
+	var isValid = true;
 	var reason = "";
 	
 	var inputValue = inputElement.value;
 	
 	if (customValidator) {
 		var customResults = customValidator(inputValue);
-		isInvalid = !customResults.isValid;
+		isValid = customResults.isValid;
 		reason = customResults.reason;
 		
 		if(!reason){
@@ -131,19 +131,28 @@ function verify_input(inputElement, customValidator) {
 	}
 	else if (!inputValue) {
 		// Value is empty
-		isInvalid = true;
+		isValid = false;
 		reason = "La donnée ne peut pas être vide.";
 	}
 	else if (inputElement.type == "number") {
 		
 		var numberValue = parseInt(inputValue);
 		
-		isInvalid = numberValue <= 0;
+		isValid = numberValue > 0;
 		reason = "Le nombre doit être supérieur à 0.";
 		
 	}
 	
-	if (isInvalid) {
+	if (isValid) {
+		
+		inputElement.classList.remove("is-invalid");
+		
+		inputElement.dataset.content = "";
+		
+		$(inputElement).popover("hide");
+		
+	}
+	else{
 		
 		inputElement.classList.add("is-invalid");
 		
@@ -152,15 +161,7 @@ function verify_input(inputElement, customValidator) {
 		$(inputElement).popover("show");
 		
 	}
-	else{
-		
-		inputElement.classList.remove("is-invalid");
-		inputElement.dataset.content = "";
-		
-		$(inputElement).popover("hide");
-		
-	}
 	
-	return !isInvalid;
+	return isValid;
 	
 }
