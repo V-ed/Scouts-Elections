@@ -71,26 +71,26 @@
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="database-name">Nom de la base de données</label>
 					<div class="col-sm-9">
-						<input type="text" class="form-control" id="db-name" aria-describedby="dbName">
+						<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" autocomplete="off" required>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="number-of-voters">Nombre de voteurs</label>
 					<div class="col-sm-9">
-						<input type="number" class="form-control" id="number-of-voters" min="1" aria-describedby="numberOfVoters">
+						<input type="number" class="form-control is-invalid is-popable" id="number-of-voters" min="1" aria-describedby="numberOfVoters" name="numberOfVoters" required>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="number-of-votes">Nombre de votes par voteur</label>
 					<div class="col-sm-9">
-						<input type="number" class="form-control" id="number-of-votes" min="1" aria-describedby="numberOfVotes">
+						<input type="number" class="form-control is-invalid is-popable" id="number-of-votes" min="1" aria-describedby="numberOfVotes" name="numberOfVotes" required>
 					</div>
 				</div>
 				<div id="setup-candidates" class="py-3">
-					<div class="form-group row">
-						<label class="col-sm-2 col-form-label" for="candidate1">Candidat 1</label>
+					<div id="candidate-controls-1" class="form-group row">
+						<label class="col-sm-2 col-form-label" for="candidate-name-1">Candidat 1</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="candidate1" aria-describedby="candidate1" placeholder="Nom">
+							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-candidatenumber="1" autocomplete="off" required>
 						</div>
 					</div>
 				</div>
@@ -99,7 +99,7 @@
 					<button id="candidate-remove" class="ml-5 btn btn-danger" hidden>Enlever dernier Candidat</button>
 				</div>
 				<div class="ml-auto">
-					<button type="submit" class="btn btn-primary">Submit</button>
+					<button type="submit" id="setup-submit-button" class="btn btn-primary" disabled>Submit</button>
 				</div>
 			</form>
 			

@@ -11,3 +11,7 @@ newElectionsButton.addEventListener("click", e => {
 	switch_view("setup-page")
 	
 });
+
+$(function () {
+	$(".is-popable").popover({trigger: "manual"});
+})
