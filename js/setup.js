@@ -85,7 +85,7 @@ add_input_for_verification("db-name", data => {
 	return {
 		isValid: data != "" && data[0] === data[0].toUpperCase(),
 		reason: data == "" ? "Le nom de la base de donnée ne peut être vide." : "Le nom de la base de donnée doit commencer avec une majuscule."
-	} 
+	}
 });
 add_input_for_verification("number-of-voters");
 add_input_for_verification("number-of-votes", data => {
@@ -123,8 +123,9 @@ function verify_all_valid() {
 	var isValid = true;
 	
 	for (const inputProperty in setupInputs) {
-		if (isValid)
+		if (isValid) {
 			isValid = setupInputs[inputProperty];
+		}
 	}
 	
 	submitSetupButton.disabled = !isValid;
@@ -134,8 +135,9 @@ function verify_all_valid() {
 function verify_input(inputElement, customValidator) {
 	
 	// Check if required. If not, don't verify
-	if (!inputElement.required)
+	if (!inputElement.required) {
 		return true;
+	}
 	
 	var isValid = true;
 	var reason = "";

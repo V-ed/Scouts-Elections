@@ -4,7 +4,8 @@ function switch_view(viewId, onSwitchedHandler) {
 	
 	views.forEach(view => view.hidden = view.id != viewId);
 	
-	if (onSwitchedHandler)
+	if (onSwitchedHandler) {
 		onSwitchedHandler();
+	}
 	
 }
