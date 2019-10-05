@@ -94,7 +94,7 @@ add_input_for_verification("number-of-votes", data => {
 	
 	return {
 		isValid: data > 0 && candidatesCount > data,
-		reason: data === "" ? "Le nombre de vote ne peut être vide." : data > 0 ? "Le nombre de vote ne peut pas être inférieur au nombre de candidats." : "Le nombre doit être supérieur à 0."
+		reason: data === "" ? "Le nombre de vote ne peut être vide." : data > 0 ? "Le nombre de vote doit être inférieur au nombre de candidats." : "Le nombre doit être supérieur à 0."
 	};
 	
 });
