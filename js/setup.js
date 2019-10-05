@@ -11,11 +11,13 @@ candidateAddButton.addEventListener("click", function (e) {
 	<div id="candidate-controls-${number}" class="form-group row">
 		<label class="col-sm-2 col-form-label" for="candidate-${number}">Candidat ${number}</label>
 		<div class="col-sm-10">
-			<input type="text" class="form-control" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom" name="candidate-${number}" data-candidatenumber="${number}">
+			<input type="text" class="form-control is-invalid" id="candidate-${number}" aria-describedby="candidate-${number}" placeholder="Nom" name="candidate-${number}" data-candidatenumber="${number}" required>
 		</div>
 	</div>`);
 	
 	candidateRemoveButton.hidden = false;
+	
+	add_input_for_verification(`candidate-${number}`);
 	
 	document.getElementById(`candidate-${number}`).focus();
 	
@@ -60,3 +62,83 @@ submitSetupButton.addEventListener("click", e => {
 	switch_view("voting-page", () => setup_voting_session(data));
 	
 });
+
+// Handle data validation
+
+var setupInputs = {};
+
+add_input_for_verification("db-name", data => { return data == "LOL" });
+add_input_for_verification("number-of-voters");
+add_input_for_verification("number-of-votes");
+add_input_for_verification("candidate-1");
+
+function add_input_for_verification(inputId, customValidator) {
+	
+	setupInputs[inputId] = false;
+	
+	var inputElement = document.getElementById(inputId);
+	
+	inputElement.addEventListener("input", e => {
+		
+		setupInputs[inputId] = verify_input(inputElement, customValidator);
+		
+		verify_all_valid();
+		
+	});
+	
+	verify_all_valid();
+	
+}
+
+function verify_all_valid() {
+	
+	var isValid = true;
+	
+	for (const inputProperty in setupInputs) {
+		if (isValid)
+			isValid = setupInputs[inputProperty];
+	}
+	
+	submitSetupButton.disabled = !isValid;
+	
+}
+
+function verify_input(inputElement, customValidator) {
+	
+	// Check if required. If not, don't verify
+	if (!inputElement.required)
+		return true;
+	
+	var isInvalid = false;
+	
+	var inputValue = inputElement.value;
+	
+	if (customValidator) {
+		isInvalid = !customValidator(inputValue);
+	}
+	else if (!inputValue) {
+		// Value is empty
+		isInvalid = true;
+	}
+	else if (inputElement.type == "number") {
+		
+		var numberValue = parseInt(inputValue);
+		
+		isInvalid = numberValue <= 0;
+		
+	}
+	
+	if (isInvalid) {
+		
+		inputElement.classList.add("is-invalid");
+		
+	}
+	else{
+		
+		inputElement.classList.remove("is-invalid");
+		
+	}
+	
+	return !isInvalid;
+	
+}
