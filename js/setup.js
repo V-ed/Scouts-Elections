@@ -34,6 +34,9 @@ candidateRemoveButton.addEventListener("click", function (e) {
 	$(document.getElementById(`candidate-name-${number}`)).popover("dispose");
 	document.getElementById(`candidate-controls-${number}`).remove();
 	
+	delete setupInputs[`candidate-name-${number}`];
+	verify_all_valid();
+	
 	if (number == 2) {
 		candidateRemoveButton.hidden = true;
 	}
