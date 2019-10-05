@@ -17,6 +17,8 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	candidateRemoveButton.hidden = false;
 	
+	document.getElementById(`candidate-${number}`).focus();
+	
 });
 
 candidateRemoveButton.addEventListener("click", function (e) {
