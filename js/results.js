@@ -53,7 +53,8 @@ function setup_results_page(data) {
 		
 		tableBodyHtml += `
 		<tr>
-			<th scope="row">${i + 1 - countOfEqual} / ${i + 1}</th>
+			<th scope="row">${i + 1}</th>
+			<td>${i + 1 - countOfEqual}</td>
 			<td>${candidate.name}</td>
 			<td>${candidate.voteCount}</td>
 		</tr>`;
