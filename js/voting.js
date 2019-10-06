@@ -139,7 +139,7 @@ function setup_voting_session(data) {
 		if(e.keyCode == 32){
 			
 			if (isVoteFinished && voterCountRemaining == 0) {
-				switch_view("results-page", () => setup_results_page(data));
+				switch_view("pre-results-page", () => setup_pre_results_page(data));
 			}
 			else{
 				
