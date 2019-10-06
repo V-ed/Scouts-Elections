@@ -6,12 +6,8 @@ window.onbeforeunload = function(e) {
 
 var newElectionsButton = document.getElementById("home-new-button");
 
-newElectionsButton.addEventListener("click", e => {
-	
-	switch_view("setup-page")
-	
-});
+newElectionsButton.addEventListener("click", e => switch_view("setup-page"));
 
 $(function () {
 	$(".is-popable").popover({trigger: "manual"});
-})
+});
