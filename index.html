@@ -121,8 +121,58 @@
 			
 		</div>
 		
-		<div id="results-page" class="row h-100 w-100" hidden>
-			<span class="m-auto">This is my results page</span>
+		<div id="pre-results-page" class="h-100" hidden>
+			
+			<div class="d-flex flex-column h-100">
+				
+				<h1 class="display-2 pt-3 text-center">Résultats Élections Scouts</h1>
+				
+				<div class="flex-grow-1">
+					<div class="h-100 d-flex align-items-center justify-content-center">
+						
+						<form id="pre-results-form" class="w-100">
+							<div class="form-group">
+								<label for="pre-results-password-input">Mot de passe pour afficher les résultats</label>
+								<input type="text" class="form-control my-3" id="pre-results-password-input" placeholder="Password" autocomplete="off">
+							</div>
+							<div class="w-100 text-center mt-4">
+								<button type="submit" id="pre-results-submit-button" class="btn btn-primary">Submit</button>
+							</div>
+						</form>
+						
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+		<div id="results-page" class="h-100" hidden>
+			
+			<div class="d-flex flex-column h-100">
+				
+				<h1 class="display-2 pt-3 text-center">Résultats Élections Scouts</h1>
+				
+				<div class="flex-grow-1">
+					<div class="h-100 d-flex align-items-center justify-content-center">
+						<table class="table table-striped table-hover">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col" width="5%">#</th>
+									<th scope="col" width="5%">Position</th>
+									<th scope="col">Candidat</th>
+									<th scope="col">Nombre de votes</th>
+								</tr>
+							</thead>
+							<tbody id="results-body">
+								<!-- Will be filled dynamically with candidates voting results -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+			</div>
+			
 		</div>
 		
 	</div>
