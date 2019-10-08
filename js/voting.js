@@ -131,6 +131,8 @@ function setup_voting_session(data) {
 			voterCountRemaining--;
 			isVoteFinished = true;
 			
+			data.numberOfVoted++;
+			
 		}, 1300);
 		
 	});

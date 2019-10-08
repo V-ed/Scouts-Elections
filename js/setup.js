@@ -68,8 +68,10 @@ submitSetupButton.addEventListener("click", e => {
 	
 	var data = {
 		dbName: formData.get("dbName"),
-		numberOfVoters: formData.get("numberOfVoters"),
-		numberOfVotePerVoter: formData.get("numberOfVotes"),
+		numberOfVoters: parseInt(formData.get("numberOfVoters")),
+		numberOfVotePerVoter: parseInt(formData.get("numberOfVotes")),
+		numberOfVoted: 0,
+		hasSkipped: false,
 		candidates: tempCandidates
 	};
 	
