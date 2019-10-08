@@ -133,7 +133,7 @@ function setup_voting_session(data) {
 			
 			data.numberOfVoted++;
 			
-		}, 1300);
+		}, 1200);
 		
 	});
 	
