@@ -82,10 +82,29 @@ submitSetupButton.addEventListener("click", e => {
 var setupInputs = {};
 
 add_input_for_verification("db-name", data => {
-	return {
-		isValid: data != "" && data[0] === data[0].toUpperCase(),
-		reason: data == "" ? "Le nom de la base de donnée ne peut être vide." : "Le nom de la base de donnée doit commencer avec une majuscule."
+	
+	if (data == "") {
+		return "Le nom de la base de donnée ne peut être vide.";
 	}
+	
+	if (data.length > 50) {
+		return "Le nom de la base de donnée doit être inférieur ou égal à 50 caractères de longueur.";
+	}
+	
+	if (data.endsWith(".")) {
+		return "Le nom de la base de donnée ne peut pas terminer avec un point.";
+	}
+	
+	var illegalCharRegex = /^[^\\/:\*\?"<>\|]+$/;
+	if (!illegalCharRegex.test(data)) {
+		return "Le nom de la base de donnée contient actuellement au moins un caractère invalide.";
+	}
+	
+	var reservedFileRegex = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i;
+	if (reservedFileRegex.test(data)) {
+		return "Le nom de la base de donnée ne peut pas être un nom réservé au système.";
+	}
+	
 });
 add_input_for_verification("number-of-voters");
 add_input_for_verification("number-of-votes", data => {
