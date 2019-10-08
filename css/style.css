@@ -13,7 +13,7 @@ div#voting-voted-overlay {
     z-index: 10000;
     background: radial-gradient(circle, #149314, #107810);
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
 
 div#voting-voted-overlay:not(.active) {
@@ -28,12 +28,11 @@ div#voting-voted-overlay.active {
 
 div#voting-voted-overlay > * {
     opacity: 0;
-    transition: opacity 1.2s ease-in-out;
-    -webkit-transition: opacity 1.7s cubic-bezier(1.000, 0, 0.685, 0.765); /* older webkit */
-    -webkit-transition: opacity 1.7s cubic-bezier(1.000, -0.335, 0.685, 0.765);
-    -moz-transition: opacity 1.7s cubic-bezier(1.000, -0.335, 0.685, 0.765);
-    -o-transition: opacity 1.7s cubic-bezier(1.000, -0.335, 0.685, 0.765);
-    transition: opacity 1.7s cubic-bezier(1.000, -0.335, 0.685, 0.765);
+    -webkit-transition: opacity 1.2s cubic-bezier(1.000, 0, 0.685, 0.765); /* older webkit */
+    -webkit-transition: opacity 1.2s cubic-bezier(1.000, -0.335, 0.685, 0.765);
+    -moz-transition: opacity 1.2s cubic-bezier(1.000, -0.335, 0.685, 0.765);
+    -o-transition: opacity 1.2s cubic-bezier(1.000, -0.335, 0.685, 0.765);
+    transition: opacity 1.2s cubic-bezier(1.000, -0.335, 0.685, 0.765);
 }
 
 div#voting-voted-overlay.active > * {
