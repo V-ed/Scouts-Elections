@@ -65,4 +65,16 @@ function setup_results_page(data) {
 	
 	$(resultsTableBody).append(tableBodyHtml);
 	
+	var downloadDbButton = document.getElementById("results-download-button");
+	
+	downloadDbButton.addEventListener("click", e => {
+		e.preventDefault();
+		
+		var stringData = JSON.stringify(data);
+		
+		var file = new File([stringData], `${data.dbName}.json`, {type: "application/json;charset=utf-8"});
+		saveAs(file);
+		
+	});
+	
 }
