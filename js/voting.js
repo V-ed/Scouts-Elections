@@ -1,4 +1,8 @@
+var onKeyUpEventBefore;
+
 function setup_voting_session(data) {
+	
+	onKeyUpEventBefore = document.body.onkeyup;
 	
 	var voteIndexes = [];
 	
@@ -140,6 +144,7 @@ function setup_voting_session(data) {
 			
 			if (isVoteFinished && voterCountRemaining == 0) {
 				switch_view("pre-results-page", () => setup_pre_results_page(data));
+				document.body.onkeyup = onKeyUpEventBefore;
 			}
 			else{
 				
