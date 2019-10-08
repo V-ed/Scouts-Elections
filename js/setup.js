@@ -109,12 +109,19 @@ add_input_for_verification("db-name", data => {
 add_input_for_verification("number-of-voters");
 add_input_for_verification("number-of-votes", data => {
 	
+	if (data === "") {
+		return "Le nombre de vote ne peut être vide.";
+	}
+	
+	if (data < 1) {
+		return "Le nombre doit être supérieur à 0.";
+	}
+	
 	var candidatesCount = document.querySelectorAll("input[id^='candidate-name-']").length;
 	
-	return {
-		isValid: data > 0 && candidatesCount > data,
-		reason: data === "" ? "Le nombre de vote ne peut être vide." : data > 0 ? "Le nombre de vote doit être inférieur au nombre de candidats." : "Le nombre doit être supérieur à 0."
-	};
+	if (candidatesCount <= data) {
+		return "Le nombre de vote doit être inférieur au nombre de candidats - 1.";
+	}
 	
 });
 add_input_for_verification("candidate-name-1");
