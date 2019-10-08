@@ -147,12 +147,21 @@ function verify_input(inputElement, customValidator) {
 	if (customValidator) {
 		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue)) : customValidator(inputValue);
 		
-		isValid = customResults.isValid;
-		reason = customResults.reason;
-		
-		if(!reason){
+		if (typeof customResults == "string") {
+			isValid = false;
+			reason = customResults;
+		}
+		else if (typeof customResults == "boolean") {
+			isValid = customResults;
 			reason = "La donnée n'est pas valide.";
 		}
+		else if (customResults) {
+			
+			isValid = customResults.isValid;
+			reason = customResults.reason;
+			
+		}
+		
 	}
 	else if (!inputValue) {
 		// Value is empty
