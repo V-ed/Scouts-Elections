@@ -1,6 +1,6 @@
 # Scouts-Elections
 
-This static website is a program that lets our Scout group create Elections to determine which leaders will be in our subgroups.
+This static website is a program that lets our Scouts group create Elections to determine which leaders will be in our subgroups.
 
 As we don't know how many kids will be there on Election day (absences...), this program allows for configurations on setup and when ready, shows the voting page with all the candidates entered on setup with a customizable number of votes. That voting page repeas until all the voters have went through.
 
@@ -17,9 +17,11 @@ I may add a configuration option later on to allow that, but this wasn't our nee
 The name of the database, on the setup page, is the name that will be given to the file if you want to download the database at the end.
 Validations rules on it prevents you from entering a filename that wouldn't be accepted by Windows systems.
 
-Before showing results, a password is asked to prevent kids from viewing the results by accident. The password is currently hardcoded to `VL` ("**V**ieux-**L**oups"), but may be switched to a setup-based password selection (view #12).
+Before showing results, a password is asked to prevent kids from viewing the results by accident. The password is currently hardcoded to `VL` ("**V**ieux-**L**oups"), but may be switched to a setup-based password selection (view [#12][1]).
 The results shown at the end are sorted by number of votes, meaning the most voted candidate will be on top and the lowest voted candidate will be at the bottom.
 Rows are clickable, which highlights the candidates, allowing for discussions with other maintainers.
 
 All the text in here is in French, since our group is French-based.
 Code is in English because code should always be in English.
+
+[1]: https://github.com/V-ed/Scouts-Elections/issues/12
