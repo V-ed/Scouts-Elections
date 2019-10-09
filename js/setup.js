@@ -17,7 +17,7 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	candidateRemoveButton.hidden = false;
 	
-	add_input_for_verification(`candidate-name-${number}`);
+	add_input_for_verification(`candidate-name-${number}`, validateCandidate);
 	
 	document.getElementById(`candidate-name-${number}`).focus();
 	
@@ -81,6 +81,42 @@ submitSetupButton.addEventListener("click", e => {
 
 // Handle data validation
 
+var validateCandidate = function (data, input) {
+	
+	var candidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']"));
+	const dupCandidates = candidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == data.toLowerCase());
+	
+	if (dupCandidates.length > 1) {
+		
+		input.classList.add("is-invalid");
+		input.dataset.dupevalue = data.toLowerCase();
+		
+		dupCandidates.filter(dupInput => dupInput != input && !dupInput.classList.contains("is-invalid")).forEach(dupInput => {
+			var forceCandidateEvent = new Event("input");
+			dupInput.dispatchEvent(forceCandidateEvent);
+		});
+		
+		return "Le nom de ce candidat est dupliqué!";
+		
+	}
+	else if (input.dataset.dupevalue != null) {
+		
+		const candidatesToRevalidate = candidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+		candidatesToRevalidate.filter(dupInput => dupInput != input).forEach(candidate => {
+			var forceCandidateEvent = new Event("input");
+			candidate.dispatchEvent(forceCandidateEvent);
+		});
+		
+		delete input.dataset.dupevalue;
+		
+	}
+	
+	if (data == "") {
+		return "Le nom du candidat ne peut être vide.";
+	}
+	
+}
+
 var setupInputs = {};
 
 add_input_for_verification("db-name", data => {
@@ -126,7 +162,7 @@ add_input_for_verification("number-of-votes", data => {
 	}
 	
 });
-add_input_for_verification("candidate-name-1");
+add_input_for_verification("candidate-name-1", validateCandidate);
 
 function add_input_for_verification(inputId, customValidator) {
 	
@@ -173,7 +209,7 @@ function verify_input(inputElement, customValidator) {
 	var inputValue = inputElement.value;
 	
 	if (customValidator) {
-		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue)) : customValidator(inputValue);
+		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement) : customValidator(inputValue, inputElement);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
