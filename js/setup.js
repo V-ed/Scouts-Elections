@@ -60,9 +60,13 @@ submitSetupButton.addEventListener("click", e => {
 	var tempCandidates = [];
 	
 	for(var i = 1, max = document.querySelectorAll("input[id^='candidate-name-']").length; i <= max; i++){
-		var candidateData = formData.get(`candidate-name-${i}`);
-		tempCandidates.push({name: candidateData, voteCount: 0});
+		
 	}
+	
+	document.querySelectorAll("input[id^='candidate-name-']").forEach(candidate => {
+		var candidateData = formData.get(candidate.name);
+		tempCandidates.push({name: candidateData, voteCount: 0});
+	});
 	
 	var data = {
 		dbName: formData.get("dbName"),
