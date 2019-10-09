@@ -102,7 +102,7 @@ add_input_for_verification("db-name", data => {
 		return "Le nom de la base de donnée contient actuellement au moins un caractère invalide.";
 	}
 	
-	var reservedFileRegex = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i;
+	var reservedFileRegex = /^(nul|prn|con|(lpt|com)[0-9])(\.|$)/i;
 	if (reservedFileRegex.test(data)) {
 		return "Le nom de la base de donnée ne peut pas être un nom réservé au système.";
 	}
