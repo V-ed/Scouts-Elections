@@ -38,3 +38,7 @@ div#voting-voted-overlay > * {
 div#voting-voted-overlay.active > * {
     opacity: 1;
 }
+
+table.table-border {
+    border: 1px solid #dee2e6;
+}
