@@ -144,6 +144,10 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	verify_all_valid();
 	
+	if (inputElement.classList.contains("is-popable")) {
+		$(inputElement).popover({trigger: "manual"});
+	}
+	
 }
 
 function verify_all_valid() {
