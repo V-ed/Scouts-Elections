@@ -52,7 +52,7 @@ function setup_results_page(data) {
 		}
 		
 		tableBodyHtml += `
-		<tr>
+		<tr class="clickable-row">
 			<th scope="row">${i + 1}</th>
 			<td>${i + 1 - countOfEqual}</td>
 			<td>${candidate.name}</td>
@@ -64,6 +64,10 @@ function setup_results_page(data) {
 	});
 	
 	$(resultsTableBody).append(tableBodyHtml);
+	
+	$(resultsTableBody).on("click", ".clickable-row", function(event) {
+		$(this).toggleClass("bg-success");
+	});
 	
 	var downloadDbButton = document.getElementById("results-download-button");
 	
