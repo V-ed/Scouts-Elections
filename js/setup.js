@@ -23,8 +23,7 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 1;
-	var forceNumberOfVotesEvent = new Event("input");
-	numberOfVoteInput.dispatchEvent(forceNumberOfVotesEvent);
+	numberOfVoteInput.dispatchEvent(new Event("input"));
 	
 });
 
@@ -48,17 +47,13 @@ candidateRemoveButton.addEventListener("click", function (e) {
 		
 		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
 		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.forEach(candidate => {
-			var forceCandidateEvent = new Event("input");
-			candidate.dispatchEvent(forceCandidateEvent);
-		});
+		candidatesToRevalidate.forEach(candidate => candidate.dispatchEvent(new Event("input")));
 		
 	}
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 2;
-	var forceNumberOfVotesEvent = new Event("input");
-	numberOfVoteInput.dispatchEvent(forceNumberOfVotesEvent);
+	numberOfVoteInput.dispatchEvent(new Event("input"));
 	
 });
 
@@ -101,10 +96,7 @@ var validateCandidate = function (data, input) {
 		input.classList.add("is-invalid");
 		input.dataset.dupevalue = data.toLowerCase();
 		
-		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => {
-			var forceCandidateEvent = new Event("input");
-			dupInput.dispatchEvent(forceCandidateEvent);
-		});
+		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => dupInput.dispatchEvent(new Event("input")));
 		
 		return "Le nom de ce candidat est dupliqué!";
 		
@@ -112,10 +104,7 @@ var validateCandidate = function (data, input) {
 	else if (input.dataset.dupevalue != null) {
 		
 		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.forEach(candidate => {
-			var forceCandidateEvent = new Event("input");
-			candidate.dispatchEvent(forceCandidateEvent);
-		});
+		candidatesToRevalidate.forEach(candidate => candidate.dispatchEvent(new Event("input")));
 		
 		delete input.dataset.dupevalue;
 		
