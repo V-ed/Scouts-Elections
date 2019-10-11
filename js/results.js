@@ -81,4 +81,8 @@ function setup_results_page(data) {
 		
 	});
 	
+	var homepageButton = document.getElementById("results-homepage-button");
+	
+	homepageButton.addEventListener("click", () => document.location.reload(true));
+	
 }
