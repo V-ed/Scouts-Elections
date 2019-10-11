@@ -97,7 +97,6 @@ function setup_voting_session(data) {
 		});
 	});
 	
-	var voterCountRemaining = data.numberOfVoters;
 	var isVoteFinished = false;
 	
 	var votingOverlay = document.getElementById("voting-voted-overlay");
@@ -128,7 +127,6 @@ function setup_voting_session(data) {
 			
 			submitVotesButton.disabled = true;
 			
-			voterCountRemaining--;
 			isVoteFinished = true;
 			
 			data.numberOfVoted++;
@@ -144,13 +142,13 @@ function setup_voting_session(data) {
 		
 		if(e.keyCode == 32){
 			
-			if (isVoteFinished && voterCountRemaining == 0) {
+			if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
 				switch_view("pre-results-page", () => setup_pre_results_page(data));
 				document.body.onkeyup = onKeyUpEventBefore;
 			}
 			else{
 				
-				votersRemainingCountToast.innerText = `${voterCountRemaining} vote(s) restant sur ${data.numberOfVoters}`;
+				votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} vote(s) restant sur ${data.numberOfVoters}`;
 				
 				$("#voting-toasts-container > .toast").toast("show");
 				
