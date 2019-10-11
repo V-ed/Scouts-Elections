@@ -59,12 +59,10 @@ submitSetupButton.addEventListener("click", e => {
 	
 	var tempCandidates = [];
 	
-	var candidateData = formData.get("candidate-name-1");
-	
-	for(var i = 2; candidateData != null; i++){
+	document.querySelectorAll("input[id^='candidate-name-']").forEach(candidate => {
+		var candidateData = formData.get(candidate.name);
 		tempCandidates.push({name: candidateData, voteCount: 0});
-		candidateData = formData.get(`candidate-name-${i}`);
-	}
+	});
 	
 	var data = {
 		dbName: formData.get("dbName"),
@@ -122,25 +120,25 @@ var setupInputs = {};
 add_input_for_verification("db-name", data => {
 	
 	if (data == "") {
-		return "Le nom de la base de donnée ne peut être vide.";
+		return "Le nom de la base de données ne peut être vide.";
 	}
 	
 	if (data.length > 50) {
-		return "Le nom de la base de donnée doit être inférieur ou égal à 50 caractères de longueur.";
+		return "Le nom de la base de données doit être inférieur ou égal à 50 caractères de longueur.";
 	}
 	
 	if (data.endsWith(".")) {
-		return "Le nom de la base de donnée ne peut pas terminer avec un point.";
+		return "Le nom de la base de données ne peut pas terminer avec un point.";
 	}
 	
 	var illegalCharRegex = /^[^\\/:\*\?"<>\|]+$/;
 	if (!illegalCharRegex.test(data)) {
-		return "Le nom de la base de donnée contient actuellement au moins un caractère invalide.";
+		return "Le nom de la base de données contient actuellement au moins un caractère invalide.";
 	}
 	
-	var reservedFileRegex = /^(nul|prn|con|lpt[0-9]|com[0-9])(\.|$)/i;
+	var reservedFileRegex = /^(nul|prn|con|(lpt|com)[0-9])(\.|$)/i;
 	if (reservedFileRegex.test(data)) {
-		return "Le nom de la base de donnée ne peut pas être un nom réservé au système.";
+		return "Le nom de la base de données ne peut pas être un nom réservé au système.";
 	}
 	
 });
@@ -179,6 +177,10 @@ function add_input_for_verification(inputId, customValidator) {
 	});
 	
 	verify_all_valid();
+	
+	if (inputElement.classList.contains("is-popable")) {
+		$(inputElement).popover({trigger: "manual"});
+	}
 	
 }
 
