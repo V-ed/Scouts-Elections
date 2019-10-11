@@ -17,7 +17,7 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	candidateRemoveButton.hidden = false;
 	
-	add_input_for_verification(`candidate-name-${number}`);
+	add_input_for_verification(`candidate-name-${number}`, validateCandidate);
 	
 	document.getElementById(`candidate-name-${number}`).focus();
 	
@@ -31,9 +31,10 @@ candidateAddButton.addEventListener("click", function (e) {
 candidateRemoveButton.addEventListener("click", function (e) {
 	e.preventDefault();
 	
-	var number = candidateAddButton.dataset.candidatecount--;
+	const number = candidateAddButton.dataset.candidatecount--;
 	
-	$(document.getElementById(`candidate-name-${number}`)).popover("dispose");
+	const input = document.getElementById(`candidate-name-${number}`);
+	$(input).popover("dispose");
 	document.getElementById(`candidate-controls-${number}`).remove();
 	
 	delete setupInputs[`candidate-name-${number}`];
@@ -41,6 +42,17 @@ candidateRemoveButton.addEventListener("click", function (e) {
 	
 	if (number == 2) {
 		candidateRemoveButton.hidden = true;
+	}
+	
+	if (input.dataset.dupevalue != null) {
+		
+		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+		candidatesToRevalidate.forEach(candidate => {
+			var forceCandidateEvent = new Event("input");
+			candidate.dispatchEvent(forceCandidateEvent);
+		});
+		
 	}
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
@@ -78,6 +90,42 @@ submitSetupButton.addEventListener("click", e => {
 });
 
 // Handle data validation
+
+var validateCandidate = function (data, input) {
+	
+	var otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+	const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == data.toLowerCase());
+	
+	if (dupCandidates.length > 0) {
+		
+		input.classList.add("is-invalid");
+		input.dataset.dupevalue = data.toLowerCase();
+		
+		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => {
+			var forceCandidateEvent = new Event("input");
+			dupInput.dispatchEvent(forceCandidateEvent);
+		});
+		
+		return "Le nom de ce candidat est dupliqué!";
+		
+	}
+	else if (input.dataset.dupevalue != null) {
+		
+		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+		candidatesToRevalidate.forEach(candidate => {
+			var forceCandidateEvent = new Event("input");
+			candidate.dispatchEvent(forceCandidateEvent);
+		});
+		
+		delete input.dataset.dupevalue;
+		
+	}
+	
+	if (data == "") {
+		return "Le nom du candidat ne peut être vide.";
+	}
+	
+}
 
 var setupInputs = {};
 
@@ -124,7 +172,7 @@ add_input_for_verification("number-of-votes", data => {
 	}
 	
 });
-add_input_for_verification("candidate-name-1");
+add_input_for_verification("candidate-name-1", validateCandidate);
 
 function add_input_for_verification(inputId, customValidator) {
 	
@@ -175,7 +223,7 @@ function verify_input(inputElement, customValidator) {
 	var inputValue = inputElement.value;
 	
 	if (customValidator) {
-		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue)) : customValidator(inputValue);
+		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement) : customValidator(inputValue, inputElement);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
