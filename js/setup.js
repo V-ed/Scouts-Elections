@@ -81,15 +81,15 @@ submitSetupButton.addEventListener("click", e => {
 
 var validateCandidate = function (data, input) {
 	
-	var candidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']"));
-	const dupCandidates = candidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == data.toLowerCase());
+	var otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+	const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == data.toLowerCase());
 	
-	if (dupCandidates.length > 1) {
+	if (dupCandidates.length > 0) {
 		
 		input.classList.add("is-invalid");
 		input.dataset.dupevalue = data.toLowerCase();
 		
-		dupCandidates.filter(dupInput => dupInput != input && !dupInput.classList.contains("is-invalid")).forEach(dupInput => {
+		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => {
 			var forceCandidateEvent = new Event("input");
 			dupInput.dispatchEvent(forceCandidateEvent);
 		});
@@ -99,8 +99,8 @@ var validateCandidate = function (data, input) {
 	}
 	else if (input.dataset.dupevalue != null) {
 		
-		const candidatesToRevalidate = candidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.filter(dupInput => dupInput != input).forEach(candidate => {
+		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+		candidatesToRevalidate.forEach(candidate => {
 			var forceCandidateEvent = new Event("input");
 			candidate.dispatchEvent(forceCandidateEvent);
 		});
