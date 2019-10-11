@@ -31,9 +31,10 @@ candidateAddButton.addEventListener("click", function (e) {
 candidateRemoveButton.addEventListener("click", function (e) {
 	e.preventDefault();
 	
-	var number = candidateAddButton.dataset.candidatecount--;
+	const number = candidateAddButton.dataset.candidatecount--;
 	
-	$(document.getElementById(`candidate-name-${number}`)).popover("dispose");
+	const input = document.getElementById(`candidate-name-${number}`);
+	$(input).popover("dispose");
 	document.getElementById(`candidate-controls-${number}`).remove();
 	
 	delete setupInputs[`candidate-name-${number}`];
@@ -41,6 +42,17 @@ candidateRemoveButton.addEventListener("click", function (e) {
 	
 	if (number == 2) {
 		candidateRemoveButton.hidden = true;
+	}
+	
+	if (input.dataset.dupevalue != null) {
+		
+		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+		candidatesToRevalidate.forEach(candidate => {
+			var forceCandidateEvent = new Event("input");
+			candidate.dispatchEvent(forceCandidateEvent);
+		});
+		
 	}
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
