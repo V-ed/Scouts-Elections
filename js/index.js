@@ -100,7 +100,7 @@ function load_file(file) {
 		
 		if (isValid) {
 			
-			switch_view("pre-results-page", () => setup_pre_results_page(data));
+			route_data(data);
 			
 		}
 		else{
@@ -115,6 +115,21 @@ function load_file(file) {
 		show_loader_error($form, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.");
 		
 	});
+	
+}
+
+function route_data(data) {
+	
+	if (data.hasSkipped || data.numberOfVoted == data.numberOfVoters) {
+		
+		switch_view("pre-results-page", () => setup_pre_results_page(data));
+		
+	}
+	else {
+		
+		switch_view("voting-page", () => setup_voting_session(data));
+		
+	}
 	
 }
 
