@@ -1,0 +1,17 @@
+{
+	"dbName": "badDbTest",
+	"numberOfVoters": 22,
+	"numberOfVotePerVoter": 4,
+	"numberOfVoted": 18,
+	"hasSkipped": false
+	"candidates": [
+		{
+			"name": "Test1",
+			"voteCount": 9
+		},
+		{
+			"name": "Test2",
+			"voteCount": 11
+		}
+	]
+}

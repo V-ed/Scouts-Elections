@@ -1,0 +1,29 @@
+{
+	"dbName": "unfinishedDbTest",
+	"numberOfVoters": 22,
+	"numberOfVotePerVoter": 4,
+	"numberOfVoted": 18,
+	"hasSkipped": true,
+	"candidates": [
+		{
+			"name": "Test1",
+			"voteCount": 9
+		},
+		{
+			"name": "Test2",
+			"voteCount": 11
+		},
+		{
+			"name": "Test3",
+			"voteCount": 3
+		},
+		{
+			"name": "Test4",
+			"voteCount": 7
+		},
+		{
+			"name": "Test5",
+			"voteCount": 5
+		}
+	]
+}
