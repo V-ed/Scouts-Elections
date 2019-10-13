@@ -31,6 +31,8 @@ if (isAdvancedUpload) {
 	})
 	.on("dragover dragenter", e => {
 		
+		$form.removeClass("bg-danger");
+		
 		var count = e.originalEvent.dataTransfer.items.length;
 		
 		var error = null;
@@ -48,11 +50,8 @@ if (isAdvancedUpload) {
 		
 		if (error != null) {
 			
-			$form.addClass("bg-danger");
-			
-			$form[0].dataset.content = error;
 			$form[0].dataset.haderror = "";
-			$form.popover("show");
+			show_loader_error($form, error);
 			
 		}
 		else {
@@ -80,6 +79,10 @@ if (isAdvancedUpload) {
 
 var databaseLoaderInput = document.getElementById("loader-file-input");
 databaseLoaderInput.addEventListener("change", e => load_file(e.target.files[0]));
+databaseLoaderInput.addEventListener("click", () => {
+	$form.removeClass("bg-danger");
+	$form.popover("hide");
+});
 
 function load_file(file) {
 	
@@ -88,11 +91,40 @@ function load_file(file) {
 		
 		var data = JSON.parse(text);
 		
-		switch_view("pre-results-page", () => setup_pre_results_page(data));
+		var isValid = data.dbName !== undefined
+			&& data.numberOfVoters !== undefined
+			&& data.numberOfVotePerVoter !== undefined
+			&& data.numberOfVoted !== undefined
+			&& data.hasSkipped !== undefined
+			&& data.candidates !== undefined;
+		
+		if (isValid) {
+			
+			switch_view("pre-results-page", () => setup_pre_results_page(data));
+			
+		}
+		else{
+			
+			show_loader_error($form, "La base de donnée manque des informations cruciales - veuillez valider les données dans le fichier.");
+			
+		}
 		
 	})
 	.catch(err => {
-		console.log("ya dun goofed!");
+		
+		show_loader_error($form, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.");
+		
 	});
+	
+}
+
+function show_loader_error($form, error) {
+	
+	$form.addClass("bg-danger");
+	
+	$form[0].dataset.content = error;
+	$form.popover("show");
+	
+	$form.get(0).reset();
 	
 }
