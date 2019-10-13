@@ -53,10 +53,17 @@
 				
 				<div class="flex-grow-1">
 					<div class="h-100 d-flex align-items-center justify-content-center">
-						<div class="d-flex flex-column">
+						<div class="d-flex flex-column w-100">
+							
 							<button type="button" id="home-new-button" class="btn btn-success btn-lg">Nouvelles Élections</button>
-							<button type="button" id="home-old-button" class="btn btn-success btn-lg my-5" disabled>Anciennes Élections</button>
-							<button type="button" id="home-continue-button" class="btn btn-success btn-lg" disabled>Continuer Élections en cours</button>
+							
+							<form id="database-loader-zone" class="loader mt-5 is-popable" method="post" action="" enctype="multipart/form-data" data-placement="bottom">
+								<div class="loader-input">
+									<input id="loader-file-input" class="loader-file" type="file" name="file" accept=".json" />
+									<label for="loader-file-input" class="h-100 w-100 p-5 m-0"><strong>Cliquez dans cette boite pour choisir une base de données (fichier json)</strong><span class="loader-dragndrop"> ou glissez la ici</span>.</label>
+								</div>
+							</form>
+							
 						</div>
 					</div>
 				</div>

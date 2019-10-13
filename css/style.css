@@ -42,3 +42,47 @@ div#voting-voted-overlay.active > * {
 table.table-border {
     border: 1px solid #dee2e6;
 }
+
+/* file loader styles */
+
+.loader .loader-dragndrop,
+.loader .loader-uploading,
+.loader .loader-success,
+.loader .loader-error {
+    display: none;
+}
+
+.loader.has-advanced-upload {
+    background-color: lightgray;
+    border: 2px solid black;
+    outline: 0px dashed black;
+    outline-offset: -3px;
+    transition: outline-offset 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    border-radius: 5px;
+}
+.loader.has-advanced-upload .loader-dragndrop {
+    display: inline;
+}
+
+.loader.loader-is-dragover {
+    background-color: #218838;
+    color: white;
+    outline: 2px dashed black;
+    outline-offset: -15px;
+}
+
+.loader:hover {
+    background-color: #218838;
+    color: white;
+}
+
+.loader .loader-file {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    position: absolute;
+}
+
+.loader label {
+    cursor: pointer;
+}
