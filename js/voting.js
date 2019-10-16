@@ -137,7 +137,7 @@ function setup_voting_session(data) {
 	
 	var votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	
-	document.body.onkeyup = function(e) {
+	document.body.onkeyup = e => {
 		e.preventDefault();
 		
 		if(e.keyCode == 32){
