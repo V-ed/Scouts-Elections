@@ -143,8 +143,7 @@ function setup_voting_session(data) {
 		if(e.keyCode == 32){
 			
 			if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
-				switch_view("pre-results-page", () => setup_pre_results_page(data));
-				document.body.onkeyup = onKeyUpEventBefore;
+				end_voting_session(data);
 			}
 			else{
 				
@@ -163,6 +162,24 @@ function setup_voting_session(data) {
 			}
 			
 		}
+	}
+	
+	var skipVotesButton = document.getElementById("voting-skip-button");
+	
+	skipVotesButton.addEventListener("click", e => {
+		e.preventDefault();
+		
+		data.hasSkipped = true;
+		
+		end_voting_session(data);
+		
+	});
+	
+	function end_voting_session(data) {
+		
+		switch_view("pre-results-page", () => setup_pre_results_page(data));
+		document.body.onkeyup = onKeyUpEventBefore;
+		
 	}
 	
 }
