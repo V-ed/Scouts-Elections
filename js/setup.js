@@ -82,6 +82,8 @@ submitSetupButton.addEventListener("click", e => {
 	
 	switch_view("voting-page", () => setup_voting_session(data));
 	
+	window.removeEventListener("beforeunload", prevent_data_loss);
+	
 });
 
 // Handle data validation
@@ -266,3 +268,19 @@ function verify_input(inputElement, customValidator) {
 	return isValid;
 	
 }
+
+// Handle reload if at least one candidate is entered
+
+function prevent_data_loss() {
+	
+	var isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
+	
+	if (isOneCandidateIsEntered) {
+		
+		event.returnValue = "Il y au moins un candidat d'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?";
+		
+	}
+	
+}
+
+window.addEventListener("beforeunload", prevent_data_loss);
