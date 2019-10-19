@@ -19,7 +19,14 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 	add_input_for_verification(`candidate-name-${number}`, validateCandidate);
 	
-	document.getElementById(`candidate-name-${number}`).focus();
+	var newCandidateInput = document.getElementById(`candidate-name-${number}`);
+	newCandidateInput.focus();
+	newCandidateInput.addEventListener("keyup", setup_candidate_selector);
+	newCandidateInput.addEventListener("keydown", e => {
+		if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
+			e.preventDefault();
+		}
+	});
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 1;
@@ -284,3 +291,46 @@ function prevent_data_loss() {
 }
 
 window.addEventListener("beforeunload", prevent_data_loss);
+
+// Handle Enter on input fields
+
+var setupPageTextFields = document.querySelectorAll("#setup-form input");
+
+setupPageTextFields.forEach(input => {
+	
+	input.addEventListener("keydown", e => {
+		
+		if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
+			e.preventDefault();
+		}
+		
+	});
+	
+});
+
+function setup_candidate_selector(e) {
+	
+	if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
+		e.preventDefault();
+		
+		var inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
+		
+		var inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
+		
+		if (inputNextCandidate == undefined) {
+			
+			candidateAddButton.click();
+			
+		}
+		else {
+			
+			inputNextCandidate.select();
+			
+		}
+		
+	}
+	
+}
+
+document.getElementById("candidate-name-1").addEventListener("keyup", setup_candidate_selector);
+
