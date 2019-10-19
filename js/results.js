@@ -24,7 +24,7 @@ function setup_pre_results_page(data) {
 		
 	});
 	
-	passwordInput.addEventListener("input", e => {
+	passwordInput.addEventListener("input", () => {
 		
 		passwordInput.classList.remove("is-invalid")
 		preResultsSubmitButton.disabled = false;
@@ -65,7 +65,7 @@ function setup_results_page(data) {
 	
 	$(resultsTableBody).append(tableBodyHtml);
 	
-	$(resultsTableBody).on("click", ".clickable-row", function(event) {
+	$(resultsTableBody).on("click", ".clickable-row", () => {
 		$(this).toggleClass("bg-success");
 	});
 	

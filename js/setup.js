@@ -2,7 +2,7 @@ var candidateAddButton = document.getElementById("candidate-add");
 var candidateRemoveButton = document.getElementById("candidate-remove");
 var candidateContainer = document.getElementById("setup-candidates");
 
-candidateAddButton.addEventListener("click", function (e) {
+candidateAddButton.addEventListener("click", e => {
 	e.preventDefault();
 	
 	var number = ++candidateAddButton.dataset.candidatecount;
@@ -34,7 +34,7 @@ candidateAddButton.addEventListener("click", function (e) {
 	
 });
 
-candidateRemoveButton.addEventListener("click", function (e) {
+candidateRemoveButton.addEventListener("click", e => {
 	e.preventDefault();
 	
 	const number = candidateAddButton.dataset.candidatecount--;
@@ -178,7 +178,7 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	var inputElement = document.getElementById(inputId);
 	
-	inputElement.addEventListener("input", e => {
+	inputElement.addEventListener("input", () => {
 		
 		setupInputs[inputId] = verify_input(inputElement, customValidator);
 		

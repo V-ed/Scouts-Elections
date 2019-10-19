@@ -1,12 +1,6 @@
-window.onbeforeunload = function(e) {
-	
-	// Code that executes before reload
-	
-};
-
 var newElectionsButton = document.getElementById("home-new-button");
 
-newElectionsButton.addEventListener("click", e => switch_view("setup-page"));
+newElectionsButton.addEventListener("click", () => switch_view("setup-page"));
 
 $(function () {
 	$(".is-popable").popover({trigger: "manual"});
@@ -25,7 +19,7 @@ if (isAdvancedUpload) {
 	
 	var droppedFiles = false;
 	
-	$form.on("drag dragstart dragend dragover dragenter dragleave drop", function(e) {
+	$form.on("drag dragstart dragend dragover dragenter dragleave drop", e => {
 		e.preventDefault();
 		e.stopPropagation();
 	})
@@ -61,7 +55,7 @@ if (isAdvancedUpload) {
 		}
 		
 	})
-	.on("dragleave dragend drop", function() {
+	.on("dragleave dragend drop", () => {
 		$form.removeClass("loader-is-dragover");
 		$form.removeClass("bg-danger");
 		$form.popover("hide");
@@ -111,11 +105,7 @@ function load_file(file) {
 		}
 		
 	})
-	.catch(err => {
-		
-		show_loader_error($form, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.");
-		
-	});
+	.catch(() => show_loader_error($form, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme."));
 	
 }
 

@@ -63,8 +63,8 @@ function setup_voting_session(data) {
 	
 	var votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
 	
-	votingButtons.forEach(function (button) {
-		button.addEventListener("click", function (e) {
+	votingButtons.forEach(button => {
+		button.addEventListener("click", e => {
 			e.preventDefault();
 			
 			voteIndexes.push(button.dataset.voterindex);
@@ -89,8 +89,8 @@ function setup_voting_session(data) {
 	
 	var unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
 	
-	unvoteButtons.forEach(function (button) {
-		button.addEventListener("click", function (e) {
+	unvoteButtons.forEach(button => {
+		button.addEventListener("click", e => {
 			e.preventDefault();
 			
 			voteIndexes = voteIndexes.filter(index => index != button.dataset.voterindex);
@@ -113,12 +113,12 @@ function setup_voting_session(data) {
 	
 	var votingOverlay = document.getElementById("voting-voted-overlay");
 	
-	submitVotesButton.addEventListener("click", function (e) {
+	submitVotesButton.addEventListener("click", () => {
 		
 		submitVotesButton.disabled = true;
 		votingOverlay.classList.add("active");
 		
-		setTimeout(function() {
+		setTimeout(() => {
 			
 			voteIndexes.forEach(voteIndex => {
 				
