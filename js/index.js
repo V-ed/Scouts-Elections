@@ -100,7 +100,7 @@ function load_file(file) {
 		}
 		else{
 			
-			show_loader_error($form, "La base de donnée manque des informations cruciales - veuillez valider les données dans le fichier.");
+			show_loader_error($form, "La base de données manque des informations cruciales - veuillez valider les données dans le fichier.");
 			
 		}
 		
