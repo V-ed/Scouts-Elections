@@ -65,6 +65,7 @@ if (isAdvancedUpload) {
 		$form.removeClass("loader-is-dragover");
 		$form.removeClass("bg-danger");
 		$form.popover("hide");
+		delete $form[0].dataset.haderror;
 	})
 	.on("drop", e => {
 		if ("haderror" in $form[0].dataset) {
