@@ -333,4 +333,3 @@ function setup_candidate_selector(e) {
 }
 
 document.getElementById("candidate-name-1").addEventListener("keyup", setup_candidate_selector);
-
