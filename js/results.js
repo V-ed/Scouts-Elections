@@ -74,10 +74,9 @@ function setup_results_page(data) {
 	downloadDbButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		var stringData = JSON.stringify(data);
+		download_data(data);
 		
-		var file = new File([stringData], `${data.dbName}.json`, {type: "application/json;charset=utf-8"});
-		saveAs(file);
+		didDownloadDb = true;
 		
 	});
 	

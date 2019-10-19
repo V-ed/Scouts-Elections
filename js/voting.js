@@ -1,6 +1,18 @@
 var onKeyUpEventBefore;
 
+var didDownloadDb = false;
+
 function setup_voting_session(data) {
+	
+	window.addEventListener("beforeunload", () => {
+		
+		if (!didDownloadDb) {
+			
+			download_data(data);
+			
+		}
+		
+	});
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
