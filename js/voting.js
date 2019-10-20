@@ -157,7 +157,7 @@ function setup_voting_session(data) {
 			}
 			else{
 				
-				votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} vote(s) restant sur ${data.numberOfVoters}`;
+				votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
 				
 				$("#voting-toasts-container > .toast").toast("show");
 				
