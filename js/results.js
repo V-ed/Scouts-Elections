@@ -51,8 +51,26 @@ function setup_results_page(data) {
 			countOfEqual++;
 		}
 		
+		var candidateBackground = "";
+		var candidateSelectedState = "unselected";
+		
+		switch (candidate.selectedState) {
+			case "pre-selected":
+				candidateBackground = " bg-warning";
+				candidateSelectedState = "pre-selected";
+				break;
+			case "selected":
+				candidateBackground = " bg-success";
+				candidateSelectedState = "selected";
+				break;
+			default:
+				candidateBackground = "";
+				candidateSelectedState = "unselected";
+				break;
+		}
+		
 		tableBodyHtml += `
-		<tr class="clickable-row">
+		<tr class="clickable-row${candidateBackground}" data-stateselected="${candidateSelectedState}" data-candidate="${candidate.name}">
 			<th scope="row">${i + 1}</th>
 			<td>${i + 1 - countOfEqual}</td>
 			<td>${candidate.name}</td>
@@ -65,8 +83,34 @@ function setup_results_page(data) {
 	
 	$(resultsTableBody).append(tableBodyHtml);
 	
-	$(resultsTableBody).on("click", ".clickable-row", function() {
-		$(this).toggleClass("bg-success");
+	$(resultsTableBody).on("click", ".clickable-row", e => {
+		
+		const row = e.currentTarget;
+		
+		$(row).removeClass("bg-warning bg-success");
+		
+		var candidateState = "problem (not changed)";
+		
+		if (row.dataset.stateselected == "unselected") {
+			
+			$(row).toggleClass("bg-warning");
+			candidateState = "pre-selected";
+			
+		}
+		else if (row.dataset.stateselected == "pre-selected") {
+			
+			$(row).toggleClass("bg-success");
+			candidateState = "selected";
+			
+		}
+		else if (row.dataset.stateselected == "selected") {
+			
+			candidateState = "unselected";
+			
+		}
+		
+		row.dataset.stateselected = candidateState;
+		
 	});
 	
 	var downloadDbButton = document.getElementById("results-download-button");
