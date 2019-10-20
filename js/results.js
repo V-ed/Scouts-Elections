@@ -111,6 +111,10 @@ function setup_results_page(data) {
 		
 		row.dataset.stateselected = candidateState;
 		
+		const candidateObject = data.candidates.find(candidate => candidate.name == row.dataset.candidate);
+		
+		candidateObject.selectedState = candidateState;
+		
 	});
 	
 	var downloadDbButton = document.getElementById("results-download-button");
