@@ -124,8 +124,6 @@ function setup_results_page(data) {
 		
 		download_data(data);
 		
-		didDownloadDb = true;
-		
 	});
 	
 	var homepageButton = document.getElementById("results-homepage-button");

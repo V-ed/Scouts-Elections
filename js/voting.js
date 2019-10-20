@@ -1,7 +1,5 @@
 var onKeyUpEventBefore;
 
-var didDownloadDb = false;
-
 function setup_voting_session(data) {
 	
 	window.addEventListener("beforeunload", () => {
