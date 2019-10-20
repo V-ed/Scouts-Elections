@@ -65,7 +65,7 @@ function setup_results_page(data) {
 	
 	$(resultsTableBody).append(tableBodyHtml);
 	
-	$(resultsTableBody).on("click", ".clickable-row", () => {
+	$(resultsTableBody).on("click", ".clickable-row", function() {
 		$(this).toggleClass("bg-success");
 	});
 	
