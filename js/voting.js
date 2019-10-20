@@ -150,7 +150,7 @@ function setup_voting_session(data) {
 	document.body.onkeyup = e => {
 		e.preventDefault();
 		
-		if(e.keyCode == 32){
+		if(e.key == " " || e.keyCode == 32){
 			
 			if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
 				end_voting_session(data);
