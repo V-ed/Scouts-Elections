@@ -134,3 +134,13 @@ function show_loader_error($form, error) {
 	$form.get(0).reset();
 	
 }
+
+var preventDrag = e => {
+	e.preventDefault();
+	e.dataTransfer.effectAllowed = "none";
+	e.dataTransfer.dropEffect = "none";
+};
+
+window.addEventListener("dragenter", preventDrag);
+window.addEventListener("dragover", preventDrag);
+window.addEventListener("drop", preventDrag);
