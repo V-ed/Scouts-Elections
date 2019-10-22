@@ -153,7 +153,7 @@ function setup_voting_session(data) {
 		var touchDuration = 500;
 		
 		function touchStart() {
-			timer = setTimeout(onLongTouch, touchDuration); 
+			timer = setTimeout(onLongTouch, touchDuration);
 		}
 		
 		function touchEnd() {
@@ -186,7 +186,7 @@ function setup_voting_session(data) {
 		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
 			end_voting_session(data);
 		}
-		else{
+		else {
 			
 			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
 			
