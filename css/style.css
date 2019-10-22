@@ -8,12 +8,24 @@ body {
     user-select: none;
 }
 
+/* Headings overrides */
+
+#views h2.display-2 {
+    font-size: 4vmax;
+}
+
+/* Voting overlay */
+
 div#voting-voted-overlay {
     position: absolute;
     z-index: 10000;
     background: radial-gradient(circle, #149314, #107810);
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
+}
+
+div#voting-voted-overlay h1 {
+    font-size: 9vmax;
 }
 
 div#voting-voted-overlay:not(.active),
@@ -41,6 +53,8 @@ div#voting-voted-overlay > * {
 div#voting-voted-overlay.active > * {
     opacity: 1;
 }
+
+/* Results table overrides */
 
 table.table-border {
     border: 1px solid #dee2e6;
