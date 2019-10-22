@@ -35,16 +35,21 @@ if (isAdvancedUpload) {
 		
 		var error = null;
 		
-		var count = e.originalEvent.dataTransfer.items.length;
+		const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
 		
-		if (count > 1) {
-			
-			error = "Veuillez ne glisser qu'un seul fichier!";
-			
+		if (isNotFile) {
+			error = "Seuls des fichiers sont acceptés dans cette zone.";
 		}
-		else if (e.originalEvent.dataTransfer.items[0].type != "application/json") {
+		else {
 			
-			error = "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.";
+			var count = e.originalEvent.dataTransfer.items.length;
+			
+			if (count > 1) {
+				error = "Veuillez ne glisser qu'un seul fichier.";
+			}
+			else if (e.originalEvent.dataTransfer.items[0].type != "application/json") {
+				error = "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.";
+			}
 			
 		}
 		
