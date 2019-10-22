@@ -18,19 +18,16 @@ function setup_voting_session(data) {
 	
 	var cardsHtml = "";
 	
+	cardsHtml += `<div class="row d-flex justify-content-center px-2 px-md-0">`;
+	
 	for(var i = 1; i <= data.candidates.length; i++){
 		
 		var candidateIndex = i - 1;
 		
-		// Create rows for each 4 cards
-		if (candidateIndex % 4 == 0) {
-			cardsHtml += `<div class="row d-flex justify-content-center px-2 px-md-0">`;
-		}
-		
 		var candidateData = data.candidates[candidateIndex];
 		
 		cardsHtml += `
-		<div class="col-6 col-md-3 p-2 p-md-3">
+		<div class="col-6 col-sm-4 col-md-3 p-2 p-md-3">
 			<div class="card">
 				<div class="card-body text-center">
 					<h5 class="card-title">${candidateData.name}</h5>
@@ -40,12 +37,9 @@ function setup_voting_session(data) {
 			</div>
 		</div>`;
 		
-		// End rows for each 4 cards
-		if (candidateIndex % 4 == 3) {
-			cardsHtml += `</div>`;
-		}
-		
 	}
+	
+	cardsHtml += `</div>`;
 	
 	var cardsContainer = document.getElementById("cards-container");
 	
