@@ -25,7 +25,7 @@ if (isAdvancedUpload) {
 	})
 	.on("dragover dragenter", e => {
 		
-		if ($form.hasClass("bg-danger") || $form.hasClass("loader-is-dragover")) {
+		if ($form.hasClass("loader-is-dragover") || ($form.hasClass("bg-danger") && $form.hasClass("loader-is-dragover"))) {
 			return;
 		}
 		
@@ -33,11 +33,9 @@ if (isAdvancedUpload) {
 			return;
 		}
 		
-		$form.removeClass("bg-danger");
+		var error = null;
 		
 		var count = e.originalEvent.dataTransfer.items.length;
-		
-		var error = null;
 		
 		if (count > 1) {
 			
@@ -56,7 +54,7 @@ if (isAdvancedUpload) {
 			
 		}
 		else {
-			delete $form[0].dataset.haderror;
+			clear_errors($form);
 		}
 		
 		$form.addClass("loader-is-dragover");
@@ -70,9 +68,7 @@ if (isAdvancedUpload) {
 		
 		$form.removeClass("loader-is-dragover");
 		if (e.handleObj.type != "drop"){
-			$form.removeClass("bg-danger");
-			$form.popover("hide");
-			delete $form[0].dataset.haderror;
+			clear_errors($form);
 		}
 		
 	})
@@ -87,10 +83,16 @@ if (isAdvancedUpload) {
 var databaseLoaderInput = document.getElementById("loader-file-input");
 databaseLoaderInput.addEventListener("change", e => load_file(e.target.files[0]));
 databaseLoaderInput.addEventListener("click", () => {
+	clear_errors($form);
+});
+
+function clear_errors($form) {
+	
 	$form.removeClass("bg-danger");
 	$form.popover("hide");
 	delete $form[0].dataset.haderror;
-});
+	
+}
 
 function load_file(file) {
 	
