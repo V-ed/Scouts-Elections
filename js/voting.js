@@ -24,13 +24,13 @@ function setup_voting_session(data) {
 		
 		// Create rows for each 4 cards
 		if (candidateIndex % 4 == 0) {
-			cardsHtml += `<div class="row d-flex justify-content-center my-2">`;
+			cardsHtml += `<div class="row d-flex justify-content-center px-2 px-md-0">`;
 		}
 		
 		var candidateData = data.candidates[candidateIndex];
 		
 		cardsHtml += `
-		<div class="col-3">
+		<div class="col-6 col-md-3 p-2 p-md-3">
 			<div class="card">
 				<div class="card-body text-center">
 					<h5 class="card-title">${candidateData.name}</h5>
