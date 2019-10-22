@@ -47,7 +47,7 @@ if (isAdvancedUpload) {
 			if (count > 1) {
 				error = "Veuillez ne glisser qu'un seul fichier.";
 			}
-			else if (e.originalEvent.dataTransfer.items[0].type != "application/json") {
+			else if (!is_file_json(e.originalEvent.dataTransfer.items[0])) {
 				error = "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.";
 			}
 			
@@ -99,7 +99,16 @@ function clear_errors($form) {
 	
 }
 
+function is_file_json(file) {
+	return file.type == "application/json";
+}
+
 function load_file(file) {
+	
+	if (!is_file_json(file)) {
+		show_loader_error($form, "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.");
+		return;
+	}
 	
 	file.text()
 	.then(text => {
