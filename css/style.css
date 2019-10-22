@@ -17,7 +17,8 @@ div#voting-voted-overlay {
 }
 
 div#voting-voted-overlay:not(.active),
-div#voting-voted-overlay:not(.active) .touch-skipper
+div#voting-voted-overlay:not(.active) .touch-skipper,
+.i-am-away
 {
     height: 0 !important;
     width: 0 !important;

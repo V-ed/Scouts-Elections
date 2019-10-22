@@ -217,6 +217,8 @@ function setup_voting_session(data) {
 	
 	function end_voting_session(data) {
 		
+		document.getElementById("voting-toasts-container").classList.add("i-am-away");
+		
 		switch_view("pre-results-page", () => setup_pre_results_page(data));
 		document.body.onkeyup = onKeyUpEventBefore;
 		
