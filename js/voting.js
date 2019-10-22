@@ -185,6 +185,8 @@ function setup_voting_session(data) {
 		
 	}
 	
+	const toastContainer = document.getElementById("voting-toasts-container");
+	
 	function go_to_next_voter(data) {
 		
 		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
@@ -194,6 +196,7 @@ function setup_voting_session(data) {
 			
 			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
 			
+			toastContainer.classList.remove("i-am-away")
 			$("#voting-toasts-container > .toast").toast("show");
 			
 		}
@@ -207,6 +210,10 @@ function setup_voting_session(data) {
 		}
 		
 	}
+	
+	$("#voting-toasts-container > .toast").on("hidden.bs.toast", () => {
+		toastContainer.classList.add("i-am-away")
+	});
 	
 	var skipVotesButton = document.getElementById("voting-skip-button");
 	
