@@ -120,19 +120,21 @@
 			
 		</div>
 		
-		<div id="voting-page" class="row h-100" hidden>
-			
-			<div id="cards-container" class="w-100 mt-auto mb-5">
-				<!-- Will be filled dynamically with candidates cards -->
+		<div id="voting-page" class="h-100" hidden>
+			<div class="d-flex flex-column h-100  justify-content-center">
+				
+				<div id="cards-container" class="w-100 mb-5">
+					<!-- Will be filled dynamically with candidates cards -->
+				</div>
+				
+				<div class="w-100">
+					<p class="lead text-center">
+						Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
+					</p>
+					<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer mes votes</button>
+				</div>
+				
 			</div>
-			
-			<div class="w-100">
-				<p class="lead text-center">
-					Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
-				</p>
-				<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer mes votes</button>
-			</div>
-			
 		</div>
 		
 		<div id="pre-results-page" class="h-100" hidden>
