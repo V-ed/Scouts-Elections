@@ -9,7 +9,10 @@ var isDownloadDisabled = false;
 var dbIsDirty = false;
 
 function should_download_data() {
-	return dbIsDirty || (!didDownloadDb && !isDownloadDisabled);
+	if (isDownloadDisabled) {
+		return false;
+	}
+	return dbIsDirty || !didDownloadDb;
 }
 
 function download_data(data) {
