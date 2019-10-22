@@ -22,15 +22,10 @@ function setup_voting_session(data) {
 		
 		var candidateIndex = i - 1;
 		
-		// Create rows for each 4 cards
-		if (candidateIndex % 4 == 0) {
-			cardsHtml += `<div class="row d-flex justify-content-center my-2">`;
-		}
-		
 		var candidateData = data.candidates[candidateIndex];
 		
 		cardsHtml += `
-		<div class="col-3">
+		<div class="col-6 col-sm-4 col-md-3 p-2">
 			<div class="card">
 				<div class="card-body text-center">
 					<h5 class="card-title">${candidateData.name}</h5>
@@ -40,16 +35,11 @@ function setup_voting_session(data) {
 			</div>
 		</div>`;
 		
-		// End rows for each 4 cards
-		if (candidateIndex % 4 == 3) {
-			cardsHtml += `</div>`;
-		}
-		
 	}
 	
 	var cardsContainer = document.getElementById("cards-container");
 	
-	$(cardsContainer).append(cardsHtml);
+	$(cardsContainer).append(`<div class="row d-flex justify-content-center px-2 px-md-0">${cardsHtml}</div>`);
 	
 	var voteRemainingCounter = document.getElementById("voting-remaining-count");
 	
@@ -152,26 +142,66 @@ function setup_voting_session(data) {
 		
 		if(e.key == " " || e.keyCode == 32){
 			
-			if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
-				end_voting_session(data);
-			}
-			else{
-				
-				votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
-				
-				$("#voting-toasts-container > .toast").toast("show");
-				
-			}
+			go_to_next_voter(data);
 			
-			if (isVoteFinished) {
-				
-				isVoteFinished = false;
-				
-				votingOverlay.classList.remove("active");
-				
+		}
+	}
+	
+	if (isTouchDevice) {
+		
+		var timer;
+		var touchDuration = 500;
+		
+		function touchStart() {
+			timer = setTimeout(onLongTouch, touchDuration);
+		}
+		
+		function touchEnd() {
+			
+			if (timer) {
+				clearTimeout(timer);
 			}
 			
 		}
+		
+		function onLongTouch() {
+			
+			go_to_next_voter(data);
+			
+		};
+		
+		const touchSkippers = document.querySelectorAll("#voting-voted-overlay .touch-skipper");
+		
+		touchSkippers.forEach(skipper => {
+			
+			skipper.addEventListener("touchstart", touchStart);
+			skipper.addEventListener("touchend", touchEnd);
+			
+		});
+		
+	}
+	
+	function go_to_next_voter(data) {
+		
+		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
+			end_voting_session(data);
+		}
+		else {
+			
+			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
+			
+			$("#voting-toasts-container > .toast").toast("show");
+			
+		}
+		
+		if (isVoteFinished) {
+			
+			isVoteFinished = false;
+			
+			votingOverlay.classList.remove("active");
+			
+		}
+		
 	}
 	
 	var skipVotesButton = document.getElementById("voting-skip-button");
@@ -186,6 +216,8 @@ function setup_voting_session(data) {
 	});
 	
 	function end_voting_session(data) {
+		
+		document.getElementById("voting-toasts-container").classList.add("i-am-away");
 		
 		switch_view("pre-results-page", () => setup_pre_results_page(data));
 		document.body.onkeyup = onKeyUpEventBefore;

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Élections Scoutes</title>
 	
@@ -21,18 +21,18 @@
 
 <body class="d-flex">
 	
-	<div id="voting-voted-overlay" class="w-100 h-100 d-flex">
+	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex">
 		
-		<div id="refresher" style="position: absolute; width: 1px; height: 1px;"></div>
+		<div class="touch-skipper w-100 h-50 fixed-top"></div>
 		
-		<div class="m-auto">
-			<h1 class="display-1">Votes enregistrés!</h1>
+		<div class="m-auto text-center">
+			<h1 class="display-1" style="font-size: 10vw">Votes enregistrés!</h1>
 		</div>
 		
 	</div>
 	
-	<div id="voting-toasts-container" class="position-absolute w-100 d-flex flex-column p-4">
-		<div class="toast mx-auto" role="alert" data-delay="1000">
+	<div id="voting-toasts-container" class="fixed-top w-100 d-flex flex-column p-4" style="z-index: 99999;">
+		<div class="toast mx-auto" role="alert" data-delay="1500">
 			<div class="toast-header">
 				<strong class="mr-auto text-primary">Nombre voteur(s) restant</strong>
 				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -120,19 +120,21 @@
 			
 		</div>
 		
-		<div id="voting-page" class="row h-100" hidden>
-			
-			<div id="cards-container" class="w-100 mt-auto mb-5">
-				<!-- Will be filled dynamically with candidates cards -->
+		<div id="voting-page" class="h-100" hidden>
+			<div class="d-flex flex-column h-100  justify-content-center">
+				
+				<div id="cards-container" class="w-100 mb-3">
+					<!-- Will be filled dynamically with candidates cards -->
+				</div>
+				
+				<div class="w-100">
+					<p class="lead text-center">
+						Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
+					</p>
+					<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer mes votes</button>
+				</div>
+				
 			</div>
-			
-			<div class="w-100">
-				<p class="lead text-center">
-					Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
-				</p>
-				<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer mes votes</button>
-			</div>
-			
 		</div>
 		
 		<div id="pre-results-page" class="h-100" hidden>

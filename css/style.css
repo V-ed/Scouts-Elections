@@ -16,10 +16,13 @@ div#voting-voted-overlay {
     transition: opacity 0.8s ease-in-out;
 }
 
-div#voting-voted-overlay:not(.active) {
+div#voting-voted-overlay:not(.active),
+div#voting-voted-overlay:not(.active) .touch-skipper,
+.i-am-away
+{
     height: 0 !important;
     width: 0 !important;
-    left: -9999999px
+    left: -9999999px;
 }
 
 div#voting-voted-overlay.active {
@@ -53,7 +56,7 @@ table.table-border {
     display: none;
 }
 
-.loader.has-advanced-upload {
+.loader {
     background-color: lightgray;
     border: 2px solid black;
     transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
