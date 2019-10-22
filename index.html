@@ -23,14 +23,16 @@
 	
 	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex">
 		
+		<div class="touch-skipper w-100 h-50 fixed-top"></div>
+		
 		<div class="m-auto text-center">
 			<h1 class="display-1" style="font-size: 10vw">Votes enregistrés!</h1>
 		</div>
 		
 	</div>
 	
-	<div id="voting-toasts-container" class="position-absolute w-100 d-flex flex-column p-4">
-		<div class="toast mx-auto" role="alert" data-delay="1000">
+	<div id="voting-toasts-container" class="fixed-top w-100 d-flex flex-column p-4" style="z-index: 99999;">
+		<div class="toast mx-auto" role="alert" data-delay="1500">
 			<div class="toast-header">
 				<strong class="mr-auto text-primary">Nombre voteur(s) restant</strong>
 				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">

@@ -16,10 +16,12 @@ div#voting-voted-overlay {
     transition: opacity 0.8s ease-in-out;
 }
 
-div#voting-voted-overlay:not(.active) {
+div#voting-voted-overlay:not(.active),
+div#voting-voted-overlay:not(.active) .touch-skipper
+{
     height: 0 !important;
     width: 0 !important;
-    left: -9999999px
+    left: -9999999px;
 }
 
 div#voting-voted-overlay.active {

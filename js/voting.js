@@ -142,26 +142,66 @@ function setup_voting_session(data) {
 		
 		if(e.key == " " || e.keyCode == 32){
 			
-			if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
-				end_voting_session(data);
-			}
-			else{
-				
-				votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
-				
-				$("#voting-toasts-container > .toast").toast("show");
-				
-			}
+			go_to_next_voter(data);
 			
-			if (isVoteFinished) {
-				
-				isVoteFinished = false;
-				
-				votingOverlay.classList.remove("active");
-				
+		}
+	}
+	
+	if (isTouchDevice) {
+		
+		var timer;
+		var touchDuration = 500;
+		
+		function touchStart() {
+			timer = setTimeout(onLongTouch, touchDuration); 
+		}
+		
+		function touchEnd() {
+			
+			if (timer) {
+				clearTimeout(timer);
 			}
 			
 		}
+		
+		function onLongTouch() {
+			
+			go_to_next_voter(data);
+			
+		};
+		
+		const touchSkippers = document.querySelectorAll("#voting-voted-overlay .touch-skipper");
+		
+		touchSkippers.forEach(skipper => {
+			
+			skipper.addEventListener("touchstart", touchStart);
+			skipper.addEventListener("touchend", touchEnd);
+			
+		});
+		
+	}
+	
+	function go_to_next_voter(data) {
+		
+		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
+			end_voting_session(data);
+		}
+		else{
+			
+			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
+			
+			$("#voting-toasts-container > .toast").toast("show");
+			
+		}
+		
+		if (isVoteFinished) {
+			
+			isVoteFinished = false;
+			
+			votingOverlay.classList.remove("active");
+			
+		}
+		
 	}
 	
 	var skipVotesButton = document.getElementById("voting-skip-button");
