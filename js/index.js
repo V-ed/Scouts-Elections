@@ -8,7 +8,7 @@ $(function () {
 
 var isAdvancedUpload = function() {
 	var divElement = document.createElement("div");
-	return (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
+	return !isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
 }();
 
 var $form = $("#database-loader-zone");

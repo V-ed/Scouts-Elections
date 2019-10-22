@@ -1,3 +1,9 @@
+// Set default variables
+
+const isTouchDevice = (navigator.maxTouchPoints || 'ontouchstart' in document.documentElement);
+
+// Setup downloadable database function
+
 var didDownloadDb = false;
 
 function download_data(data) {
