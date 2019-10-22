@@ -18,8 +18,6 @@ function setup_voting_session(data) {
 	
 	var cardsHtml = "";
 	
-	cardsHtml += `<div class="row d-flex justify-content-center px-2 px-md-0">`;
-	
 	for(var i = 1; i <= data.candidates.length; i++){
 		
 		var candidateIndex = i - 1;
@@ -27,7 +25,7 @@ function setup_voting_session(data) {
 		var candidateData = data.candidates[candidateIndex];
 		
 		cardsHtml += `
-		<div class="col-6 col-sm-4 col-md-3 p-2 p-md-3">
+		<div class="col-6 col-sm-4 col-md-3 p-2">
 			<div class="card">
 				<div class="card-body text-center">
 					<h5 class="card-title">${candidateData.name}</h5>
@@ -39,11 +37,9 @@ function setup_voting_session(data) {
 		
 	}
 	
-	cardsHtml += `</div>`;
-	
 	var cardsContainer = document.getElementById("cards-container");
 	
-	$(cardsContainer).append(cardsHtml);
+	$(cardsContainer).append(`<div class="row d-flex justify-content-center px-2 px-md-0">${cardsHtml}</div>`);
 	
 	var voteRemainingCounter = document.getElementById("voting-remaining-count");
 	
