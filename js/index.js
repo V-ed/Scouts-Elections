@@ -133,6 +133,7 @@ function route_data(data) {
 	
 	if (data.hasSkipped || data.numberOfVoted == data.numberOfVoters) {
 		
+		isDownloadDisabled = true;
 		switch_view("pre-results-page", () => setup_pre_results_page(data));
 		
 	}

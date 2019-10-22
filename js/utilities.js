@@ -5,6 +5,12 @@ const isTouchDevice = (navigator.maxTouchPoints || 'ontouchstart' in document.do
 // Setup downloadable database function
 
 var didDownloadDb = false;
+var isDownloadDisabled = false;
+var dbIsDirty = false;
+
+function should_download_data() {
+	return dbIsDirty || (!didDownloadDb && !isDownloadDisabled);
+}
 
 function download_data(data) {
 	
@@ -14,6 +20,7 @@ function download_data(data) {
 	saveAs(file);
 	
 	didDownloadDb = true;
+	dbIsDirty = false;
 	
 }
 

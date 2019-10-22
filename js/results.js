@@ -115,6 +115,8 @@ function setup_results_page(data) {
 		
 		candidateObject.selectedState = candidateState;
 		
+		dbIsDirty = true;
+		
 	});
 	
 	var downloadDbButton = document.getElementById("results-download-button");
@@ -128,6 +130,25 @@ function setup_results_page(data) {
 	
 	var homepageButton = document.getElementById("results-homepage-button");
 	
-	homepageButton.addEventListener("click", () => document.location.reload(true));
+	homepageButton.addEventListener("click", () => {
+		
+		var canReload = true;
+		
+		if (should_download_data()) {
+			
+			canReload = confirm("La base de données n'est pas enregistrée. Êtes vous sûr de vouloir continuer?");
+			
+		}
+		
+		if (canReload) {
+			
+			window.removeEventListener("beforeunload", auto_download_data);
+			
+			isDownloadDisabled = true;
+			document.location.reload(true);
+			
+		}
+		
+	});
 	
 }
