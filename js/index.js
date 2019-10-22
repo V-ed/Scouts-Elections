@@ -25,6 +25,14 @@ if (isAdvancedUpload) {
 	})
 	.on("dragover dragenter", e => {
 		
+		if ($form.hasClass("bg-danger") || $form.hasClass("loader-is-dragover")) {
+			return;
+		}
+		
+		if ($(e.relatedTarget).parents("#database-loader-zone").length) {
+			return;
+		}
+		
 		$form.removeClass("bg-danger");
 		
 		var count = e.originalEvent.dataTransfer.items.length;
@@ -44,28 +52,32 @@ if (isAdvancedUpload) {
 		
 		if (error != null) {
 			
-			$form[0].dataset.haderror = "";
 			show_loader_error($form, error);
 			
 		}
 		else {
-			
-			$form.addClass("loader-is-dragover");
-			
+			delete $form[0].dataset.haderror;
+		}
+		
+		$form.addClass("loader-is-dragover");
+		
+	})
+	.on("dragleave dragend drop", e => {
+		
+		if ($(e.relatedTarget).parents("#database-loader-zone").length) {
+			return;
+		}
+		
+		$form.removeClass("loader-is-dragover");
+		if (e.handleObj.type != "drop"){
+			$form.removeClass("bg-danger");
+			$form.popover("hide");
+			delete $form[0].dataset.haderror;
 		}
 		
 	})
-	.on("dragleave dragend drop", () => {
-		$form.removeClass("loader-is-dragover");
-		$form.removeClass("bg-danger");
-		$form.popover("hide");
-		delete $form[0].dataset.haderror;
-	})
 	.on("drop", e => {
-		if ("haderror" in $form[0].dataset) {
-			delete $form[0].dataset.haderror;
-		}
-		else {
+		if (!("haderror" in $form[0].dataset)) {
 			load_file(e.originalEvent.dataTransfer.files[0]);
 		}
 	});
@@ -77,6 +89,7 @@ databaseLoaderInput.addEventListener("change", e => load_file(e.target.files[0])
 databaseLoaderInput.addEventListener("click", () => {
 	$form.removeClass("bg-danger");
 	$form.popover("hide");
+	delete $form[0].dataset.haderror;
 });
 
 function load_file(file) {
@@ -129,6 +142,7 @@ function show_loader_error($form, error) {
 	$form.addClass("bg-danger");
 	
 	$form[0].dataset.content = error;
+	$form[0].dataset.haderror = "";
 	$form.popover("show");
 	
 	$form.get(0).reset();

@@ -63,12 +63,13 @@ table.table-border {
     display: inline;
 }
 
-.loader.loader-is-dragover {
+.loader.loader-is-dragover:not([data-haderror]) {
     box-shadow: inset 0 0 25px 5px rgba(0, 0, 0, 0.6);
 }
 
 .loader:hover,
-.loader.loader-is-dragover
+.loader.loader-is-dragover,
+.loader[data-haderror]
 {
     background-color: #218838;
     color: white;
@@ -79,7 +80,8 @@ table.table-border {
 }
 
 .loader:hover .loader-input label,
-.loader.loader-is-dragover .loader-input label
+.loader.loader-is-dragover .loader-input label,
+.loader[data-haderror] .loader-input label
 {
     text-shadow: 2px 2px black;
 }
