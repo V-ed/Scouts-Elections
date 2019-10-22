@@ -85,33 +85,33 @@
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="database-name">Nom de la base de données</label>
 					<div class="col-sm-9">
-						<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" autocomplete="off" spellcheck="false" required>
+						<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" data-placement="top" autocomplete="off" spellcheck="false" required>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="number-of-voters">Nombre de voteurs</label>
 					<div class="col-sm-9">
-						<input type="number" class="form-control is-invalid is-popable" id="number-of-voters" min="1" aria-describedby="numberOfVoters" name="numberOfVoters" required>
+						<input type="number" class="form-control is-invalid is-popable" id="number-of-voters" min="1" aria-describedby="numberOfVoters" name="numberOfVoters" data-placement="top" required>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="number-of-votes">Nombre de votes par voteur</label>
 					<div class="col-sm-9">
-						<input type="number" class="form-control is-invalid is-popable" id="number-of-votes" min="1" aria-describedby="numberOfVotes" name="numberOfVotes" required>
+						<input type="number" class="form-control is-invalid is-popable" id="number-of-votes" min="1" aria-describedby="numberOfVotes" name="numberOfVotes" data-placement="top" required>
 					</div>
 				</div>
 				<div id="setup-candidates" class="py-2 py-md-3">
 					<div id="candidate-controls-1" class="form-group row">
 						<label class="col-sm-2 col-form-label" for="candidate-name-1">Candidat 1</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-candidatenumber="1" autocomplete="off" required>
+							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-placement="top" data-candidatenumber="1" autocomplete="off" required>
 						</div>
 					</div>
 					<!-- More inputs will dynamically be added here -->
 				</div>
-				<div class="row mb-4 mx-auto justify-content-center">
-					<button id="candidate-add" class="btn btn-secondary" data-candidatecount="1">Ajouter Candidat</button>
-					<button id="candidate-remove" class="ml-5 btn btn-danger" hidden>Enlever dernier Candidat</button>
+				<div class="row mb-4 mx-auto justify-content-center flex-md-row flex-row-reverse">
+					<button id="candidate-add" class="ml-5 ml-md-0 btn btn-secondary" data-candidatecount="1">Ajouter Candidat</button>
+					<button id="candidate-remove" class="ml-md-5 btn btn-danger" hidden>Enlever dernier Candidat</button>
 				</div>
 				<div class="ml-auto">
 					<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Soumettre</button>

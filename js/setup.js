@@ -11,7 +11,7 @@ candidateAddButton.addEventListener("click", e => {
 	<div id="candidate-controls-${number}" class="form-group row">
 		<label class="col-sm-2 col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
 		<div class="col-sm-10">
-			<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-candidatenumber="${number}" autocomplete="off" required>
+			<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
 		</div>
 	</div>`);
 	
@@ -30,7 +30,7 @@ candidateAddButton.addEventListener("click", e => {
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 1;
-	numberOfVoteInput.dispatchEvent(new Event("input"));
+	triggerInputEvent(numberOfVoteInput, true);
 	
 });
 
@@ -54,13 +54,13 @@ candidateRemoveButton.addEventListener("click", e => {
 		
 		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
 		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.forEach(candidate => candidate.dispatchEvent(new Event("input")));
+		candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate));
 		
 	}
 	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 2;
-	numberOfVoteInput.dispatchEvent(new Event("input"));
+	triggerInputEvent(numberOfVoteInput, true);
 	
 });
 
@@ -105,7 +105,7 @@ var validateCandidate = function (data, input) {
 		input.classList.add("is-invalid");
 		input.dataset.dupevalue = data.toLowerCase();
 		
-		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => dupInput.dispatchEvent(new Event("input")));
+		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => triggerInputEvent(dupInput));
 		
 		return "Le nom de ce candidat est dupliqué!";
 		
@@ -113,7 +113,7 @@ var validateCandidate = function (data, input) {
 	else if (input.dataset.dupevalue != null) {
 		
 		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.forEach(candidate => candidate.dispatchEvent(new Event("input")));
+		candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate));
 		
 		delete input.dataset.dupevalue;
 		
@@ -152,8 +152,18 @@ add_input_for_verification("db-name", data => {
 	}
 	
 });
-add_input_for_verification("number-of-voters");
-add_input_for_verification("number-of-votes", data => {
+add_input_for_verification("number-of-voters", data => {
+	
+	if (data === "") {
+		return "Le nombre de voteurs ne peut être vide.";
+	}
+	
+	if (data < 1) {
+		return "Le nombre doit être supérieur à 0.";
+	}
+	
+});
+add_input_for_verification("number-of-votes", (data, input) => {
 	
 	if (data === "") {
 		return "Le nombre de vote ne peut être vide.";
@@ -178,6 +188,40 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	var inputElement = document.getElementById(inputId);
 	
+	if (inputElement.type == "number") {
+		
+		function numberTypeOnlyPositive(e) {
+			
+			var hasBadChars = false;
+			
+			if (e.type == "paste") {
+				clipboardData = e.clipboardData || window.clipboardData;
+				pastedData = clipboardData.getData("Text");
+				hasBadChars = !pastedData.match(/[0-9]/);
+			}
+			else {
+			
+				const isValidKeyCode = e.key.match(/[0-9]/) || e.ctrlKey || e.altKey || e.shiftKey || (e.code == "Backspace" || e.keyCode == 8) || e.key.includes("Arrow");
+				
+				if(!isValidKeyCode) {
+					hasBadChars = true;
+				}
+				
+			}
+			
+			if (hasBadChars) {
+				e.preventDefault();
+				return;
+			}
+			
+		}
+		inputElement.addEventListener("keyup", numberTypeOnlyPositive);
+		inputElement.addEventListener("paste", numberTypeOnlyPositive);
+		inputElement.addEventListener("keydown", numberTypeOnlyPositive);
+		inputElement.addEventListener("keypress", numberTypeOnlyPositive);
+		
+	}
+	
 	inputElement.addEventListener("input", () => {
 		
 		setupInputs[inputId] = verify_input(inputElement, customValidator);
@@ -190,6 +234,11 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	if (inputElement.classList.contains("is-popable")) {
 		$(inputElement).popover({trigger: "manual"});
+		
+		triggerInputEvent(inputElement, true);
+		
+		inputElement.addEventListener("focus", () => $(inputElement).popover("show"));
+		inputElement.addEventListener("focusout", () => $(inputElement).popover("hide"));
 	}
 	
 }
@@ -273,6 +322,22 @@ function verify_input(inputElement, customValidator) {
 	}
 	
 	return isValid;
+	
+}
+
+function triggerInputEvent(input, isSilent) {
+	
+	const inputIsPopable = input.classList.contains("is-popable");
+	
+	if (inputIsPopable && isSilent) {
+		$(input).popover("disable");
+	}
+	
+	input.dispatchEvent(new Event("input"));
+	
+	if (inputIsPopable && isSilent) {
+		$(input).popover("enable");
+	}
 	
 }
 
