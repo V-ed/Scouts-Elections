@@ -28,6 +28,8 @@ candidateAddButton.addEventListener("click", e => {
 		}
 	});
 	
+	newCandidateInput.scrollIntoView();
+	
 	var numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 1;
 	triggerInputEvent(numberOfVoteInput, true);
