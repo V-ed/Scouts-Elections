@@ -105,7 +105,7 @@ var validateCandidate = function (data, input) {
 		input.classList.add("is-invalid");
 		input.dataset.dupevalue = data.toLowerCase();
 		
-		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => triggerInputEvent(dupInput));
+		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => triggerInputEvent(dupInput, true));
 		
 		return "Le nom de ce candidat est dupliqué!";
 		
@@ -113,7 +113,7 @@ var validateCandidate = function (data, input) {
 	else if (input.dataset.dupevalue != null) {
 		
 		const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-		candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate));
+		candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
 		
 		delete input.dataset.dupevalue;
 		
