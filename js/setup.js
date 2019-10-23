@@ -201,7 +201,7 @@ function add_input_for_verification(inputId, customValidator) {
 			}
 			else {
 			
-				const isValidKeyCode = e.key.match(/[0-9]/) || e.ctrlKey || e.altKey || e.shiftKey || (e.code == "Backspace" || e.keyCode == 8) || e.key.includes("Arrow");
+				const isValidKeyCode = e.key.match(/[0-9]/) || e.ctrlKey || e.altKey || e.shiftKey || (e.code == "Backspace" || e.keyCode == 8) || (e.code == "Tab" || e.keyCode == 9) || e.key.includes("Arrow");
 				
 				if(!isValidKeyCode) {
 					hasBadChars = true;
