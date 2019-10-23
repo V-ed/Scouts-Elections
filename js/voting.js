@@ -1,10 +1,10 @@
 var onKeyUpEventBefore;
 
-let auto_download_data = () => {
+let auto_download_data = function() {
 	
 	if (should_download_data()) {
 		
-		download_data(data);
+		download_data(this.data);
 		
 	}
 	
@@ -14,7 +14,7 @@ function setup_voting_session(data) {
 	
 	dbIsDirty = true;
 		
-	window.addEventListener("beforeunload", auto_download_data.bind(data));
+	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
