@@ -99,13 +99,15 @@ submitSetupButton.addEventListener("click", e => {
 
 var validateCandidate = function (data, input) {
 	
+	const dataTrimmed = data.trim();
+	
 	var otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
-	const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == data.toLowerCase());
+	const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == dataTrimmed.toLowerCase());
 	
 	if (dupCandidates.length > 0) {
 		
 		input.classList.add("is-invalid");
-		input.dataset.dupevalue = data.toLowerCase();
+		input.dataset.dupevalue = dataTrimmed.toLowerCase();
 		
 		dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => triggerInputEvent(dupInput, true));
 		
@@ -121,7 +123,7 @@ var validateCandidate = function (data, input) {
 		
 	}
 	
-	if (data == "") {
+	if (dataTrimmed == "") {
 		return "Le nom du candidat ne peut être vide.";
 	}
 	
