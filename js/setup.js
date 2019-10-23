@@ -8,7 +8,7 @@ candidateAddButton.addEventListener("click", e => {
 	var number = ++candidateAddButton.dataset.candidatecount;
 	
 	$(candidateContainer).append(`
-	<div id="candidate-controls-${number}" class="form-group row">
+	<div id="candidate-controls-${number}" class="form-group row mb-2 mb-md-3">
 		<label class="col-sm-2 col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
