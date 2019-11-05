@@ -23,7 +23,11 @@ If skipped, the database will contain this information, which means that when lo
 In the setup page, validations are used to prevent any bad inputs on setup (empty number of voters, empty candidate name, number of votes higher than the number of candidates *(which doesn't make sense, as every candidates would be voted for...)*, etc).
 
 Currently, the number of votes is absolute and a voter cannot put two votes on the same candidate.
-I may add a configuration option later on to allow that, but this wasn't our needs and was therefore not worked on. Follow [#45]([3]) to track when this feature would be implemented.
+I may add a configuration option later on to allow for voting between `x` and `y` times, and another option for voting multiple times for the same candidate, but this wasn't our needs and was therefore not worked on.
+
+Those two last features are in my todo list, and you can track both under their given issues :
+- Voting between `x` and `y` times instead of only `x` times : [#45]([3])
+- Multiple votes per candidate instead of max 1 : [#46]([4])
 
 The name of the database is the name that will be given to the file if you want to download the database at the end.
 Validations rules on it prevents you from entering a filename that wouldn't be accepted by Windows systems.
@@ -56,3 +60,4 @@ Code is in English because code should always be in English.
 [1]: https://github.com/V-ed/Scouts-Elections/issues/32
 [2]: https://github.com/V-ed/Scouts-Elections/issues/43
 [3]: https://github.com/V-ed/Scouts-Elections/issues/45
+[4]: https://github.com/V-ed/Scouts-Elections/issues/46
