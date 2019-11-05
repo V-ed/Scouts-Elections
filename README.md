@@ -26,10 +26,10 @@ Finally, the rows are clickable, which highlights the candidates (in a cycle of 
 
 After setup, at any point, if the page gets reloaded or closed, the database will be downloaded in an unfinished state, allowing you to return to the state you were in.
 This allows some sort of protection in case a smart kid decides he wants to press Alt+F4 to mess up stuff.
-Currently, there's no way to not download the database once the voting session has started. Please follow issue [#34][2] in case you don't want to download the database.
+In the case you want to disable that, there is a checkbox in the setup page that is checked by default - simply uncheck it and the database won't download automatically.
+You will still be able to download it manually in the end if desired.
 
 All the text in here is in French, since our group is French-based.
 Code is in English because code should always be in English.
 
 [1]: https://github.com/V-ed/Scouts-Elections/issues/32
-[2]: https://github.com/V-ed/Scouts-Elections/issues/34
