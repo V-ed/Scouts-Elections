@@ -89,6 +89,8 @@ submitSetupButton.addEventListener("click", e => {
 		candidates: tempCandidates
 	};
 	
+	isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+	
 	switch_view("voting-page", () => setup_voting_session(data));
 	
 	window.removeEventListener("beforeunload", prevent_data_loss);

@@ -113,3 +113,40 @@ table.table-border {
 .loader label {
     cursor: pointer;
 }
+
+/* Custom checkbox style */
+
+.boot-checkbox {
+	display: none;
+}
+
+.boot-checkbox + label {
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+    position: relative;
+    margin: 0;
+    padding: 1.1rem;
+}
+
+.boot-checkbox + label:active,
+.boot-checkbox:checked + label:active
+{
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.boot-checkbox:checked + label {
+	border: 1px solid #9ca6ad;
+	box-shadow: inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
+}
+
+.boot-checkbox:checked + label:after {
+	content: '\2713';
+	font-size: 1.5rem;
+	position: absolute;
+	top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-weight: bold;
+}
