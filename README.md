@@ -10,8 +10,9 @@ Since we don't want to know who voted for who, there is no need to "register", b
 Therefore, after a voter's vote, an overlay shows on the voting page, preventing any further actions until the special input is pressed, which will reset the page to allow for the next voter to actually vote.
 
 There is two way to trigger that special input :
-- When using a keyboard, you can use the current default of `space`
-- When having a touchscreen, you also have the ability to long press the top half portion of the overlay.
+- When using a keyboard, you can use the current default keybinding of `space`
+- When having a touchscreen, you also have the ability to long press the top half portion of the overlay
+  - This input is only available in the overlay that appears when someone voted, and can therefore not be triggered in the voting page
 
 Whenever that special input is used, a toast notification shows up for a brief moment showing how much votes remains, to keep track of the progress of the current voting session.
 
