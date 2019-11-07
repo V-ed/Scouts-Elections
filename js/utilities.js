@@ -15,11 +15,13 @@ function should_download_data() {
 	return dbIsDirty || !didDownloadDb;
 }
 
-function download_data(data) {
+function download_data(data, dbNameSuffix) {
 	
 	var stringData = JSON.stringify(data);
 	
-	var file = new File([stringData], `${data.dbName}.json`, {type: "application/json;charset=utf-8"});
+	dbNameSuffix = dbNameSuffix || "";
+	
+	var file = new File([stringData], `${data.dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
 	saveAs(file);
 	
 	didDownloadDb = true;
