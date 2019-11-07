@@ -4,7 +4,7 @@ let auto_download_data = function() {
 	
 	if (should_download_data()) {
 		
-		download_data(this.data);
+		download_data(this.data, "_unfinished");
 		
 	}
 	
