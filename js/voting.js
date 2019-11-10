@@ -79,6 +79,10 @@ function setup_voting_session(data) {
 	
 	const submitVotesButton = document.getElementById("voting-submit-button");
 	
+	if(minNumberOfVotesLeft == 0){
+		submitVotesButton.disabled = false;
+	}
+	
 	const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
 	
 	votingButtons.forEach(button => {
@@ -101,7 +105,7 @@ function setup_voting_session(data) {
 				
 			}
 			
-			if(minNumberOfVotesLeft == 0){
+			if(minNumberOfVotesLeft <= 0){
 				submitVotesButton.disabled = false;
 			}
 			
@@ -142,7 +146,7 @@ function setup_voting_session(data) {
 			
 			disabledNonVotedCandidatesButtons.forEach(button => button.disabled = false);
 			
-			if(minNumberOfVotesLeft != 0){
+			if(minNumberOfVotesLeft > 0){
 				submitVotesButton.disabled = true;
 			}
 			
