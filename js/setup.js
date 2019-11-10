@@ -254,8 +254,10 @@ function verify_all_valid() {
 	let isValid = true;
 	
 	for (const inputProperty in setupInputs) {
-		if (isValid) {
-			isValid = setupInputs[inputProperty];
+		isValid = setupInputs[inputProperty];
+		
+		if (!isValid) {
+			break;
 		}
 	}
 	
