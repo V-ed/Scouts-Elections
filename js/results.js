@@ -1,13 +1,13 @@
 function setup_pre_results_page(data) {
 	
-	var preResultsSubmitButton = document.getElementById("pre-results-submit-button");
+	const preResultsSubmitButton = document.getElementById("pre-results-submit-button");
 	
-	var passwordInput = document.getElementById("pre-results-password-input");
+	const passwordInput = document.getElementById("pre-results-password-input");
 	
 	preResultsSubmitButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		var password = passwordInput.value;
+		const password = passwordInput.value;
 		
 		// Password is "VL" for "Vieux-Loups"
 		if (password == "VL") {
@@ -35,15 +35,15 @@ function setup_pre_results_page(data) {
 
 function setup_results_page(data) {
 	
-	var resultsTableBody = document.getElementById("results-body");
+	const resultsTableBody = document.getElementById("results-body");
 	
-	var candidatesClone = JSON.parse(JSON.stringify(data.candidates));
-	var sortedCandidates = candidatesClone.sort((a, b) => (a.voteCount > b.voteCount) ? -1 : ((b.voteCount > a.voteCount) ? 1 : 0));
+	const candidatesClone = JSON.parse(JSON.stringify(data.candidates));
+	const sortedCandidates = candidatesClone.sort((a, b) => (a.voteCount > b.voteCount) ? -1 : ((b.voteCount > a.voteCount) ? 1 : 0));
 	
-	var tableBodyHtml = "";
+	let tableBodyHtml = "";
 	
-	var countOfEqual = 0;
-	var lastVoteCount = -1;
+	let countOfEqual = 0;
+	let lastVoteCount = -1;
 	
 	sortedCandidates.forEach((candidate, i) => {
 		
@@ -51,8 +51,8 @@ function setup_results_page(data) {
 			countOfEqual++;
 		}
 		
-		var candidateBackground = "";
-		var candidateSelectedState = "unselected";
+		let candidateBackground = "";
+		let candidateSelectedState = "unselected";
 		
 		switch (candidate.selectedState) {
 			case "pre-selected":
@@ -89,7 +89,7 @@ function setup_results_page(data) {
 		
 		$(row).removeClass("bg-warning bg-success");
 		
-		var candidateState = "problem (not changed)";
+		let candidateState = "problem (not changed)";
 		
 		if (row.dataset.stateselected == "unselected") {
 			
@@ -119,7 +119,7 @@ function setup_results_page(data) {
 		
 	});
 	
-	var downloadDbButton = document.getElementById("results-download-button");
+	const downloadDbButton = document.getElementById("results-download-button");
 	
 	downloadDbButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -128,11 +128,11 @@ function setup_results_page(data) {
 		
 	});
 	
-	var homepageButton = document.getElementById("results-homepage-button");
+	const homepageButton = document.getElementById("results-homepage-button");
 	
 	homepageButton.addEventListener("click", () => {
 		
-		var canReload = true;
+		let canReload = true;
 		
 		if (should_download_data()) {
 			

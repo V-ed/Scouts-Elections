@@ -1,4 +1,4 @@
-var newElectionsButton = document.getElementById("home-new-button");
+const newElectionsButton = document.getElementById("home-new-button");
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page"));
 
@@ -6,18 +6,18 @@ $(function () {
 	$(".is-popable").popover({trigger: "manual"});
 });
 
-var isAdvancedUpload = function() {
-	var divElement = document.createElement("div");
+const isAdvancedUpload = function() {
+	const divElement = document.createElement("div");
 	return !isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
 }();
 
-var $form = $("#database-loader-zone");
+const $form = $("#database-loader-zone");
 
 if (isAdvancedUpload) {
 	
 	$form.addClass("has-advanced-upload");
 	
-	var droppedFiles = false;
+	let droppedFiles = false;
 	
 	$form.on("drag dragstart dragend dragover dragenter dragleave drop", e => {
 		e.preventDefault();
@@ -33,7 +33,7 @@ if (isAdvancedUpload) {
 			return;
 		}
 		
-		var error = null;
+		let error = null;
 		
 		const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
 		
@@ -42,7 +42,7 @@ if (isAdvancedUpload) {
 		}
 		else {
 			
-			var count = e.originalEvent.dataTransfer.items.length;
+			const count = e.originalEvent.dataTransfer.items.length;
 			
 			if (count > 1) {
 				error = "Veuillez ne glisser qu'un seul fichier.";
@@ -85,7 +85,7 @@ if (isAdvancedUpload) {
 	
 }
 
-var databaseLoaderInput = document.getElementById("loader-file-input");
+const databaseLoaderInput = document.getElementById("loader-file-input");
 databaseLoaderInput.addEventListener("change", e => load_file(e.target.files[0]));
 databaseLoaderInput.addEventListener("click", () => {
 	clear_errors($form);
@@ -113,9 +113,9 @@ function load_file(file) {
 	file.text()
 	.then(text => {
 		
-		var data = JSON.parse(text);
+		const data = JSON.parse(text);
 		
-		var isValid = data.dbName !== undefined
+		const isValid = data.dbName !== undefined
 			&& data.numberOfVoters !== undefined
 			&& data.numberOfVotePerVoter !== undefined
 			&& data.numberOfVoted !== undefined
@@ -166,7 +166,7 @@ function show_loader_error($form, error) {
 	
 }
 
-var preventDrag = e => {
+const preventDrag = e => {
 	e.preventDefault();
 	e.dataTransfer.effectAllowed = "none";
 	e.dataTransfer.dropEffect = "none";

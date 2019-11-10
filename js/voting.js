@@ -1,4 +1,4 @@
-var onKeyUpEventBefore;
+let onKeyUpEventBefore;
 
 let auto_download_data = function() {
 	
@@ -18,15 +18,15 @@ function setup_voting_session(data) {
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
-	var voteIndexes = [];
+	let voteIndexes = [];
 	
-	var cardsHtml = "";
+	let cardsHtml = "";
 	
-	for(var i = 1; i <= data.candidates.length; i++){
+	for(let i = 1; i <= data.candidates.length; i++){
 		
-		var candidateIndex = i - 1;
+		const candidateIndex = i - 1;
 		
-		var candidateData = data.candidates[candidateIndex];
+		const candidateData = data.candidates[candidateIndex];
 		
 		cardsHtml += `
 		<div class="col-6 col-sm-4 col-md-3 p-2">
@@ -41,19 +41,19 @@ function setup_voting_session(data) {
 		
 	}
 	
-	var cardsContainer = document.getElementById("cards-container");
+	const cardsContainer = document.getElementById("cards-container");
 	
 	$(cardsContainer).append(`<div class="row d-flex justify-content-center px-2 px-md-0">${cardsHtml}</div>`);
 	
-	var voteRemainingCounter = document.getElementById("voting-remaining-count");
+	const voteRemainingCounter = document.getElementById("voting-remaining-count");
 	
-	var numberOfVotesLeft = data.numberOfVotePerVoter;
+	let numberOfVotesLeft = data.numberOfVotePerVoter;
 	
 	voteRemainingCounter.textContent = numberOfVotesLeft;
 	
-	var submitVotesButton = document.getElementById("voting-submit-button");
+	const submitVotesButton = document.getElementById("voting-submit-button");
 	
-	var votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+	const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
 	
 	votingButtons.forEach(button => {
 		button.addEventListener("click", e => {
@@ -68,7 +68,7 @@ function setup_voting_session(data) {
 			
 			if(numberOfVotesLeft == 0){
 				
-				var nonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])");
+				const nonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])");
 				
 				nonVotedCandidatesButtons.forEach(button => button.disabled = true);
 				
@@ -79,7 +79,7 @@ function setup_voting_session(data) {
 		});
 	});
 	
-	var unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+	const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
 	
 	unvoteButtons.forEach(button => {
 		button.addEventListener("click", e => {
@@ -92,7 +92,7 @@ function setup_voting_session(data) {
 			
 			voteRemainingCounter.textContent = ++numberOfVotesLeft;
 			
-			var disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
+			const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
 			
 			disabledNonVotedCandidatesButtons.forEach(button => button.disabled = false);
 			
@@ -101,9 +101,9 @@ function setup_voting_session(data) {
 		});
 	});
 	
-	var isVoteFinished = false;
+	let isVoteFinished = false;
 	
-	var votingOverlay = document.getElementById("voting-voted-overlay");
+	const votingOverlay = document.getElementById("voting-voted-overlay");
 	
 	submitVotesButton.addEventListener("click", () => {
 		
@@ -139,7 +139,7 @@ function setup_voting_session(data) {
 		
 	});
 	
-	var votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
+	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	
 	document.body.onkeyup = e => {
 		e.preventDefault();
@@ -153,8 +153,8 @@ function setup_voting_session(data) {
 	
 	if (isTouchDevice) {
 		
-		var timer;
-		var touchDuration = 500;
+		let timer;
+		const touchDuration = 500;
 		
 		function touchStart() {
 			timer = setTimeout(onLongTouch, touchDuration);
@@ -215,7 +215,7 @@ function setup_voting_session(data) {
 		toastContainer.classList.add("i-am-away")
 	});
 	
-	var skipVotesButton = document.getElementById("voting-skip-button");
+	const skipVotesButton = document.getElementById("voting-skip-button");
 	
 	skipVotesButton.addEventListener("click", e => {
 		e.preventDefault();

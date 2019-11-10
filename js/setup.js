@@ -1,11 +1,11 @@
-var candidateAddButton = document.getElementById("candidate-add");
-var candidateRemoveButton = document.getElementById("candidate-remove");
-var candidateContainer = document.getElementById("setup-candidates");
+const candidateAddButton = document.getElementById("candidate-add");
+const candidateRemoveButton = document.getElementById("candidate-remove");
+const candidateContainer = document.getElementById("setup-candidates");
 
 candidateAddButton.addEventListener("click", e => {
 	e.preventDefault();
 	
-	var number = ++candidateAddButton.dataset.candidatecount;
+	const number = ++candidateAddButton.dataset.candidatecount;
 	
 	$(candidateContainer).append(`
 	<div id="candidate-controls-${number}" class="form-group row mb-2 mb-md-3">
@@ -19,7 +19,7 @@ candidateAddButton.addEventListener("click", e => {
 	
 	add_input_for_verification(`candidate-name-${number}`, validateCandidate);
 	
-	var newCandidateInput = document.getElementById(`candidate-name-${number}`);
+	const newCandidateInput = document.getElementById(`candidate-name-${number}`);
 	newCandidateInput.focus();
 	newCandidateInput.addEventListener("keyup", setup_candidate_selector);
 	newCandidateInput.addEventListener("keydown", e => {
@@ -30,7 +30,7 @@ candidateAddButton.addEventListener("click", e => {
 	
 	newCandidateInput.scrollIntoView();
 	
-	var numberOfVoteInput = document.getElementById("number-of-votes");
+	const numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 1;
 	triggerInputEvent(numberOfVoteInput, true);
 	
@@ -60,27 +60,27 @@ candidateRemoveButton.addEventListener("click", e => {
 		
 	}
 	
-	var numberOfVoteInput = document.getElementById("number-of-votes");
+	const numberOfVoteInput = document.getElementById("number-of-votes");
 	numberOfVoteInput.max = number - 2;
 	triggerInputEvent(numberOfVoteInput, true);
 	
 });
 
-var submitSetupButton = document.getElementById("setup-submit-button");
+const submitSetupButton = document.getElementById("setup-submit-button");
 
 submitSetupButton.addEventListener("click", e => {
 	e.preventDefault();
 	
-	var formData = new FormData(document.getElementById("setup-form"));
+	const formData = new FormData(document.getElementById("setup-form"));
 	
-	var tempCandidates = [];
+	let tempCandidates = [];
 	
 	document.querySelectorAll("input[id^='candidate-name-']").forEach(candidate => {
-		var candidateData = formData.get(candidate.name);
+		const candidateData = formData.get(candidate.name);
 		tempCandidates.push({name: candidateData, voteCount: 0, selectedState: "unselected"});
 	});
 	
-	var data = {
+	let data = {
 		dbName: formData.get("dbName"),
 		numberOfVoters: parseInt(formData.get("numberOfVoters")),
 		numberOfVotePerVoter: parseInt(formData.get("numberOfVotes")),
@@ -99,11 +99,11 @@ submitSetupButton.addEventListener("click", e => {
 
 // Handle data validation
 
-var validateCandidate = function (data, input) {
+const validateCandidate = function (data, input) {
 	
 	const dataTrimmed = data.trim();
 	
-	var otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+	const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
 	const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == dataTrimmed.toLowerCase());
 	
 	if (dupCandidates.length > 0) {
@@ -131,7 +131,7 @@ var validateCandidate = function (data, input) {
 	
 }
 
-var setupInputs = {};
+let setupInputs = {};
 
 add_input_for_verification("db-name", data => {
 	
@@ -147,12 +147,12 @@ add_input_for_verification("db-name", data => {
 		return "Le nom de la base de données ne peut pas terminer avec un point.";
 	}
 	
-	var illegalCharRegex = /^[^\\/:\*\?"<>\|]+$/;
+	const illegalCharRegex = /^[^\\/:\*\?"<>\|]+$/;
 	if (!illegalCharRegex.test(data)) {
 		return "Le nom de la base de données contient actuellement au moins un caractère invalide.";
 	}
 	
-	var reservedFileRegex = /^(nul|prn|con|(lpt|com)[0-9])(\.|$)/i;
+	const reservedFileRegex = /^(nul|prn|con|(lpt|com)[0-9])(\.|$)/i;
 	if (reservedFileRegex.test(data)) {
 		return "Le nom de la base de données ne peut pas être un nom réservé au système.";
 	}
@@ -179,7 +179,7 @@ add_input_for_verification("number-of-votes", (data, input) => {
 		return "Le nombre doit être supérieur à 0.";
 	}
 	
-	var candidatesCount = document.querySelectorAll("input[id^='candidate-name-']").length;
+	const candidatesCount = document.querySelectorAll("input[id^='candidate-name-']").length;
 	
 	if (candidatesCount <= data) {
 		return "Le nombre de vote doit être inférieur au nombre de candidats - 1.";
@@ -192,13 +192,13 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	setupInputs[inputId] = false;
 	
-	var inputElement = document.getElementById(inputId);
+	const inputElement = document.getElementById(inputId);
 	
 	if (inputElement.type == "number") {
 		
 		function numberTypeOnlyPositive(e) {
 			
-			var hasBadChars = false;
+			let hasBadChars = false;
 			
 			if (e.type == "paste") {
 				clipboardData = e.clipboardData || window.clipboardData;
@@ -251,7 +251,7 @@ function add_input_for_verification(inputId, customValidator) {
 
 function verify_all_valid() {
 	
-	var isValid = true;
+	let isValid = true;
 	
 	for (const inputProperty in setupInputs) {
 		if (isValid) {
@@ -270,13 +270,13 @@ function verify_input(inputElement, customValidator) {
 		return true;
 	}
 	
-	var isValid = true;
-	var reason = "";
+	let isValid = true;
+	let reason = "";
 	
-	var inputValue = inputElement.value;
+	const inputValue = inputElement.value;
 	
 	if (customValidator) {
-		var customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement) : customValidator(inputValue, inputElement);
+		const customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement) : customValidator(inputValue, inputElement);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
@@ -301,7 +301,7 @@ function verify_input(inputElement, customValidator) {
 	}
 	else if (inputElement.type == "number") {
 		
-		var numberValue = parseInt(inputValue);
+		const numberValue = parseInt(inputValue);
 		
 		isValid = numberValue > 0;
 		reason = "Le nombre doit être supérieur à 0.";
@@ -351,7 +351,7 @@ function triggerInputEvent(input, isSilent) {
 
 function prevent_data_loss() {
 	
-	var isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
+	const isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
 	
 	if (isOneCandidateIsEntered) {
 		
@@ -365,7 +365,7 @@ window.addEventListener("beforeunload", prevent_data_loss);
 
 // Handle Enter on input fields
 
-var setupPageTextFields = document.querySelectorAll("#setup-form input");
+const setupPageTextFields = document.querySelectorAll("#setup-form input");
 
 setupPageTextFields.forEach(input => {
 	
@@ -384,9 +384,9 @@ function setup_candidate_selector(e) {
 	if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
 		e.preventDefault();
 		
-		var inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
+		const inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
 		
-		var inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
+		const inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
 		
 		if (inputNextCandidate == undefined) {
 			

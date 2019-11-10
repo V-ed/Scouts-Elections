@@ -4,9 +4,9 @@ const isTouchDevice = "ontouchstart" in document.documentElement;
 
 // Setup downloadable database function
 
-var didDownloadDb = false;
-var isDownloadDisabled = false;
-var dbIsDirty = false;
+let didDownloadDb = false;
+let isDownloadDisabled = false;
+let dbIsDirty = false;
 
 function should_download_data() {
 	if (isDownloadDisabled) {
@@ -17,11 +17,11 @@ function should_download_data() {
 
 function download_data(data, dbNameSuffix) {
 	
-	var stringData = JSON.stringify(data);
+	const stringData = JSON.stringify(data);
 	
 	dbNameSuffix = dbNameSuffix || "";
 	
-	var file = new File([stringData], `${data.dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
+	const file = new File([stringData], `${data.dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
 	saveAs(file);
 	
 	didDownloadDb = true;
