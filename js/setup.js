@@ -396,6 +396,8 @@ function setup_candidate_selector(e) {
 		
 		const inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
 		
+		const candidateAddButton = document.getElementById("candidate-add");
+		
 		const inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
 		
 		if (inputNextCandidate == undefined) {
