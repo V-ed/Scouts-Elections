@@ -4,6 +4,7 @@ newElectionsButton.addEventListener("click", () => switch_view("setup-page", () 
 
 $(function () {
 	$(".is-popable").popover({trigger: "manual"});
+	$(".is-popable-hover").popover({trigger: "hover"});
 });
 
 const isAdvancedUpload = function() {

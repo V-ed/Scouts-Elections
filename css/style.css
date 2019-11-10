@@ -150,3 +150,11 @@ table.table-border {
     text-align: center;
     font-weight: bold;
 }
+
+/* Fix bootstrap border utilities */
+
+@media (max-width:768px){
+    .border-right.border-right-no-medium {
+        border-right: none !important;
+    }
+}
