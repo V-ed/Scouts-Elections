@@ -1,6 +1,6 @@
 const newElectionsButton = document.getElementById("home-new-button");
 
-newElectionsButton.addEventListener("click", () => switch_view("setup-page"));
+newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
 $(function () {
 	$(".is-popable").popover({trigger: "manual"});
