@@ -45,13 +45,43 @@ function setup_voting_session(data) {
 	
 	$(cardsContainer).append(`<div class="row d-flex justify-content-center px-2 px-md-0">${cardsHtml}</div>`);
 	
+	let minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
+	let maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
+	
+	if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
+		
+		const backwardCompatibleNumber = data.numberOfVotePerVoter;
+		
+		minNumberOfVotesLeft = backwardCompatibleNumber;
+		maxNumberOfVotesLeft = backwardCompatibleNumber;
+		
+	}
+	
 	const voteRemainingCounter = document.getElementById("voting-remaining-count");
+	const voteRemainingCounterMin = document.getElementById("voting-remaining-count-min");
+	const voteRemainingCounterMax = document.getElementById("voting-remaining-count-max");
 	
-	let numberOfVotesLeft = data.numberOfVotePerVoter;
-	
-	voteRemainingCounter.textContent = numberOfVotesLeft;
+	if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
+		
+		voteRemainingCounter.textContent = minNumberOfVotesLeft;
+		
+		document.getElementById("voting-remaining-text-absolute").hidden = false;
+		
+	}
+	else {
+		
+		voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
+		voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+		
+		document.getElementById("voting-remaining-text-multiple").hidden = false;
+		
+	}
 	
 	const submitVotesButton = document.getElementById("voting-submit-button");
+	
+	if(minNumberOfVotesLeft == 0){
+		submitVotesButton.disabled = false;
+	}
 	
 	const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
 	
@@ -64,15 +94,26 @@ function setup_voting_session(data) {
 			button.hidden = true;
 			document.getElementById(`unvote-candidate-${button.dataset.voternumber}`).hidden = false;
 			
-			voteRemainingCounter.textContent = --numberOfVotesLeft;
+			if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
+				voteRemainingCounter.textContent = --minNumberOfVotesLeft;
+				--maxNumberOfVotesLeft;
+			}
+			else {
+				
+				voteRemainingCounterMin.textContent = --minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0;
+				voteRemainingCounterMax.textContent = --maxNumberOfVotesLeft;
+				
+			}
 			
-			if(numberOfVotesLeft == 0){
+			if(minNumberOfVotesLeft <= 0){
+				submitVotesButton.disabled = false;
+			}
+			
+			if (maxNumberOfVotesLeft == 0) {
 				
 				const nonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])");
 				
 				nonVotedCandidatesButtons.forEach(button => button.disabled = true);
-				
-				submitVotesButton.disabled = false;
 				
 			}
 			
@@ -90,13 +131,24 @@ function setup_voting_session(data) {
 			button.hidden = true;
 			document.getElementById(`vote-candidate-${button.dataset.voternumber}`).hidden = false;
 			
-			voteRemainingCounter.textContent = ++numberOfVotesLeft;
+			if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
+				voteRemainingCounter.textContent = ++minNumberOfVotesLeft;
+				++maxNumberOfVotesLeft;
+			}
+			else {
+				
+				voteRemainingCounterMin.textContent = ++minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0;
+				voteRemainingCounterMax.textContent = ++maxNumberOfVotesLeft;
+				
+			}
 			
 			const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
 			
 			disabledNonVotedCandidatesButtons.forEach(button => button.disabled = false);
 			
-			submitVotesButton.disabled = true;
+			if(minNumberOfVotesLeft > 0){
+				submitVotesButton.disabled = true;
+			}
 			
 		});
 	});

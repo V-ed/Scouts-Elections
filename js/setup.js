@@ -34,7 +34,7 @@ function setup_setup() {
 		
 		newCandidateInput.scrollIntoView();
 		
-		const numberOfVoteInput = document.getElementById("number-of-votes");
+		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
 		numberOfVoteInput.max = number - 1;
 		triggerInputEvent(numberOfVoteInput, true);
 		
@@ -64,7 +64,7 @@ function setup_setup() {
 			
 		}
 		
-		const numberOfVoteInput = document.getElementById("number-of-votes");
+		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
 		numberOfVoteInput.max = number - 2;
 		triggerInputEvent(numberOfVoteInput, true);
 		
@@ -87,7 +87,9 @@ function setup_setup() {
 		let data = {
 			dbName: formData.get("dbName"),
 			numberOfVoters: parseInt(formData.get("numberOfVoters")),
-			numberOfVotePerVoter: parseInt(formData.get("numberOfVotes")),
+			// numberOfVotePerVoter: parseInt(formData.get("numberOfVotes")),
+			numberOfVotePerVoterMin: parseInt(formData.get("numberOfVotesMin")),
+			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
 			numberOfVoted: 0,
 			hasSkipped: false,
 			candidates: tempCandidates
@@ -171,20 +173,55 @@ function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-votes", (data, input) => {
+	add_input_for_verification("number-of-votes-minimum", (data, input, isManualVerification) => {
 		
 		if (data === "") {
-			return "Le nombre de vote ne peut être vide.";
+			return "Le nombre de vote minimum ne peut être vide.";
+		}
+		
+		if (data < 0) {
+			return "Le nombre doit être positif (supérieur ou égal à 0).";
+		}
+		
+		const numberOfVotesMaxInput = document.getElementById("number-of-votes-maximum");
+		
+		numberOfVotesMaxInput.min = data;
+		
+		if (!isManualVerification) {
+			triggerInputEvent(numberOfVotesMaxInput, true);
+		}
+		
+		if (numberOfVotesMaxInput.value && data > numberOfVotesMaxInput.value) {
+			return "Le nombre de vote minimum ne peut pas être supérieur au nombre de vote maximum.";
+		}
+		
+	});
+	add_input_for_verification("number-of-votes-maximum", (data, input, isManualVerification) => {
+		
+		if (data === "") {
+			return "Le nombre de vote maximum ne peut être vide.";
 		}
 		
 		if (data < 1) {
 			return "Le nombre doit être supérieur à 0.";
 		}
 		
+		const numberOfVotesMinInput = document.getElementById("number-of-votes-minimum");
+		
+		numberOfVotesMinInput.max = data;
+		
+		if (!isManualVerification) {
+			triggerInputEvent(numberOfVotesMinInput, true);
+		}
+		
+		if (numberOfVotesMinInput.value && data < numberOfVotesMinInput.value) {
+			return "Le nombre de vote maximum ne peut pas être inférieur au nombre de vote minimum.";
+		}
+		
 		const candidatesCount = document.querySelectorAll("input[id^='candidate-name-']").length;
 		
 		if (candidatesCount <= data) {
-			return "Le nombre de vote doit être inférieur au nombre de candidats - 1.";
+			return "Le nombre de vote maximum doit être inférieur au nombre de candidats - 1.";
 		}
 		
 	});
@@ -252,9 +289,11 @@ function add_input_for_verification(inputId, customValidator) {
 		
 	}
 	
-	inputElement.addEventListener("input", () => {
+	inputElement.addEventListener("input", (e) => {
 		
-		setupInputs[inputId] = verify_input(inputElement, customValidator);
+		const isManual = e.detail ? e.detail.isManual : false;
+		
+		setupInputs[inputId] = verify_input(inputElement, customValidator, isManual);
 		
 		verify_all_valid();
 		
@@ -291,7 +330,7 @@ function verify_all_valid() {
 	
 }
 
-function verify_input(inputElement, customValidator) {
+function verify_input(inputElement, customValidator, isManualVerification) {
 	
 	// Check if required. If not, don't verify
 	if (!inputElement.required) {
@@ -304,7 +343,7 @@ function verify_input(inputElement, customValidator) {
 	const inputValue = inputElement.value;
 	
 	if (customValidator) {
-		const customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement) : customValidator(inputValue, inputElement);
+		const customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement, isManualVerification) : customValidator(inputValue, inputElement, isManualVerification);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
@@ -367,7 +406,7 @@ function triggerInputEvent(input, isSilent) {
 		$(input).popover("disable");
 	}
 	
-	input.dispatchEvent(new Event("input"));
+	input.dispatchEvent(new CustomEvent("input", {"detail": {isManual: true}}));
 	
 	if (inputIsPopable && isSilent) {
 		$(input).popover("enable");

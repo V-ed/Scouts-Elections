@@ -96,8 +96,19 @@
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-3 col-form-label" for="number-of-votes">Nombre de votes par voteur</label>
-					<div class="col-sm-9">
-						<input type="number" class="form-control is-invalid is-popable" id="number-of-votes" min="1" aria-describedby="numberOfVotes" name="numberOfVotes" data-placement="top" required>
+					<div class="col-sm-9 row pr-0">
+						<div class="col-4 col-md-3 col-lg-2 py-0 col-form-label">
+							<label class="col-form-label" for="number-of-votes-minimum">Minimum :</label>
+						</div>
+						<div class="col-8 col-md-3 col-lg-4 pr-0">
+							<input type="number" class="form-control is-invalid is-popable" id="number-of-votes-minimum" min="0" name="numberOfVotesMin" data-placement="top" required>
+						</div>
+						<div class="col-4 col-md-3 col-lg-2 py-0 col-form-label mt-3 mt-md-0">
+							<label class="col-form-label" for="number-of-votes-maximum">Maximum :</label>
+						</div>
+						<div class="col-8 col-md-3 col-lg-4 mt-3 mt-md-0 pr-0">
+							<input type="number" class="form-control is-invalid is-popable" id="number-of-votes-maximum" name="numberOfVotesMax" data-placement="top" required>
+						</div>
 					</div>
 				</div>
 				<div class="form-group row">
@@ -135,8 +146,13 @@
 				</div>
 				
 				<div class="w-100">
-					<p class="lead text-center">
+					<p id="voting-remaining-text-absolute" class="lead text-center" hidden>
 						Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
+					</p>
+					<p id="voting-remaining-text-multiple" class="lead text-center" hidden>
+						Nombre de vote minimum restant : <span id="voting-remaining-count-min" class="font-weight-bold"></span>
+						<br>
+						Nombre de vote maximum restant : <span id="voting-remaining-count-max" class="font-weight-bold"></span>
 					</p>
 					<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer mes votes</button>
 				</div>
