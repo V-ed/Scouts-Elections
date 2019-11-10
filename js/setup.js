@@ -89,6 +89,7 @@ function setup_setup() {
 			numberOfVoters: parseInt(formData.get("numberOfVoters")),
 			numberOfVotePerVoterMin: parseInt(formData.get("numberOfVotesMin")),
 			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
+			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
 			numberOfVoted: 0,
 			hasSkipped: false,
 			candidates: tempCandidates
