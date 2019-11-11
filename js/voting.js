@@ -104,6 +104,10 @@ function setup_voting_session(data) {
 		
 		$(inputs).on("change", e => {
 			
+			if (!e.detail || !e.detail.direction) {
+				return;
+			}
+			
 			vote_for_candidate(e.currentTarget.dataset.candidateindex, e.detail.direction);
 			
 			inputs.forEach(input => input.max = maxNumberOfVotesLeft + $(input).val());
@@ -243,9 +247,9 @@ function setup_voting_session(data) {
 				
 				inputs.forEach(input => {
 					
-					$(input).val(0);
 					input.max = maxNumberOfVotesLeft;
-					input.readOnly = false
+					input.readOnly = false;
+					$(input).val(0);
 					
 				});
 				
