@@ -100,7 +100,7 @@ function setup_voting_session(data) {
 	
 		const inputs = document.querySelectorAll("input.spinner[type='number']");
 		
-		$(inputs).inputSpinner({readOnlyInputs: true, inputClass: "font-weight-bold"});
+		$(inputs).inputSpinner({readOnlyInputs: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 		
 		$(inputs).on("change", e => {
 			
