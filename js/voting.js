@@ -18,7 +18,7 @@ function setup_voting_session(data) {
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
-	let voteIndexes = [];
+	let candidatesIndexes = [];
 	
 	const isMultipleSameCandidateAllowed = data.allowMultipleSameCandidate || false;
 	
@@ -49,8 +49,8 @@ function setup_voting_session(data) {
 		}
 		else {
 			inputHtml = `
-				<button id="vote-candidate-${i}" type="button" class="btn btn-primary" data-voterindex="${candidateIndex}" data-voternumber="${i}">Voter</button>
-				<button id="unvote-candidate-${i}" type="button" class="btn btn-danger" data-voterindex="${candidateIndex}" data-voternumber="${i}" hidden>Enlever Vote</button>
+				<button id="vote-candidate-${i}" type="button" class="btn btn-primary" data-candidateindex="${candidateIndex}">Voter</button>
+				<button id="unvote-candidate-${i}" type="button" class="btn btn-danger" data-candidateindex="${candidateIndex}" hidden>Enlever Vote</button>
 			`;
 		}
 		
@@ -132,10 +132,10 @@ function setup_voting_session(data) {
 			button.addEventListener("click", e => {
 				e.preventDefault();
 				
-				vote_for_candidate(button.dataset.voterindex, 1);
+				vote_for_candidate(button.dataset.candidateindex, 1);
 				
 				button.hidden = true;
-				document.getElementById(`unvote-candidate-${button.dataset.voternumber}`).hidden = false;
+				document.getElementById(`unvote-candidate-${button.dataset.candidateindex + 1}`).hidden = false;
 				
 				if (maxNumberOfVotesLeft == 0) {
 					
@@ -154,10 +154,10 @@ function setup_voting_session(data) {
 			button.addEventListener("click", e => {
 				e.preventDefault();
 				
-				vote_for_candidate(button.dataset.voterindex, -1);
+				vote_for_candidate(button.dataset.candidateindex, -1);
 				
 				button.hidden = true;
-				document.getElementById(`vote-candidate-${button.dataset.voternumber}`).hidden = false;
+				document.getElementById(`vote-candidate-${button.dataset.candidateindex + 1}`).hidden = false;
 				
 				const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
 				
@@ -171,11 +171,11 @@ function setup_voting_session(data) {
 	function vote_for_candidate(index, direction) {
 		
 		if (direction > 0) {
-			voteIndexes.push(index);
+			candidatesIndexes.push(index);
 		}
 		else if (direction < 0) {
-			let candidateIndex = voteIndexes.findIndex(voteIndex => voteIndex == index);
-    		candidateIndex !== -1 && voteIndexes.splice(candidateIndex, 1);
+			let candidateIndex = candidatesIndexes.findIndex(currentIndex => currentIndex == index);
+    		candidateIndex !== -1 && candidatesIndexes.splice(candidateIndex, 1);
 		}
 		
 		// If voting positive for candidate, lower number of votes left, otherwise bump it
@@ -205,13 +205,13 @@ function setup_voting_session(data) {
 		
 		setTimeout(() => {
 			
-			voteIndexes.forEach(voteIndex => {
+			candidatesIndexes.forEach(voteIndex => {
 				
 				data.candidates[voteIndex].voteCount++;
 				
 			});
 			
-			voteIndexes = [];
+			candidatesIndexes = [];
 			
 			minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
 			maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
