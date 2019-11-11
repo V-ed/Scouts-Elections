@@ -110,17 +110,11 @@ function setup_voting_session(data) {
 			
 			if (maxNumberOfVotesLeft == 0) {
 				const nonSelectedInput = Array.from(inputs).filter(input => $(input).val() == 0);
-				nonSelectedInput.forEach(input => {
-					input.readOnly = true;
-					input.nextSibling.querySelector("input").classList.remove("font-weight-bold");
-				});
+				nonSelectedInput.forEach(input => input.readOnly = true);
 			}
 			else {
 				const readonlyInputs = Array.from(inputs).filter(input => input.readOnly);
-				readonlyInputs.forEach(input => {
-					input.readOnly = false;
-					input.nextSibling.querySelector("input").classList.remove("font-weight-bold");
-				});
+				readonlyInputs.forEach(input => input.readOnly = false);
 			}
 			
 		});
@@ -251,6 +245,7 @@ function setup_voting_session(data) {
 					
 					$(input).val(0);
 					input.max = maxNumberOfVotesLeft;
+					input.readOnly = false
 					
 				});
 				
