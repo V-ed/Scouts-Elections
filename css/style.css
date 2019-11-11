@@ -14,6 +14,17 @@ body {
     font-size: 7vmin;
 }
 
+/* Voting tweaks */
+
+div#voting-page input.spinner[type="number"] + div.input-group > input:not([readonly]) {
+    background-color: #f6f6f6;
+}
+
+div#voting-page input.spinner[type="number"] + div.input-group > input[readonly] {
+    font-style: italic;
+    font-weight: normal !important;
+}
+
 /* Voting overlay */
 
 div#voting-voted-overlay {
