@@ -1,5 +1,13 @@
 const newElectionsButton = document.getElementById("home-new-button");
 
+// Javascript enabled, enable inputs...
+
+newElectionsButton.disabled = false;
+document.getElementById("loader-file-input").disabled = false;
+document.getElementById("database-loader-zone").classList.remove("loader-disabled");
+
+// Index script
+
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
 $(function () {

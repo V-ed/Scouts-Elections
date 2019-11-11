@@ -73,6 +73,11 @@ table.table-border {
 
 /* file loader styles */
 
+.loader.loader-disabled {
+    opacity: .65;
+    border: 2px solid darkgray;
+}
+
 .loader .loader-dragndrop,
 .loader .loader-uploading,
 .loader .loader-success,
@@ -91,25 +96,25 @@ table.table-border {
     display: inline;
 }
 
-.loader.loader-is-dragover:not([data-haderror]) {
+.loader:not(.loader-disabled).loader-is-dragover:not([data-haderror]) {
     box-shadow: inset 0 0 25px 5px rgba(0, 0, 0, 0.6);
 }
 
-.loader:hover,
-.loader.loader-is-dragover,
-.loader[data-haderror]
+.loader:not(.loader-disabled):hover,
+.loader:not(.loader-disabled).loader-is-dragover,
+.loader:not(.loader-disabled)[data-haderror]
 {
     background-color: #218838;
     color: white;
 }
 
-.loader .loader-input label {
+.loader:not(.loader-disabled) .loader-input label {
     transition: text-shadow 0.3s ease-in-out;
 }
 
-.loader:hover .loader-input label,
-.loader.loader-is-dragover .loader-input label,
-.loader[data-haderror] .loader-input label
+.loader:not(.loader-disabled):hover .loader-input label,
+.loader:not(.loader-disabled).loader-is-dragover .loader-input label,
+.loader:not(.loader-disabled)[data-haderror] .loader-input label
 {
     text-shadow: 2px 2px black;
 }
@@ -121,7 +126,7 @@ table.table-border {
     position: absolute;
 }
 
-.loader label {
+.loader:not(.loader-disabled) label {
     cursor: pointer;
 }
 
