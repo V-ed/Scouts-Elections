@@ -108,7 +108,7 @@ function setup_voting_session(data) {
 				return;
 			}
 			
-			vote_for_candidate(e.currentTarget.dataset.candidateindex, e.detail.direction);
+			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.direction);
 			
 			inputs.forEach(input => input.max = maxNumberOfVotesLeft + $(input).val());
 			
@@ -132,10 +132,10 @@ function setup_voting_session(data) {
 			button.addEventListener("click", e => {
 				e.preventDefault();
 				
-				vote_for_candidate(button.dataset.candidateindex, 1);
+				vote_for_candidate(parseInt(button.dataset.candidateindex), 1);
 				
 				button.hidden = true;
-				document.getElementById(`unvote-candidate-${button.dataset.candidateindex + 1}`).hidden = false;
+				document.getElementById(`unvote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
 				
 				if (maxNumberOfVotesLeft == 0) {
 					
@@ -154,10 +154,10 @@ function setup_voting_session(data) {
 			button.addEventListener("click", e => {
 				e.preventDefault();
 				
-				vote_for_candidate(button.dataset.candidateindex, -1);
+				vote_for_candidate(parseInt(button.dataset.candidateindex), -1);
 				
 				button.hidden = true;
-				document.getElementById(`vote-candidate-${button.dataset.candidateindex + 1}`).hidden = false;
+				document.getElementById(`vote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
 				
 				const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
 				
