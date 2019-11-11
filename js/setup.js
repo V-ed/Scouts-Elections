@@ -1,4 +1,5 @@
 let setupInputs = {};
+let textFieldHadFocus = undefined;
 
 function setup_setup() {
 	
@@ -67,6 +68,10 @@ function setup_setup() {
 		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
 		numberOfVoteInput.max = number - 2;
 		triggerInputEvent(numberOfVoteInput, true);
+		
+		if (textFieldHadFocus) {
+			document.getElementById(`candidate-name-${number - 1}`).focus();
+		}
 		
 	});
 	
@@ -309,6 +314,13 @@ function add_input_for_verification(inputId, customValidator) {
 		inputElement.addEventListener("focus", () => $(inputElement).popover("show"));
 		inputElement.addEventListener("focusout", () => $(inputElement).popover("hide"));
 	}
+	
+	inputElement.addEventListener("focus", e => textFieldHadFocus = e.currentTarget);
+	inputElement.addEventListener("focusout", e => setTimeout(() => {
+		if (e.target == textFieldHadFocus) {
+			textFieldHadFocus = undefined;
+		}
+	}, 100));
 	
 }
 
