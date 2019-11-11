@@ -19,7 +19,7 @@ function setup_setup() {
 				</div>
 			</div>`);
 		
-		candidateRemoveButton.hidden = false;
+		candidateRemoveButton.disabled = false;
 		
 		add_input_for_verification(`candidate-name-${number}`, validateCandidate);
 		
@@ -53,7 +53,7 @@ function setup_setup() {
 		verify_all_valid();
 		
 		if (number == 2) {
-			candidateRemoveButton.hidden = true;
+			candidateRemoveButton.disabled = true;
 		}
 		
 		if (input.dataset.dupevalue != null) {
