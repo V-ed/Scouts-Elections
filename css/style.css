@@ -14,6 +14,17 @@ body {
     font-size: 7vmin;
 }
 
+/* Voting tweaks */
+
+div#voting-page input.spinner[type="number"] + div.input-group > input:not([readonly]) {
+    background-color: #f6f6f6;
+}
+
+div#voting-page input.spinner[type="number"] + div.input-group > input[readonly] {
+    font-style: italic;
+    font-weight: normal !important;
+}
+
 /* Voting overlay */
 
 div#voting-voted-overlay {
@@ -149,4 +160,12 @@ table.table-border {
     height: 100%;
     text-align: center;
     font-weight: bold;
+}
+
+/* Fix bootstrap border utilities */
+
+@media (max-width:768px){
+    .border-right.border-right-no-medium {
+        border-right: none !important;
+    }
 }

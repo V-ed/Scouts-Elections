@@ -17,6 +17,7 @@
 	<script src="./js/libraries/bootstrap.min.js"></script>
 	
 	<script src="./js/libraries/FileSaver.min.js"></script>
+	<script src="./js/libraries/bootstrap-input-spinner.min.js"></script>
 </head>
 
 <body class="d-flex">
@@ -112,8 +113,13 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<label class="col-auto col-form-label" for="auto-download-db">Télécharger la DB automatiquement</label>
-					<div class="d-flex col justify-content-end">
+					<label class="col-10 col-md-5 col-form-label col-md-1 is-popable-hover" data-placement="top" data-content="Permet de voter plusieurs fois pour le même candidat. Par défaut, un candidat ne peut avoir qu'un seul vote (case décochée).">Multiple votes par candidat</label>
+					<div class="d-flex col-2 col-md-1 col-md-1 col-md-1 justify-content-end border-right border-right-no-medium">
+						<input type="checkbox" id="allow-multiple-same-candidate" name="allowMultipleSameCandidate" class="boot-checkbox">
+						<label for="allow-multiple-same-candidate"></label>
+					</div>
+					<label class="col-10 col-md-5 col-form-label mt-2 mt-md-0 is-popable-hover" data-placement="top" data-content="Permet de télécharger la base de données automatiquement pendant le vote si la page se ferme ou se fait rafraichir. Coché par défaut.">Télécharger la bd automatiquement</label>
+					<div class="d-flex col-2 col-md-1 mt-2 mt-md-0 justify-content-end">
 						<input type="checkbox" id="auto-download-db" name="autoDownloadDb" class="boot-checkbox" checked>
 						<label for="auto-download-db"></label>
 					</div>
