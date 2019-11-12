@@ -39,6 +39,10 @@ div#voting-voted-overlay h1 {
     font-size: 9vmax;
 }
 
+div#voting-voted-overlay h2 {
+    font-size: 5.5vmax;
+}
+
 div#voting-voted-overlay:not(.active),
 div#voting-voted-overlay:not(.active) .touch-skipper,
 .i-am-away
@@ -63,6 +67,11 @@ div#voting-voted-overlay > * {
 
 div#voting-voted-overlay.active > * {
     opacity: 1;
+}
+
+div#voting-voted-overlay img {
+    -webkit-filter: drop-shadow(0px 5px 10px #222);
+    filter:         drop-shadow(0px 5px 10px #222);
 }
 
 /* Results table overrides */
