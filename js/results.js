@@ -1,4 +1,18 @@
+function setup_results(data) {
+	
+	if (data.dbPsw || data.dbPsw == undefined) {
+		switch_view("pre-results-page", () => setup_pre_results_page(data));
+	}
+	else {
+		switch_view("results-page", () => setup_results_page(data));
+	}
+	
+}
+
 function setup_pre_results_page(data) {
+	
+	// Default password if not set is "VL" for "Vieux-Loups"
+	let passwordToCheck = data.dbPsw || "VL";
 	
 	const preResultsSubmitButton = document.getElementById("pre-results-submit-button");
 	
@@ -9,8 +23,7 @@ function setup_pre_results_page(data) {
 		
 		const password = passwordInput.value;
 		
-		// Password is "VL" for "Vieux-Loups"
-		if (password == "VL") {
+		if (password == passwordToCheck) {
 			
 			switch_view("results-page", () => setup_results_page(data));
 			

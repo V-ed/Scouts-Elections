@@ -96,6 +96,7 @@ function setup_setup() {
 		
 		let data = {
 			dbName: formData.get("dbName"),
+			dbPsw: formData.get("dbPsw"),
 			numberOfVoters: parseInt(formData.get("numberOfVoters")),
 			numberOfVotePerVoterMin: parseInt(formData.get("numberOfVotesMin")),
 			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
