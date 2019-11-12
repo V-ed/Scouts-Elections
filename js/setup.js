@@ -3,6 +3,11 @@ let textFieldHadFocus = undefined;
 
 function setup_setup() {
 	
+	const pswVisibilityToggler = document.getElementById("password-visible");
+	const pswField = document.getElementById("db-psw");
+	
+	pswVisibilityToggler.addEventListener("click", () => pswField.type = pswField.type == "password" ? "text" : "password");
+	
 	const candidateAddButton = document.getElementById("candidate-add");
 	const candidateRemoveButton = document.getElementById("candidate-remove");
 	const candidateContainer = document.getElementById("setup-candidates");
