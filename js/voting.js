@@ -257,6 +257,7 @@ function setup_voting_session(data) {
 			else {
 				
 				const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+				const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
 				
 				votingButtons.forEach(button => {
 					button.hidden = false;
