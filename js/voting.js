@@ -98,7 +98,7 @@ function setup_voting_session(data) {
 	
 	if (isMultipleSameCandidateAllowed) {
 	
-		const inputs = document.querySelectorAll("input.spinner[type='number']");
+		const inputs = document.querySelectorAll("div#voting-page input.spinner[type='number']");
 		
 		$(inputs).inputSpinner({disabledInput: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 		
