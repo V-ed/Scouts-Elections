@@ -45,7 +45,7 @@ function setup_voting_session(data) {
 		let inputHtml;
 		
 		if (isMultipleSameCandidateAllowed) {
-			inputHtml = `<input type="number" class="spinner" value="0" min="0" max="${maxNumberOfVotesLeft}" step="1" data-step-max="3" data-candidateindex="${candidateIndex}"/>`;
+			inputHtml = `<input type="number" class="spinner" value="0" min="0" max="${maxNumberOfVotesLeft}" step="1" data-step-max="1" data-candidateindex="${candidateIndex}"/>`;
 		}
 		else {
 			inputHtml = `
@@ -110,7 +110,7 @@ function setup_voting_session(data) {
 			
 			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.direction);
 			
-			inputs.forEach(input => input.max = maxNumberOfVotesLeft + $(input).val());
+			inputs.forEach(input => input.max = maxNumberOfVotesLeft + parseInt($(input).val()));
 			
 			if (maxNumberOfVotesLeft == 0) {
 				const nonSelectedInput = Array.from(inputs).filter(input => $(input).val() == 0);
