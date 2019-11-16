@@ -100,15 +100,15 @@ function setup_voting_session(data) {
 	
 		const inputs = document.querySelectorAll("input.spinner[type='number']");
 		
-		$(inputs).inputSpinner({readOnlyInputs: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
+		$(inputs).inputSpinner({disabledInput: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 		
 		$(inputs).on("change", e => {
 			
-			if (!e.detail || !e.detail.direction) {
+			if (!e.detail || !e.detail.step) {
 				return;
 			}
 			
-			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.direction);
+			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.step);
 			
 			inputs.forEach(input => input.max = maxNumberOfVotesLeft + parseInt($(input).val()));
 			
@@ -168,26 +168,29 @@ function setup_voting_session(data) {
 		
 	}
 	
-	function vote_for_candidate(index, direction) {
+	function vote_for_candidate(index, step) {
 		
-		if (direction > 0) {
-			candidatesIndexes.push(index);
+		if (step > 0) {
+			for (let i = 0; i < step; i++) {
+				candidatesIndexes.push(index);
+			}
 		}
-		else if (direction < 0) {
-			let candidateIndex = candidatesIndexes.findIndex(currentIndex => currentIndex == index);
-    		candidateIndex !== -1 && candidatesIndexes.splice(candidateIndex, 1);
+		else if (step < 0) {
+			for (let i = 0; i > step; i--) {
+				let candidateIndex = candidatesIndexes.findIndex(currentIndex => currentIndex == index);
+				candidateIndex !== -1 && candidatesIndexes.splice(candidateIndex, 1);
+			}
 		}
 		
-		// If voting positive for candidate, lower number of votes left, otherwise bump it
-		let newMin = direction > 0 ? --minNumberOfVotesLeft : direction < 0 ? ++minNumberOfVotesLeft : minNumberOfVotesLeft;
-		let newMax = direction > 0 ? --maxNumberOfVotesLeft : direction < 0 ? ++maxNumberOfVotesLeft : maxNumberOfVotesLeft;
+		minNumberOfVotesLeft = minNumberOfVotesLeft - step;
+		maxNumberOfVotesLeft = maxNumberOfVotesLeft - step;
 		
 		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-			voteRemainingCounter.textContent = newMin;
+			voteRemainingCounter.textContent = minNumberOfVotesLeft;
 		}
 		else {
-			voteRemainingCounterMin.textContent = newMin >= 0 ? newMin : 0;
-			voteRemainingCounterMax.textContent = newMax;
+			voteRemainingCounterMin.textContent = minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0;
+			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
 		}
 		
 		submitVotesButton.disabled = minNumberOfVotesLeft > 0;
