@@ -126,7 +126,7 @@ function load_file(file) {
 		
 		const isValid = data.dbName !== undefined
 			&& data.numberOfVoters !== undefined
-			&& data.numberOfVotePerVoter !== undefined
+			&& (data.numberOfVotePerVoter !== undefined || (data.numberOfVotePerVoterMin !== undefined && data.numberOfVotePerVoterMax !== undefined))
 			&& data.numberOfVoted !== undefined
 			&& data.hasSkipped !== undefined
 			&& data.candidates !== undefined;
