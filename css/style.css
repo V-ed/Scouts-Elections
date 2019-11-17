@@ -165,8 +165,7 @@ table.table-border {
     box-shadow: inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
 }
 
-.boot-checkbox:checked + label:after {
-    content: '\2713';
+.boot-checkbox + label:after {
     font-size: 1.5rem;
     position: absolute;
     top: 0;
@@ -177,8 +176,23 @@ table.table-border {
     font-weight: bold;
 }
 
+.boot-checkbox:checked + label:after {
+    content: '\2713';
+}
+
+.checkbox-eye.boot-checkbox:not(:checked) + label {
+    background: url(../images/closed-eye.png) 0 0px no-repeat;
+    background-size: 100% 100%;
+}
+
+.checkbox-eye.boot-checkbox:checked + label {
+    border: 1px solid #ced4da;
+}
+
 .checkbox-eye.boot-checkbox:checked + label:after {
-    content: '\1F441';
+    background: url(../images/open-eye.png) 0 0px no-repeat;
+    background-size: 100% 100%;
+    content: '';
 }
 
 /* Fix bootstrap border utilities */
