@@ -335,7 +335,7 @@ function setup_voting_session(data) {
 		}
 		else {
 			
-			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} voteur(s) restant sur ${data.numberOfVoters}`;
+			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant sur ${data.numberOfVoters}`;
 			
 			toastContainer.classList.remove("i-am-away")
 			$("#voting-toasts-container > .toast").toast("show");

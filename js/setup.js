@@ -180,7 +180,7 @@ function setup_setup() {
 	add_input_for_verification("number-of-voters", data => {
 		
 		if (data === "") {
-			return "Le nombre de voteurs ne peut être vide.";
+			return "Le nombre d'électeurs ne peut être vide.";
 		}
 		
 		if (data < 1) {
