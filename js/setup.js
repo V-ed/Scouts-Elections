@@ -41,7 +41,7 @@ function setup_setup() {
 		newCandidateInput.scrollIntoView();
 		
 		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
-		numberOfVoteInput.max = number - 1;
+		// numberOfVoteInput.max = number - 1;
 		triggerInputEvent(numberOfVoteInput, true);
 		
 	});
@@ -113,6 +113,10 @@ function setup_setup() {
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
 	});
+	
+	const inputs = document.querySelectorAll("div#setup-page input.spinner[type='number']");
+	
+	$(inputs).inputSpinner({inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 	
 	// Handle data validation
 	
@@ -266,7 +270,9 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	const inputElement = document.getElementById(inputId);
 	
-	if (inputElement.type == "number") {
+	const checkElement = inputElement.classList.contains("spinner") ? document.querySelector(`#${inputId} + div.input-group input.spinner`) : inputElement;
+	
+	if (checkElement.type == "number" || checkElement.inputMode == "numeric") {
 		
 		function numberTypeOnlyPositive(e) {
 			
@@ -293,10 +299,10 @@ function add_input_for_verification(inputId, customValidator) {
 			}
 			
 		}
-		inputElement.addEventListener("keyup", numberTypeOnlyPositive);
-		inputElement.addEventListener("paste", numberTypeOnlyPositive);
-		inputElement.addEventListener("keydown", numberTypeOnlyPositive);
-		inputElement.addEventListener("keypress", numberTypeOnlyPositive);
+		checkElement.addEventListener("keyup", numberTypeOnlyPositive);
+		checkElement.addEventListener("paste", numberTypeOnlyPositive);
+		checkElement.addEventListener("keydown", numberTypeOnlyPositive);
+		checkElement.addEventListener("keypress", numberTypeOnlyPositive);
 		
 	}
 	
@@ -304,7 +310,7 @@ function add_input_for_verification(inputId, customValidator) {
 		
 		const isManual = e.detail ? e.detail.isManual : false;
 		
-		setupInputs[inputId] = verify_input(inputElement, customValidator, isManual);
+		setupInputs[inputId] = verify_input(inputElement, customValidator, isManual, checkElement);
 		
 		verify_all_valid();
 		
@@ -312,17 +318,17 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	verify_all_valid();
 	
-	if (inputElement.classList.contains("is-popable")) {
-		$(inputElement).popover({ trigger: "manual" });
+	if (checkElement.classList.contains("is-popable")) {
+		$(checkElement).popover({ trigger: "manual" });
 		
 		triggerInputEvent(inputElement, true);
 		
-		inputElement.addEventListener("focus", () => $(inputElement).popover("show"));
-		inputElement.addEventListener("focusout", () => $(inputElement).popover("hide"));
+		checkElement.addEventListener("focus", () => $(checkElement).popover("show"));
+		checkElement.addEventListener("focusout", () => $(checkElement).popover("hide"));
 	}
 	
-	inputElement.addEventListener("focus", e => textFieldHadFocus = e.currentTarget);
-	inputElement.addEventListener("focusout", e => setTimeout(() => {
+	checkElement.addEventListener("focus", e => textFieldHadFocus = e.currentTarget);
+	checkElement.addEventListener("focusout", e => setTimeout(() => {
 		if (e.target == textFieldHadFocus) {
 			textFieldHadFocus = undefined;
 		}
@@ -348,7 +354,7 @@ function verify_all_valid() {
 	
 }
 
-function verify_input(inputElement, customValidator, isManualVerification) {
+function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
 	
 	// Check if required. If not, don't verify
 	if (!inputElement.required) {
@@ -361,7 +367,7 @@ function verify_input(inputElement, customValidator, isManualVerification) {
 	const inputValue = inputElement.value;
 	
 	if (customValidator) {
-		const customResults = inputElement.type == "number" && inputValue ? customValidator(parseInt(inputValue), inputElement, isManualVerification) : customValidator(inputValue, inputElement, isManualVerification);
+		const customResults = (inputElement.type == "number" || inputElement.inputMode == "numeric") && inputValue ? customValidator(parseInt(inputValue), inputElement, isManualVerification) : customValidator(inputValue, inputElement, isManualVerification);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
@@ -393,22 +399,24 @@ function verify_input(inputElement, customValidator, isManualVerification) {
 		
 	}
 	
+	const elemToClassify = elementToValidate || inputElement;
+	
 	if (isValid) {
 		
 		inputElement.classList.remove("is-invalid");
 		
-		inputElement.dataset.content = "";
+		elemToClassify.dataset.content = "";
 		
-		$(inputElement).popover("hide");
+		$(elemToClassify).popover("hide");
 		
 	}
 	else {
 		
 		inputElement.classList.add("is-invalid");
 		
-		inputElement.dataset.content = reason;
+		elemToClassify.dataset.content = reason;
 		
-		$(inputElement).popover("show");
+		$(elemToClassify).popover("show");
 		
 	}
 	
@@ -418,16 +426,19 @@ function verify_input(inputElement, customValidator, isManualVerification) {
 
 function triggerInputEvent(input, isSilent) {
 	
-	const inputIsPopable = input.classList.contains("is-popable");
+	const popableInput = input.classList.contains("spinner") ? document.querySelector(`#${input.id} + div.input-group input.spinner`) : input;
+	
+	const inputIsPopable = popableInput.classList.contains("is-popable");
 	
 	if (inputIsPopable && isSilent) {
-		$(input).popover("disable");
+		$(popableInput).popover("disable");
 	}
 	
-	input.dispatchEvent(new CustomEvent("input", {"detail": {isManual: true}}));
+	
+	input.dispatchEvent(new CustomEvent("input", {detail: {isManual: true}}));
 	
 	if (inputIsPopable && isSilent) {
-		$(input).popover("enable");
+		$(popableInput).popover("enable");
 	}
 	
 }
