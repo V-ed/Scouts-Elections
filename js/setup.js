@@ -328,6 +328,18 @@ function add_input_for_verification(inputId, customValidator) {
 		
 		checkElement.addEventListener("focus", () => $(checkElement).popover("show"));
 		checkElement.addEventListener("focusout", () => $(checkElement).popover("hide"));
+		
+		if (checkElement.classList.contains("spinner")) {
+			inputElement.addEventListener("change", e => {
+				if (e.detail.step != undefined) {
+					setTimeout(() => {
+						if (document.activeElement != checkElement) {
+							$(checkElement).popover("hide")
+						}
+					}, 1500);
+				}
+			});
+		}
 	}
 	
 	checkElement.addEventListener("focus", e => textFieldHadFocus = e.currentTarget);
