@@ -319,6 +319,9 @@ function add_input_for_verification(inputId, customValidator) {
 	verify_all_valid();
 	
 	if (checkElement.classList.contains("is-popable")) {
+		if (checkElement.hasAttribute("data-bs.popover")) {
+			checkElement.removeAttribute("data-bs.popover");
+		}
 		$(checkElement).popover({ trigger: "manual" });
 		
 		triggerInputEvent(inputElement, true);
@@ -433,7 +436,6 @@ function triggerInputEvent(input, isSilent) {
 	if (inputIsPopable && isSilent) {
 		$(popableInput).popover("disable");
 	}
-	
 	
 	input.dispatchEvent(new CustomEvent("input", {detail: {isManual: true}}));
 	
