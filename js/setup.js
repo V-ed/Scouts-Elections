@@ -190,17 +190,24 @@ function setup_setup() {
 	});
 	add_input_for_verification("number-of-votes-minimum", (data, input, isManualVerification) => {
 		
-		if (data === "") {
-			return "Le nombre de vote minimum ne peut être vide.";
-		}
+		let badData = undefined;
 		
-		if (data < 0) {
-			return "Le nombre doit être positif (supérieur ou égal à 0).";
+		if (data === "") {
+			badData = "Le nombre de vote minimum ne peut être vide.";
+		}
+		else if (data < 0) {
+			badData = "Le nombre doit être positif (supérieur ou égal à 0).";
 		}
 		
 		const numberOfVotesMaxInput = document.getElementById("number-of-votes-maximum");
 		
+		if (badData) {
+			numberOfVotesMaxInput.min = 1;
+			return badData;
+		}
+		
 		numberOfVotesMaxInput.min = data;
+		
 		
 		if (!isManualVerification) {
 			triggerInputEvent(numberOfVotesMaxInput, true);
@@ -213,15 +220,21 @@ function setup_setup() {
 	});
 	add_input_for_verification("number-of-votes-maximum", (data, input, isManualVerification) => {
 		
-		if (data === "") {
-			return "Le nombre de vote maximum ne peut être vide.";
-		}
+		let badData = undefined;
 		
-		if (data < 1) {
-			return "Le nombre doit être supérieur à 0.";
+		if (data === "") {
+			badData = "Le nombre de vote maximum ne peut être vide.";
+		}
+		else if (data < 1) {
+			badData = "Le nombre doit être supérieur à 0.";
 		}
 		
 		const numberOfVotesMinInput = document.getElementById("number-of-votes-minimum");
+		
+		if (badData) {
+			numberOfVotesMinInput.max = 9999;
+			return badData;
+		}
 		
 		numberOfVotesMinInput.max = data;
 		
