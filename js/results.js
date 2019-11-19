@@ -138,7 +138,6 @@ function setup_results_page(data) {
 		e.preventDefault();
 		
 		download_data(data);
-		
 	});
 	
 	const homepageButton = document.getElementById("results-homepage-button");

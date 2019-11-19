@@ -275,6 +275,10 @@ function setup_setup() {
 	
 	document.getElementById("candidate-name-1").addEventListener("keyup", setup_candidate_selector);
 	
+	const homepageButton = document.getElementById("setup-homepage-button");
+	
+	homepageButton.addEventListener("click", () => document.location.reload(true));
+	
 }
 
 function add_input_for_verification(inputId, customValidator) {
