@@ -248,8 +248,8 @@ function setup_setup() {
 		
 		const candidatesCount = document.querySelectorAll("input[id^='candidate-name-']").length;
 		
-		if (candidatesCount <= data) {
-			return "Le nombre de vote maximum doit être inférieur au nombre de candidats - 1.";
+		if (candidatesCount < data) {
+			return "Le nombre de vote maximum doit être inférieur ou égal au nombre de candidats.";
 		}
 		
 	});
