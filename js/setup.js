@@ -202,12 +202,12 @@ function setup_setup() {
 		const numberOfVotesMaxInput = document.getElementById("number-of-votes-maximum");
 		
 		if (badData) {
-			numberOfVotesMaxInput.min = 1;
 			return badData;
 		}
 		
-		numberOfVotesMaxInput.min = data;
-		
+		if (data > numberOfVotesMaxInput.value) {
+			$(numberOfVotesMaxInput).val(data);
+		}
 		
 		if (!isManualVerification) {
 			triggerInputEvent(numberOfVotesMaxInput, true);
@@ -232,11 +232,12 @@ function setup_setup() {
 		const numberOfVotesMinInput = document.getElementById("number-of-votes-minimum");
 		
 		if (badData) {
-			numberOfVotesMinInput.max = 9999;
 			return badData;
 		}
 		
-		numberOfVotesMinInput.max = data;
+		if (data < numberOfVotesMinInput.value) {
+			$(numberOfVotesMinInput).val(data);
+		}
 		
 		if (!isManualVerification) {
 			triggerInputEvent(numberOfVotesMinInput, true);
