@@ -41,7 +41,6 @@ function setup_setup() {
 		newCandidateInput.scrollIntoView();
 		
 		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
-		// numberOfVoteInput.max = number - 1;
 		triggerInputEvent(numberOfVoteInput, true);
 		
 	});
