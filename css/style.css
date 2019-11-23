@@ -8,6 +8,10 @@ body {
     user-select: none;
 }
 
+a {
+    cursor: pointer;
+}
+
 /* Headings overrides */
 
 #views h2.display-2 {
@@ -193,6 +197,42 @@ table.table-border {
     background: url(../images/open-eye.png) 0 0px no-repeat;
     background-size: 100% 100%;
     content: '';
+}
+
+/* Add collapsible spans and ellipsis */
+
+span.collapse {
+    display: inline;
+    position: static;
+    opacity: 0;
+    -webkit-transition: opacity 0.35s ease;
+    -moz-transition: opacity 0.35s ease;
+    -ms-transition: opacity 0.35s ease;
+    -o-transition: opacity 0.35s ease;
+    transition: opacity 0.35s ease;
+}
+
+span.collapsing {
+    display: inline;
+    position: static;
+    opacity: 0;
+    -webkit-transition: opacity 0.35s ease;
+    -moz-transition: opacity 0.35s ease;
+    -ms-transition: opacity 0.35s ease;
+    -o-transition: opacity 0.35s ease;
+    transition: opacity 0.35s ease;
+}
+
+span.collapse.show {
+    display: inline;
+    position: static;
+    opacity: 1;
+}
+
+span.collapsing + span.collapse-ellipsis,
+span.collapse.show + span.collapse-ellipsis
+{
+    opacity: 0;
 }
 
 /* Fix bootstrap border utilities */

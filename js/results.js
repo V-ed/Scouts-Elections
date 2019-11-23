@@ -132,6 +132,17 @@ function setup_results_page(data) {
 		
 	});
 	
+	const legendToggler = document.querySelector("a[data-toggle='collapse'][data-target='#results-click-explications']");
+	$("#results-click-explications").on("hidden.bs.collapse", function () {
+		legendToggler.text = "Plus";
+	});
+	$("#results-click-explications").on("hide.bs.collapse show.bs.collapse", function () {
+		legendToggler.text = "";
+	});
+	$("#results-click-explications").on("shown.bs.collapse", function () {
+		legendToggler.text = "Moins";
+	});
+	
 	const downloadDbButton = document.getElementById("results-download-button");
 	
 	downloadDbButton.addEventListener("click", e => {

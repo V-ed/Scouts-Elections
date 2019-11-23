@@ -270,23 +270,39 @@
 				
 				<div class="flex-grow-1">
 					<div class="h-100 d-flex align-items-center justify-content-center">
-						<table class="table table-striped table-hover table-border">
-							<thead class="thead-light">
-								<tr>
-									<th scope="col" width="5%">#</th>
-									<th scope="col" width="5%">Position</th>
-									<th scope="col">Candidat</th>
-									<th scope="col">Nombre de votes</th>
-								</tr>
-							</thead>
-							<tbody id="results-body">
-								<!-- Will be filled dynamically with candidates voting results -->
-							</tbody>
-						</table>
+						<div class="container-fluid">
+							
+							<div class="row mb-3 justify-content-center">
+								<div class="container-fluid">
+									<div class="row justify-content-center">
+										<span>Petit rappel que vous pouvez cliquer les lignes, ce qui les changera couleurs <span id="results-click-explications" class="collapse collapsible">de aucune couleur à jaune à vert (et revenir à aucune couleur par la suite), lesquels vous pourriez associer ces couleurs comme une sélection (par exemple, jaune est un candidat potentiel, vert un candidat choisit).</span><span class="collapse-ellipsis">...</span></span>
+									</div>
+									<div class="row justify-content-center">
+										<u><a class="text-monospace" data-toggle="collapse" data-target="#results-click-explications">Plus</a></u>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<table class="table table-striped table-hover table-border">
+									<thead class="thead-light">
+										<tr>
+											<th scope="col" width="5%">#</th>
+											<th scope="col" width="5%">Position</th>
+											<th scope="col">Candidat</th>
+											<th scope="col">Nombre de votes</th>
+										</tr>
+									</thead>
+									<tbody id="results-body">
+										<!-- Will be filled dynamically with candidates voting results -->
+									</tbody>
+								</table>
+							</div>
+							
+						</div>
 					</div>
 				</div>
 				
-				<button type="submit" id="results-download-button" class="btn btn-lg btn-success">Télécharger la base de données</button>
+				<button type="submit" id="results-download-button" class="btn btn-lg btn-primary">Télécharger la base de données</button>
 				
 			</div>
 			
