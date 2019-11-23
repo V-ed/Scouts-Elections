@@ -184,6 +184,12 @@ table.table-border {
     content: '\2713';
 }
 
+.checkbox-eye.boot-checkbox {
+    /* Fix non-cached image not loading directly when toggling checked and not */
+    background: url(../images/open-eye.png) -9999px -9999px no-repeat;
+    background-size: 0 0;
+}
+
 .checkbox-eye.boot-checkbox:not(:checked) + label {
     background: url(../images/closed-eye.png) 0 0px no-repeat;
     background-size: 100% 100%;
