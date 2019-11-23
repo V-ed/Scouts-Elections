@@ -346,6 +346,8 @@ function setup_voting_session(data) {
 			
 			isVoteFinished = false;
 			
+			document.body.scrollTop = document.documentElement.scrollTop = 0;
+			
 			votingOverlay.classList.remove("active");
 			
 		}
