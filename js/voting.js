@@ -10,11 +10,25 @@ let auto_download_data = function() {
 	
 }
 
+function setup_pre_voting_session(data) {
+	
+	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
+	
+	if (isTouchDevice) {
+		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
+	}
+	
+	document.getElementById("pre-voting-submit-button").addEventListener("click", e => {
+		e.preventDefault();
+		
+		switch_view("voting-page", () => setup_voting_session(data));
+	});
+	
+}
+
 function setup_voting_session(data) {
 	
 	dbIsDirty = true;
-		
-	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	

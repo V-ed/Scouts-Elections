@@ -108,7 +108,7 @@ function setup_setup() {
 		
 		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
-		switch_view("voting-page", () => setup_voting_session(data));
+		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		

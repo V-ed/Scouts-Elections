@@ -172,6 +172,44 @@
 			
 		</div>
 		
+		<div id="pre-voting-page" class="h-100" hidden>
+			
+			<div class="d-flex flex-column h-100">
+				
+				<h2 class="display-2 pt-5 text-center">Rappel : Vote Scouts</h2>
+				
+				<div class="flex-grow-1">
+					<div class="h-100 d-flex align-items-center justify-content-center">
+						<div class="container-fluid">
+							
+							<div class="row text-center justify-content-center mb-2">
+								<p class="h4">Ceci est un rappel du fonctionnement lors de la session de vote :</p>
+							</div>
+							<div class="row text-justify justify-content-center">
+								<span>
+									Pour passer à un prochain électeur, lorsque l'écran est <span id="pre-voting-overlay-color">vert</span> et affiche "<span class="font-italic">Votes enregistrés</span>", vous pouvez appuyer sur la <span class="font-weight-bold">barre d'espace</span> sur votre clavier.
+									<br>
+									Ceci affichera de plus une notification en haut de l'écran affichant le nombre d'électeurs restant. Cette notification s'affichera à chaque fois que la barre d'espace sera appuyée, même pendant qu'un vote est en cours!
+								</span>
+							</div>
+							<div id="pre-voting-touchscreen-reminder" class="row text-justify justify-content-center mt-3 pt-3 border-top" hidden>
+								<span>De plus, puisque vous avez un écran tactile, dans ce même écran, vous pouvez appuyer le <span class="font-weight-bold">haut de l'écran (la moitié supérieure)</span> pendant quelques instants pour passer aussi au prochain électeur (particulièrement utile pour les appareils n'ayant pas de claviers de connecté).</span>
+							</div>
+							<div class="row text-center justify-content-center mt-4" style="font-size: 1.2rem;">
+								<span>Bonnes élections!</span>
+							</div>
+							<div class="row text-center mt-4 justify-content-center">
+									<button type="submit" id="pre-voting-submit-button" class="btn btn-primary">Débuter la session de votes</button>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+		
 		<div id="voting-page" class="h-100" hidden>
 			<div class="d-flex flex-column h-100  justify-content-center">
 				
