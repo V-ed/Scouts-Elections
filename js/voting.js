@@ -111,7 +111,7 @@ function setup_voting_session(data) {
 	}
 	
 	if (isMultipleSameCandidateAllowed) {
-	
+		
 		const inputs = document.querySelectorAll("div#voting-page input.spinner[type='number']");
 		
 		$(inputs).inputSpinner({disabledInput: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
@@ -139,7 +139,7 @@ function setup_voting_session(data) {
 		
 	}
 	else {
-	
+		
 		const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
 		
 		votingButtons.forEach(button => {
@@ -243,7 +243,7 @@ function setup_voting_session(data) {
 			}
 			
 			if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-		
+				
 				voteRemainingCounter.textContent = minNumberOfVotesLeft;
 				
 				document.getElementById("voting-remaining-text-absolute").hidden = false;
