@@ -347,9 +347,11 @@ function add_input_for_verification(inputId, customValidator) {
 		checkElement.addEventListener("focusout", () => $(checkElement).popover("hide"));
 		
 		if (checkElement.classList.contains("spinner")) {
+			let previousSpinnerTimer = undefined;
 			inputElement.addEventListener("change", e => {
 				if (e.detail.step != undefined) {
-					setTimeout(() => {
+					clearTimeout(previousSpinnerTimer);
+					previousSpinnerTimer = setTimeout(() => {
 						if (document.activeElement != checkElement) {
 							$(checkElement).popover("hide")
 						}
