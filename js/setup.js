@@ -126,23 +126,32 @@ function setup_setup() {
 		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
 		const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == dataTrimmed.toLowerCase());
 		
-		if (dupCandidates.length > 0) {
+		const prevDupeValue = input.dataset.dupevalue;
+		
+		const hasDupes = dupCandidates.length > 0;
+		
+		if (hasDupes) {
 			
 			input.classList.add("is-invalid");
 			input.dataset.dupevalue = dataTrimmed.toLowerCase();
 			
 			dupCandidates.filter(dupInput => !dupInput.classList.contains("is-invalid")).forEach(dupInput => triggerInputEvent(dupInput, true));
 			
-			return "Le nom de ce candidat est dupliqué!";
-			
 		}
-		else if (input.dataset.dupevalue != null) {
+		
+		if (input.dataset.dupevalue != null) {
 			
-			const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
+			const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == prevDupeValue);
 			candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
 			
-			delete input.dataset.dupevalue;
+			if (!hasDupes) {
+				delete input.dataset.dupevalue;
+			}
 			
+		}
+		
+		if (hasDupes) {
+			return "Le nom de ce candidat est dupliqué!";
 		}
 		
 		if (dataTrimmed == "") {
