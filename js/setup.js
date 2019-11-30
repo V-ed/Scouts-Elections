@@ -65,7 +65,7 @@ function setup_setup() {
 			
 			const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
 			const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-			candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate));
+			candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
 			
 		}
 		
