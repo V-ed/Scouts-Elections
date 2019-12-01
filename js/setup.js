@@ -164,6 +164,8 @@ function setup_setup() {
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
+		uninitialize_images("setup-page");
+		
 	});
 	
 	const inputs = document.querySelectorAll("div#setup-page input.spinner[type='number']");
