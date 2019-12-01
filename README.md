@@ -44,9 +44,9 @@ Even with the automatic download disabled, you will still be able to download th
 ## Results
 
 Before showing results, a password is asked to prevent kids from viewing the results by accident.
-The password can be set in the setup page, and is optionnal : if you don't set any password, when the last voter has finished voting, the overlay will show and going to the next voter will simply show the results directly.
+The password can be set in the setup page, and is optional : if you don't set any password, when the last voter has finished voting, the overlay will show and going to the next voter will simply show the results directly.
 
-**Please note that** the password is not encrypted and is simply a bridge between the voters and the scout leaders.
+**Please note that the password is not encrypted** and is simply a bridge between the voters and the scout leaders.
 If you used this application before you could set the password, and you try to load the database, the password still defaults to `VL` so you don't get too lost.
 
 The results shown at the end are sorted by number of votes, meaning the most voted candidate will be on top and the lowest voted candidate will be at the bottom.
