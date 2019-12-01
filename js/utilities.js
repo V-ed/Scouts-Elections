@@ -31,23 +31,21 @@ function download_data(data, dbNameSuffix) {
 
 // File loader initiator and utility functions
 
-function show_loader_error($form, error) {
+function show_loader_error($file_zone, error) {
 	
-	$form.addClass("bg-danger");
+	$file_zone.addClass("bg-danger");
 	
-	$form[0].dataset.content = error;
-	$form[0].dataset.haderror = "";
-	$form.popover("show");
-	
-	$form.get(0).reset();
+	$file_zone[0].dataset.content = error;
+	$file_zone[0].dataset.haderror = "";
+	$file_zone.popover("show");
 	
 }
 
-function clear_loader_errors($form) {
+function clear_loader_errors($file_zone) {
 	
-	$form.removeClass("bg-danger");
-	$form.popover("hide");
-	delete $form[0].dataset.haderror;
+	$file_zone.removeClass("bg-danger");
+	$file_zone.popover("hide");
+	delete $file_zone[0].dataset.haderror;
 	
 }
 
@@ -127,7 +125,19 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 	}
 	
 	const databaseLoaderInput = $jqueryElem.find("input.loader-file")[0];
-	databaseLoaderInput.addEventListener("change", e => loadFilesFn(e.target.files));
+	databaseLoaderInput.addEventListener("change", e => {
+		
+		const error = handleItemsForErrorsFn(databaseLoaderInput.files);
+		
+		if (error) {
+			showLoaderErrorFn($jqueryElem, error);
+			databaseLoaderInput.value = "";
+		}
+		else {
+			loadFilesFn(e.target.files, $jqueryElem);
+		}
+		
+	});
 	databaseLoaderInput.addEventListener("click", () => {
 		clearErrorsFn($jqueryElem);
 	});

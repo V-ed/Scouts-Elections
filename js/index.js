@@ -30,14 +30,9 @@ function is_file_json(file) {
 	return file.type == "application/json";
 }
 
-function load_file(files, $form) {
+function load_file(files, $file_zone) {
 	
 	const file = files[0];
-	
-	if (!is_file_json(file)) {
-		show_loader_error($form, "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.");
-		return;
-	}
 	
 	file.text()
 	.then(text => {
@@ -58,12 +53,12 @@ function load_file(files, $form) {
 		}
 		else{
 			
-			show_loader_error($form, "La base de données manque des informations cruciales - veuillez valider les données dans le fichier.");
+			show_loader_error($file_zone, "La base de données manque des informations cruciales - veuillez valider les données dans le fichier.");
 			
 		}
 		
 	})
-	.catch(() => show_loader_error($form, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme."));
+	.catch(() => show_loader_error($file_zone, "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme."));
 	
 }
 
