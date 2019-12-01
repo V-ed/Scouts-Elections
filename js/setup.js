@@ -3,6 +3,58 @@ let textFieldHadFocus = undefined;
 
 function setup_setup() {
 	
+	const imagePreview = document.getElementById("setup-preview-image");
+	const imagePreviewCloser = document.getElementById("setup-preview-image-closer");
+	
+	let groupImageData = undefined;
+	
+	function set_preview_image(imageData) {
+		imagePreview.src = imageData;
+		imagePreview.value = "";
+		imagePreviewCloser.disabled = false;
+		groupImageData = imageData;
+	}
+	
+	function remove_preview_image() {
+		imagePreview.src = "./images/no_image.png";
+		imagePreviewCloser.disabled = true;
+		$(imagePreviewCloser).popover("hide");
+		groupImageData = undefined;
+	}
+	
+	create_file_loader("image-loader-zone", (files, $file_zone) => {
+		
+		const file = files[0];
+		
+		const reader  = new FileReader();
+		
+		reader.onloadend = function () {
+			set_preview_image(reader.result);
+		}
+		
+		if (file) {
+			reader.readAsDataURL(file);
+		} else {
+			remove_preview_image();
+		}
+		
+	}, items => {
+		const count = items.length;
+		
+		if (count > 1) {
+			return "Veuillez ne glisser qu'un seul fichier.";
+		}
+		else if (!items[0].type.match(/^image\/.+$/)) {
+			return "Le fichier n'est pas valide : seules les images sont acceptées.";
+		}
+	});
+	
+	imagePreviewCloser.addEventListener("click", e => {
+		e.preventDefault();
+		
+		remove_preview_image();
+	});
+	
 	const pswVisibilityToggler = document.getElementById("password-visible");
 	const pswField = document.getElementById("db-psw");
 	
@@ -102,7 +154,8 @@ function setup_setup() {
 			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
 			numberOfVoted: 0,
 			hasSkipped: false,
-			candidates: tempCandidates
+			candidates: tempCandidates,
+			groupImage: groupImageData
 		};
 		
 		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
