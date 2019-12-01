@@ -119,7 +119,7 @@ function setup_setup() {
 	
 	// Handle data validation
 	
-	const validateCandidate = function (data, input) {
+	const validateCandidate = function (data, input, isManual) {
 		
 		const dataTrimmed = data.trim();
 		
@@ -141,8 +141,12 @@ function setup_setup() {
 		
 		if (input.dataset.dupevalue != null) {
 			
-			const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == prevDupeValue);
-			candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
+			if (!isManual) {
+				
+				const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == prevDupeValue);
+				candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
+				
+			}
 			
 			if (!hasDupes) {
 				delete input.dataset.dupevalue;
