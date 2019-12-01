@@ -69,7 +69,7 @@ function setup_voting_session(data) {
 		}
 		
 		cardsHtml += `
-		<div class="col-6 col-sm-4 col-md-3 p-2">
+		<div class="col-6 col-md-4 col-lg-3 p-2">
 			<div class="card">
 				<div class="card-body text-center">
 					<h5 class="card-title">${candidateData.name}</h5>
