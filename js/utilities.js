@@ -144,6 +144,51 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 	
 }
 
+// Load image on all elements matching under given view id
+
+function initialize_images(viewId, imageData) {
+	
+	if (imageData) {
+		viewImageIterator(viewId, true, imageElem => imageElem.src = imageData);
+	}
+	else {
+		viewImageIterator(viewId, false, container => {
+			container.classList.add("d-none");
+			container.classList.remove("d-flex");
+		});
+	}
+	
+}
+
+function uninitialize_images(viewId) {
+	viewImageIterator(viewId, true, imageElem => imageElem.src = "");
+}
+
+function viewImageIterator(viewId, iterateOnImages, iteratorFn) {
+	
+	const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
+	
+	if (iterateOnImages) {
+		
+		imageContainers.forEach(container => {
+			
+			const imageElems = container.querySelectorAll("img");
+			
+			imageElems.forEach(imageElem => iteratorFn(imageElem));
+			// imageElem.src = imageData
+		});
+		
+	}
+	else {
+		
+		imageContainers.forEach(container => iteratorFn(container));
+		
+		// container.classList.add("d-none");
+		// container.classList.remove("d-flex");
+	}
+	
+}
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
 	document.location.reload(true);

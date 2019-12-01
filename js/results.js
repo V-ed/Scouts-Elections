@@ -11,6 +11,8 @@ function setup_results(data) {
 
 function setup_pre_results_page(data) {
 	
+	initialize_images("pre-results-page", data.groupImage);
+	
 	// Default password if not set is "VL" for "Vieux-Loups"
 	let passwordToCheck = data.dbPsw || "VL";
 	
@@ -26,6 +28,8 @@ function setup_pre_results_page(data) {
 		if (password == passwordToCheck) {
 			
 			switch_view("results-page", () => setup_results_page(data));
+			
+			uninitialize_images("pre-results-page");
 			
 		}
 		else {
@@ -47,6 +51,8 @@ function setup_pre_results_page(data) {
 }
 
 function setup_results_page(data) {
+	
+	initialize_images("results-page", data.groupImage);
 	
 	const resultsTableBody = document.getElementById("results-body");
 	

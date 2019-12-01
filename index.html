@@ -148,6 +148,26 @@
 						<label for="auto-download-db"></label>
 					</div>
 				</div>
+				<div class="form-group row">
+					<div class="col-12 col-md-6">
+						<div id="image-loader-zone" class="loader is-popable" data-placement="bottom">
+							<div class="loader-input">
+								<input id="image-loader-input" class="loader-file" type="file" name="file" accept="image/*" />
+								<label for="image-loader-input" class="h-100 w-100 p-3 m-0 text-center"><strong>Cliquez dans cette boite pour choisir une image de groupe (optionnelle)</strong><span class="loader-dragndrop"> ou glissez la ici</span>.</label>
+							</div>
+						</div>
+					</div>
+					<div class="col-10 col-md-5 mt-3 mt-md-0">
+						<div class="border border-success text-center d-flex align-items-center justify-content-center h-100 election-group-image">
+							<img id="setup-preview-image" src="./images/no_image.png" class="img-fluid d-block" alt="Image preview..." style="max-height: 82px;">
+						</div>
+					</div>
+					<div class="col-2 col-md-1 mt-3 mt-md-0 d-flex align-items-center justify-content-center">
+						<button id="setup-preview-image-closer" type="button" class="btn btn-outline-danger is-popable-hover" data-placement="top" data-content="Enlever l'image choisie." disabled>
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</div>
 				<div class="py-2 py-md-3">
 					<div id="candidate-controls-1" class="form-group row mb-2 mb-md-3">
 						<label class="col-sm-3 col-md-2 col-form-label" for="candidate-name-1">Candidat 1</label>
@@ -176,11 +196,18 @@
 			
 			<div class="d-flex flex-column h-100">
 				
-				<h2 class="display-2 pt-5 text-center">Rappel : Vote Scouts</h2>
+				<h2 class="display-2 pt-2 pt-md-5 text-center">Rappel : Vote Scouts</h2>
 				
 				<div class="flex-grow-1">
-					<div class="h-100 d-flex align-items-center justify-content-center">
-						<div class="container-fluid">
+					<div class="h-100 d-flex flex-column justify-content-center">
+						
+						<div class="mb-auto mt-sm-5">
+							<div class="my-3 mt-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+								<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+							</div>
+						</div>
+						
+						<div class="container-fluid pb-md-5 mb-auto">
 							
 							<div class="row text-center justify-content-center mb-2">
 								<p class="h4">Ceci est un rappel du fonctionnement lors de la session de vote :</p>
@@ -192,7 +219,7 @@
 									Ceci affichera de plus une notification en haut de l'écran affichant le nombre d'électeurs restant. Cette notification s'affichera à chaque fois que la barre d'espace sera appuyée, même pendant qu'un vote est en cours!
 								</span>
 							</div>
-							<div id="pre-voting-touchscreen-reminder" class="row text-justify justify-content-center mt-3 pt-3 border-top" hidden>
+							<div id="pre-voting-touchscreen-reminder" class="row text-justify justify-content-center mt-2 pt-2 border-top" hidden>
 								<span>De plus, puisque vous avez un écran tactile, dans ce même écran, vous pouvez appuyer le <span class="font-weight-bold">haut de l'écran (la moitié supérieure)</span> pendant quelques instants pour passer aussi au prochain électeur (particulièrement utile pour les appareils n'ayant pas de claviers de connecté).</span>
 							</div>
 							<div class="row text-center justify-content-center mt-4" style="font-size: 1.2rem;">
@@ -203,6 +230,7 @@
 							</div>
 							
 						</div>
+						
 					</div>
 				</div>
 				
@@ -213,20 +241,30 @@
 		<div id="voting-page" class="h-100" hidden>
 			<div class="d-flex flex-column h-100 justify-content-center">
 				
-				<div id="cards-container" class="w-100 mb-3">
-					<!-- Will be filled dynamically with candidates cards -->
+				<div class="mb-auto">
+					<div class="my-3 mb-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+						<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+					</div>
 				</div>
 				
-				<div class="w-100">
-					<p id="voting-remaining-text-absolute" class="lead text-center" hidden>
-						Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
-					</p>
-					<p id="voting-remaining-text-multiple" class="lead text-center" hidden>
-						Nombre de vote minimum restant : <span id="voting-remaining-count-min" class="font-weight-bold"></span>
-						<br>
-						Nombre de vote maximum restant : <span id="voting-remaining-count-max" class="font-weight-bold"></span>
-					</p>
-					<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer</button>
+				<div class="mb-auto">
+					
+					<div id="cards-container" class="w-100 mb-3">
+						<!-- Will be filled dynamically with candidates cards -->
+					</div>
+					
+					<div class="w-100">
+						<p id="voting-remaining-text-absolute" class="lead text-center" hidden>
+							Nombre de vote restant : <span id="voting-remaining-count" class="font-weight-bold"></span>
+						</p>
+						<p id="voting-remaining-text-multiple" class="lead text-center" hidden>
+							Nombre de vote minimum restant : <span id="voting-remaining-count-min" class="font-weight-bold"></span>
+							<br>
+							Nombre de vote maximum restant : <span id="voting-remaining-count-max" class="font-weight-bold"></span>
+						</p>
+						<button type="button" id="voting-submit-button" class="btn btn-success btn-lg btn-block" disabled>Enregistrer</button>
+					</div>
+					
 				</div>
 				
 			</div>
@@ -239,17 +277,27 @@
 				<h2 class="display-2 pt-5 text-center">Résultats Élections Scoutes</h2>
 				
 				<div class="flex-grow-1">
-					<div class="h-100 d-flex align-items-center justify-content-center">
+					<div class="h-100 d-flex flex-column justify-content-center">
 						
-						<form id="pre-results-form" class="w-100">
-							<div class="form-group px-2 px-md-0">
-								<label for="pre-results-password-input">Mot de passe pour afficher les résultats</label>
-								<input type="text" class="form-control my-3" id="pre-results-password-input" placeholder="Mot de passe" autocomplete="off">
+						<div class="mb-auto">
+							<div class="my-3 mb-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+								<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
 							</div>
-							<div class="w-100 text-center mt-4">
-								<button type="submit" id="pre-results-submit-button" class="btn btn-primary">Soumettre</button>
-							</div>
-						</form>
+						</div>
+						
+						<div class="mb-auto">
+							
+							<form id="pre-results-form" class="w-100">
+								<div class="form-group px-2 px-md-0">
+									<label for="pre-results-password-input">Mot de passe pour afficher les résultats</label>
+									<input type="text" class="form-control my-3" id="pre-results-password-input" placeholder="Mot de passe" autocomplete="off">
+								</div>
+								<div class="w-100 text-center mt-4">
+									<button type="submit" id="pre-results-submit-button" class="btn btn-primary">Soumettre</button>
+								</div>
+							</form>
+							
+						</div>
 						
 					</div>
 				</div>
@@ -269,8 +317,15 @@
 				<h2 class="display-2 pt-5 text-center">Résultats Élections Scoutes</h2>
 				
 				<div class="flex-grow-1">
-					<div class="h-100 d-flex align-items-center justify-content-center">
-						<div class="container-fluid">
+					<div class="h-100 d-flex flex-column justify-content-center">
+						
+						<div class="mb-auto">
+							<div class="my-3 mb-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+								<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 100px;">
+							</div>
+						</div>
+						
+						<div class="container-fluid mb-auto">
 							
 							<div class="row mb-3 justify-content-center">
 								<div class="container-fluid">
@@ -299,6 +354,7 @@
 							</div>
 							
 						</div>
+						
 					</div>
 				</div>
 				

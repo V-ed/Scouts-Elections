@@ -22,11 +22,17 @@ function setup_pre_voting_session(data) {
 		e.preventDefault();
 		
 		switch_view("voting-page", () => setup_voting_session(data));
+		
+		uninitialize_images("pre-voting-page");
 	});
+	
+	initialize_images("pre-voting-page", data.groupImage);
 	
 }
 
 function setup_voting_session(data) {
+	
+	initialize_images("voting-page", data.groupImage);
 	
 	dbIsDirty = true;
 	
@@ -389,6 +395,8 @@ function setup_voting_session(data) {
 		
 		setup_results(data);
 		document.body.onkeyup = onKeyUpEventBefore;
+		
+		uninitialize_images("voting-page");
 		
 	}
 	
