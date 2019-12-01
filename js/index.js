@@ -10,11 +10,6 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
-$(function () {
-	$(".is-popable").popover({trigger: "manual"});
-	$(".is-popable-hover").popover({trigger: "hover"});
-});
-
 create_file_loader("database-loader-zone", load_file, items => {
 	const count = items.length;
 	

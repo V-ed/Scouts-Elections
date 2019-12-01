@@ -29,6 +29,13 @@ function download_data(data, dbNameSuffix) {
 	
 }
 
+// Setup popovers
+
+$(function () {
+	$(".is-popable").popover({trigger: "manual"});
+	$(".is-popable-hover").popover({trigger: "hover"});
+});
+
 // File loader initiator and utility functions
 
 function show_loader_error($file_zone, error) {
@@ -45,6 +52,9 @@ function clear_loader_errors($file_zone) {
 	
 	$file_zone.removeClass("bg-danger");
 	$file_zone.popover("hide");
+	if ($file_zone.attr("data-content")) {
+		$file_zone.attr("data-content", "");
+	}
 	delete $file_zone[0].dataset.haderror;
 	
 }
