@@ -53,7 +53,7 @@ The results shown at the end are sorted by number of votes, meaning the most vot
 
 The rows are clickable, which highlights the candidates (in a cycle of *unselected*, *pre-selected* and *selected*), allowing for discussions with other maintainers.
 
-The button to return to the homepage currently simply reloads the page, as this was an easier way of resetting the program's state at the time. This behavior is something I want to change, which you can follow my progress in [#43]([reset-state]).
+The button to return to the homepage currently simply reloads the page, as this was an easier way of resetting the program's state at the time. This behavior is something I want to change, which you can follow my progress in [#43][reset-state].
 
 ## Miscellaneous
 
