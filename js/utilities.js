@@ -29,6 +29,111 @@ function download_data(data, dbNameSuffix) {
 	
 }
 
+// File loader initiator and utility functions
+
+function show_loader_error($form, error) {
+	
+	$form.addClass("bg-danger");
+	
+	$form[0].dataset.content = error;
+	$form[0].dataset.haderror = "";
+	$form.popover("show");
+	
+	$form.get(0).reset();
+	
+}
+
+function clear_loader_errors($form) {
+	
+	$form.removeClass("bg-danger");
+	$form.popover("hide");
+	delete $form[0].dataset.haderror;
+	
+}
+
+const isAdvancedUpload = function() {
+	const divElement = document.createElement("div");
+	return !isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
+}();
+
+function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoaderErrorFn, clearErrorsFn) {
+	
+	if (!showLoaderErrorFn) {
+		showLoaderErrorFn = show_loader_error;
+	}
+	if (!clearErrorsFn) {
+		clearErrorsFn = clear_loader_errors;
+	}
+	
+	const $jqueryElem = $(`#${formId}`);
+	
+	if (isAdvancedUpload) {
+		
+		$jqueryElem.addClass("has-advanced-upload");
+		
+		$jqueryElem.on("drag dragstart dragend dragover dragenter dragleave drop", e => {
+			e.preventDefault();
+			e.stopPropagation();
+		})
+		.on("dragover dragenter", e => {
+			
+			if ($jqueryElem.hasClass("loader-is-dragover") || ($jqueryElem.hasClass("bg-danger") && $jqueryElem.hasClass("loader-is-dragover"))) {
+				return;
+			}
+			
+			if ($(e.relatedTarget).parents("#database-loader-zone").length) {
+				return;
+			}
+			
+			let error = undefined;
+			
+			const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
+			
+			if (isNotFile) {
+				error = "Seuls des fichiers sont acceptés dans cette zone.";
+			}
+			else {
+				error = handleItemsForErrorsFn(e.originalEvent.dataTransfer.items);
+			}
+			
+			if (error) {
+				showLoaderErrorFn($jqueryElem, error);
+			}
+			else {
+				clearErrorsFn($jqueryElem);
+			}
+			
+			$jqueryElem.addClass("loader-is-dragover");
+			
+		})
+		.on("dragleave dragend drop", e => {
+			
+			if ($(e.relatedTarget).parents(`#${formId}`).length) {
+				return;
+			}
+			
+			$jqueryElem.removeClass("loader-is-dragover");
+			if (e.handleObj.type != "drop"){
+				clearErrorsFn($jqueryElem);
+			}
+			
+		})
+		.on("drop", e => {
+			if (!("haderror" in $jqueryElem[0].dataset)) {
+				loadFilesFn(e.originalEvent.dataTransfer.files, $jqueryElem);
+			}
+		});
+		
+	}
+	
+	const databaseLoaderInput = $jqueryElem.find("input.loader-file")[0];
+	databaseLoaderInput.addEventListener("change", e => loadFilesFn(e.target.files));
+	databaseLoaderInput.addEventListener("click", () => {
+		clearErrorsFn($jqueryElem);
+	});
+	
+}
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
 	document.location.reload(true);
