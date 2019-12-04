@@ -71,7 +71,9 @@ function setup_setup() {
 		
 		$(candidateContainer).append(`
 			<div id="candidate-controls-${number}" class="form-group row mb-2 mb-md-3">
-				<label class="col-sm-3 col-md-2 col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
+				<div class="col-sm-3 col-md-2">
+					<label class="col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
+				</div>
 				<div class="col-sm-9 col-md-10">
 					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
 				</div>

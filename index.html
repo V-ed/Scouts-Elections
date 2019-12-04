@@ -96,7 +96,9 @@
 			
 			<form id="setup-form" class="w-100">
 				<div class="form-group row">
-					<label class="col-sm-3 col-md-5 col-lg-4 col-form-label" for="db-name">Nom de la base de données</label>
+					<div class="col-sm-3 col-md-5 col-lg-4">
+						<label class="col-form-label" for="db-name">Nom de la base de données</label>
+					</div>
 					<div class="col-sm-9 col-md-7 col-lg-8 align-self-center">
 						<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" data-placement="top" autocomplete="off" spellcheck="false" required>
 					</div>
@@ -116,7 +118,9 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<label class="col-sm-3 col-md-5 col-lg-4 col-form-label" for="number-of-voters">Nombre d'électeurs</label>
+					<div class="col-sm-3 col-md-5 col-lg-4">
+						<label class="col-form-label" for="number-of-voters">Nombre d'électeurs</label>
+					</div>
 					<div class="col-sm-9 col-md-7 col-lg-8 align-self-center">
 						<input type="number" class="form-control spinner is-invalid is-popable" id="number-of-voters" min="1" max="9999" aria-describedby="numberOfVoters" name="numberOfVoters" data-placement="top" required>
 					</div>
@@ -141,12 +145,16 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<label class="col-10 col-md-5 col-form-label is-popable-hover" data-placement="top" data-content="Permet de voter plusieurs fois pour le même candidat. Par défaut, un candidat ne peut avoir qu'un seul vote (case décochée).">Multiple votes par candidat</label>
+					<div class="col-10 col-md-5">
+						<label class="col-form-label is-popable-hover" data-placement="top" data-content="Permet de voter plusieurs fois pour le même candidat. Par défaut, un candidat ne peut avoir qu'un seul vote (case décochée).">Multiple votes par candidat</label>
+					</div>
 					<div class="d-flex col-2 col-md-1 justify-content-end border-right border-right-no-medium">
 						<input type="checkbox" id="allow-multiple-same-candidate" name="allowMultipleSameCandidate" class="boot-checkbox">
 						<label for="allow-multiple-same-candidate"></label>
 					</div>
-					<label class="col-10 col-md-5 col-form-label mt-2 mt-md-0 is-popable-hover" data-placement="top" data-content="Permet de télécharger la base de données automatiquement pendant le vote si la page se ferme ou se fait rafraichir. Coché par défaut (recommandé).">Télécharger la bd automatiquement</label>
+					<div class="col-10 col-md-5">
+						<label class="col-form-label mt-2 mt-md-0 is-popable-hover" data-placement="top" data-content="Permet de télécharger la base de données automatiquement pendant le vote si la page se ferme ou se fait rafraichir. Coché par défaut (recommandé).">Télécharger la bd automatiquement</label>
+					</div>
 					<div class="d-flex col-2 col-md-1 mt-2 mt-md-0 justify-content-end">
 						<input type="checkbox" id="auto-download-db" name="autoDownloadDb" class="boot-checkbox" checked>
 						<label for="auto-download-db"></label>
@@ -174,7 +182,9 @@
 				</div>
 				<div class="py-2 py-md-3">
 					<div id="candidate-controls-1" class="form-group row mb-2 mb-md-3">
-						<label class="col-sm-3 col-md-2 col-form-label" for="candidate-name-1">Candidat 1</label>
+						<div class="col-sm-3 col-md-2">
+							<label class="col-form-label" for="candidate-name-1">Candidat 1</label>
+						</div>
 						<div class="col-sm-9 col-md-10">
 							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-placement="top" data-candidatenumber="1" autocomplete="off" required>
 						</div>
