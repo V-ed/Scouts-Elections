@@ -199,6 +199,24 @@ function viewImageIterator(viewId, iterateOnImages, iteratorFn) {
 	
 }
 
+// Set bootstrap labels to not focus input on click
+
+function set_label_non_clickable(labels) {
+	
+	Array.from(labels).forEach(label => {
+		
+		label.addEventListener("click", e => {
+			e.preventDefault();
+		});
+		
+	});
+	
+}
+
+$(function () {
+	set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
+});
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
 	document.location.reload(true);
