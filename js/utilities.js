@@ -217,6 +217,15 @@ $(function () {
 	set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
 });
 
+// Restore current focus when changing screen orientation
+// Especially useful for mobile
+
+window.addEventListener("orientationchange", function() {
+	setTimeout(() => {
+		document.activeElement.scrollIntoView();
+	}, 500);
+});
+
 // Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
 
 if (!!window.chrome) {
