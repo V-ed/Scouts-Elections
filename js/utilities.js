@@ -217,6 +217,26 @@ $(function () {
 	set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
 });
 
+// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
+
+if (!!window.chrome) {
+	
+	window.addEventListener("orientationchange", function() {
+		
+		if (screen.orientation.angle % 180 == 0) {
+			
+			const bodyElem = document.querySelector("body");
+			bodyElem.classList.toggle("d-flex");
+			setTimeout(() => {
+				bodyElem.classList.toggle("d-flex");
+			}, 20);
+			
+		}
+		
+	});
+	
+}
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
 	document.location.reload(true);
