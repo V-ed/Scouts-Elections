@@ -238,7 +238,7 @@ if (!!window.chrome) {
 			bodyElem.classList.toggle("d-flex");
 			setTimeout(() => {
 				bodyElem.classList.toggle("d-flex");
-			}, 20);
+			}, 50);
 			
 		}
 		
