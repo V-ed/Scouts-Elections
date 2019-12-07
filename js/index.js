@@ -1,8 +1,10 @@
 const newElectionsButton = document.getElementById("home-new-button");
+const joinElectionsButton = document.getElementById("home-join-button");
 
 // Javascript enabled, enable inputs...
 
 newElectionsButton.disabled = false;
+joinElectionsButton.disabled = false;
 document.getElementById("loader-file-input").disabled = false;
 document.getElementById("database-loader-zone").classList.remove("loader-disabled");
 

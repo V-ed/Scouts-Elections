@@ -71,6 +71,8 @@
 							
 							<button type="button" id="home-new-button" class="btn btn-success btn-lg" disabled>Nouvelles Élections</button>
 							
+							<button type="button" id="home-join-button" class="btn btn-success btn-lg mt-5" data-toggle="modal" data-target="#home-join-election-modal" disabled>Rejoindre une Élection Partagée</button>
+							
 							<div id="database-loader-zone" class="loader mt-5 is-popable-hover loader-disabled" data-placement="bottom">
 								<div class="loader-input">
 									<input id="loader-file-input" class="loader-file" type="file" name="file" accept=".json" disabled />
@@ -82,6 +84,40 @@
 					</div>
 				</div>
 				
+			</div>
+			
+			<div class="modal fade" id="home-join-election-modal" tabindex="-1" role="dialog" aria-labelledby="home-join-election-modal-title" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="home-join-election-modal-title">Rejoindre une Élection Partagée</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body text-left">
+							<form>
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">Code de l'Élection Partagée :</label>
+									<div class="container mt-2">
+										<div class="row input-partition" data-hidden-input-name="fullCodeValue" style="font-family: monospace; font-size: 2rem;">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+							<button id="home-join-election-modal-button" type="button" class="btn btn-primary">Rejoindre Élection</button>
+						</div>
+					</div>
+				</div>
 			</div>
 			
 		</div>
