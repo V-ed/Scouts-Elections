@@ -2,6 +2,8 @@
 
 const isTouchDevice = "ontouchstart" in document.documentElement;
 
+const sharedElectionHostRoot = "https://ved.ddnsfree.com/scouts-elections";
+
 // Setup downloadable database function
 
 let didDownloadDb = false;
@@ -154,12 +156,26 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 	
 }
 
+// Merge objects
+
+function mergeObjectTo(original, newObject, originalIsJsonString){
+	
+	const copyOfOriginal = JSON.parse(originalIsJsonString ? original : JSON.stringify(original));
+	
+	for (const value in newObject) {
+		copyOfOriginal[value] = newObject[value]
+	}
+	
+	return copyOfOriginal;
+}
+
 // Load image on all elements matching under given view id
 
 function initialize_images(viewId, imageData) {
 	
 	if (imageData) {
-		viewImageIterator(viewId, true, imageElem => imageElem.src = imageData);
+		const uncompressedImage = LZString.decompress(imageData);
+		viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
 	}
 	else {
 		viewImageIterator(viewId, false, container => {

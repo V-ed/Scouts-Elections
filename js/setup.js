@@ -133,10 +133,7 @@ function setup_setup() {
 		
 	});
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
-	
-	submitSetupButton.addEventListener("click", e => {
-		e.preventDefault();
+	function createData() {
 		
 		const formData = new FormData(document.getElementById("setup-form"));
 		
@@ -147,7 +144,11 @@ function setup_setup() {
 			tempCandidates.push({ name: candidateData, voteCount: 0, selectedState: "unselected" });
 		});
 		
-		let data = {
+		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+		
+		const compressedImageData = groupImageData ? LZString.compress(groupImageData) : undefined;
+		
+		const data = {
 			dbName: formData.get("dbName"),
 			dbPsw: formData.get("dbPsw"),
 			numberOfVoters: parseInt(formData.get("numberOfVoters")),
@@ -156,17 +157,61 @@ function setup_setup() {
 			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
 			numberOfVoted: 0,
 			hasSkipped: false,
+			isDownloadDisabled: isDownloadDisabled,
 			candidates: tempCandidates,
-			groupImage: groupImageData
+			groupImage: compressedImageData
 		};
 		
-		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+		return data;
+		
+	}
+	
+	const submitSetupButton = document.getElementById("setup-submit-button");
+	
+	submitSetupButton.addEventListener("click", e => {
+		e.preventDefault();
+		
+		let data = createData();
 		
 		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
 		uninitialize_images("setup-page");
+		
+	});
+	
+	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
+	
+	submitSharedSetupButton.addEventListener("click", e => {
+		e.preventDefault();
+		
+		const electionData = createData();
+		
+		const electionJSONData = JSON.stringify(electionData);
+		
+		const formData = new FormData();
+		formData.append("data", electionJSONData);
+		
+		const ajaxSettings = {
+			url: `${sharedElectionHostRoot}/create`,
+			data: formData,
+			cache: false,
+			contentType: false,
+			processData: false,
+		};
+		
+		var xhr = $.post(ajaxSettings).done(function (response) {
+			
+			let data = mergeObjectTo(electionJSONData, response.data, true);
+			
+			switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+			
+			window.removeEventListener("beforeunload", prevent_data_loss);
+			
+			uninitialize_images("setup-page");
+			
+		});
 		
 	});
 	
