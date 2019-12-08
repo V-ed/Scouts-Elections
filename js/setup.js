@@ -453,8 +453,10 @@ function verify_all_valid() {
 	}
 	
 	const submitSetupButton = document.getElementById("setup-submit-button");
+	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
 	
 	submitSetupButton.disabled = !isValid;
+	submitSharedSetupButton.disabled = !isValid;
 	
 }
 
