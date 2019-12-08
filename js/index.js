@@ -12,6 +12,27 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
+document.getElementById("home-join-election-modal-button").addEventListener("click", () => {
+	
+	const codeElem = document.getElementById("fullCodeValue");
+	
+	const code = codeElem.value.toUpperCase();
+	
+	const ajaxSettings = {
+		url: `${sharedElectionHostRoot}/${code}/join`,
+		contentType: 'application/javascript; charset=UTF-16',
+	};
+	
+	var xhr = $.get(ajaxSettings).done(function (response) {
+		
+		$("#home-join-election-modal").modal("hide");
+		
+		switch_view("pre-voting-page", () => setup_pre_voting_session(response.data));
+		
+	});
+	
+});
+
 create_file_loader("database-loader-zone", load_file, items => {
 	const count = items.length;
 	

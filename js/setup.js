@@ -146,7 +146,7 @@ function setup_setup() {
 		
 		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
-		const compressedImageData = groupImageData ? LZString.compress(groupImageData) : undefined;
+		const compressedImageData = groupImageData ? LZString.compressToUTF16(groupImageData) : undefined;
 		
 		const data = {
 			dbName: formData.get("dbName"),
@@ -190,18 +190,14 @@ function setup_setup() {
 		
 		const electionJSONData = JSON.stringify(electionData);
 		
-		const formData = new FormData();
-		formData.append("data", electionJSONData);
-		
 		const ajaxSettings = {
 			url: `${sharedElectionHostRoot}/create`,
-			data: formData,
+			data: electionJSONData,
 			cache: false,
-			contentType: false,
-			processData: false,
+			contentType: 'application/json',
 		};
 		
-		var xhr = $.post(ajaxSettings).done(function (response) {
+		const xhr = $.post(ajaxSettings).done(function (response) {
 			
 			let data = mergeObjectTo(electionJSONData, response.data, true);
 			

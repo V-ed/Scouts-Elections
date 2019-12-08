@@ -174,7 +174,7 @@ function mergeObjectTo(original, newObject, originalIsJsonString){
 function initialize_images(viewId, imageData) {
 	
 	if (imageData) {
-		const uncompressedImage = LZString.decompress(imageData);
+		const uncompressedImage = LZString.decompressFromUTF16(imageData);
 		viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
 	}
 	else {
@@ -272,7 +272,7 @@ elems.forEach(elem => {
 	
 	const hiddenInputValue = document.createElement("input");
 	hiddenInputValue.setAttribute("type", "hidden");
-	hiddenInputValue.setAttribute("name", elem.hasAttribute("data-hidden-input-name") ? elem.getAttribute("data-hidden-input-name") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : ""));
+	hiddenInputValue.setAttribute("id", elem.hasAttribute("data-hidden-input-id") ? elem.getAttribute("data-hidden-input-id") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : ""));
 	elem.appendChild(hiddenInputValue);
 	
 	inputs.forEach(input => {
