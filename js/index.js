@@ -91,7 +91,7 @@ function route_data(data) {
 	}
 	else {
 		
-		switch_view("voting-page", () => setup_voting_session(data));
+		setup_votes(data);
 		
 	}
 	

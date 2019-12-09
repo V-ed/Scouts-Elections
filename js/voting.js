@@ -10,9 +10,20 @@ let auto_download_data = function() {
 	
 }
 
-function setup_pre_voting_session(data) {
+function setup_votes(data) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
+	
+	if (data.numberOfVoted == 0) {
+		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+	}
+	else {
+		switch_view("voting-page", () => setup_voting_session(data));
+	}
+	
+}
+
+function setup_pre_voting_session(data) {
 	
 	if (isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
