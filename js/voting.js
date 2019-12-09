@@ -10,20 +10,25 @@ let auto_download_data = function() {
 	
 }
 
-function setup_votes(data) {
+function setup_votes(data, sharedElectionCode) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
+	if (sharedElectionCode) {
+		document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = sharedElectionCode);
+		document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = false);
+	}
+	
 	if (data.numberOfVoted == 0) {
-		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+		switch_view("pre-voting-page", () => setup_pre_voting_session(data, sharedElectionCode));
 	}
 	else {
-		switch_view("voting-page", () => setup_voting_session(data));
+		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 	}
 	
 }
 
-function setup_pre_voting_session(data) {
+function setup_pre_voting_session(data, sharedElectionCode) {
 	
 	if (isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
@@ -32,7 +37,7 @@ function setup_pre_voting_session(data) {
 	document.getElementById("pre-voting-submit-button").addEventListener("click", e => {
 		e.preventDefault();
 		
-		switch_view("voting-page", () => setup_voting_session(data));
+		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 		
 		uninitialize_images("pre-voting-page");
 	});
@@ -41,7 +46,7 @@ function setup_pre_voting_session(data) {
 	
 }
 
-function setup_voting_session(data) {
+function setup_voting_session(data, sharedElectionCode) {
 	
 	initialize_images("voting-page", data.groupImage);
 	

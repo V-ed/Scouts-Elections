@@ -201,7 +201,7 @@ function setup_setup() {
 			
 			let data = mergeObjectTo(electionJSONData, response.data, true);
 			
-			switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+			setup_votes(data, response.code);
 			
 			window.removeEventListener("beforeunload", prevent_data_loss);
 			
