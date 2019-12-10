@@ -27,7 +27,7 @@ document.getElementById("home-join-election-modal-button").addEventListener("cli
 		
 		$("#home-join-election-modal").modal("hide");
 		
-		switch_view("pre-voting-page", () => setup_pre_voting_session(response.data));
+		setup_votes(response.data, code);
 		
 	});
 	
