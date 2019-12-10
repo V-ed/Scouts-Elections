@@ -237,6 +237,70 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	const votingOverlay = document.getElementById("voting-voted-overlay");
 	
+	function resetVotingState() {
+		
+		candidatesIndexes = [];
+		
+		minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
+		maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
+		
+		if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
+			
+			const backwardCompatibleNumber = data.numberOfVotePerVoter;
+			
+			minNumberOfVotesLeft = backwardCompatibleNumber;
+			maxNumberOfVotesLeft = backwardCompatibleNumber;
+			
+		}
+		
+		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
+			
+			voteRemainingCounter.textContent = minNumberOfVotesLeft;
+			
+			document.getElementById("voting-remaining-text-absolute").hidden = false;
+			
+		}
+		else {
+			
+			voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
+			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+			
+			document.getElementById("voting-remaining-text-multiple").hidden = false;
+			
+		}
+		
+		if (isMultipleSameCandidateAllowed) {
+			
+			const inputs = document.querySelectorAll("input.spinner[type='number']");
+			
+			inputs.forEach(input => {
+				
+				input.max = maxNumberOfVotesLeft;
+				input.readOnly = false;
+				$(input).val(0);
+				
+			});
+			
+		}
+		else {
+			
+			const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+			const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+			
+			votingButtons.forEach(button => {
+				button.hidden = false;
+				button.disabled = false;
+			});
+			unvoteButtons.forEach(button => button.hidden = true);
+			
+		}
+		
+		submitVotesButton.disabled = true;
+		
+		isVoteFinished = true;
+		
+	}
+	
 	submitVotesButton.addEventListener("click", () => {
 		
 		submitVotesButton.disabled = true;
@@ -244,73 +308,40 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		setTimeout(() => {
 			
-			candidatesIndexes.forEach(voteIndex => {
+			if (sharedElectionCode) {
 				
-				data.candidates[voteIndex].voteCount++;
+				const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
 				
-			});
-			
-			candidatesIndexes = [];
-			
-			minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
-			maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
-			
-			if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
+				const ajaxSettings = {
+					type: 'PUT',
+					url: `${sharedElectionHostRoot}/${sharedElectionCode}/vote`,
+					data: candidatesIndexesJSON,
+					cache: false,
+					contentType: 'application/json',
+				};
 				
-				const backwardCompatibleNumber = data.numberOfVotePerVoter;
-				
-				minNumberOfVotesLeft = backwardCompatibleNumber;
-				maxNumberOfVotesLeft = backwardCompatibleNumber;
-				
-			}
-			
-			if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-				
-				voteRemainingCounter.textContent = minNumberOfVotesLeft;
-				
-				document.getElementById("voting-remaining-text-absolute").hidden = false;
-				
-			}
-			else {
-				
-				voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
-				voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
-				
-				document.getElementById("voting-remaining-text-multiple").hidden = false;
-				
-			}
-			
-			if (isMultipleSameCandidateAllowed) {
-				
-				const inputs = document.querySelectorAll("input.spinner[type='number']");
-				
-				inputs.forEach(input => {
+				const xhr = $.ajax(ajaxSettings).done(function (response) {
 					
-					input.max = maxNumberOfVotesLeft;
-					input.readOnly = false;
-					$(input).val(0);
+					mergeObjectTo(data, response.data, false, false);
+					
+					resetVotingState();
 					
 				});
 				
 			}
 			else {
 				
-				const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
-				const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
-				
-				votingButtons.forEach(button => {
-					button.hidden = false;
-					button.disabled = false;
+				candidatesIndexes.forEach(voteIndex => {
+					
+					data.candidates[voteIndex].voteCount++;
+					
 				});
-				unvoteButtons.forEach(button => button.hidden = true);
+				
+				resetVotingState();
+				
+				data.numberOfVoted++;
 				
 			}
-			
-			submitVotesButton.disabled = true;
-			
-			isVoteFinished = true;
-			
-			data.numberOfVoted++;
 			
 		}, 1200);
 		

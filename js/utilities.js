@@ -158,15 +158,16 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 
 // Merge objects
 
-function mergeObjectTo(original, newObject, originalIsJsonString){
+function mergeObjectTo(original, newObject, originalIsJsonString, doCloneOriginal){
 	
-	const copyOfOriginal = JSON.parse(originalIsJsonString ? original : JSON.stringify(original));
+	const objectToMerge = doCloneOriginal === false ? original : (JSON.parse(originalIsJsonString ? original : JSON.stringify(original)));
 	
 	for (const value in newObject) {
-		copyOfOriginal[value] = newObject[value]
+		objectToMerge[value] = newObject[value]
 	}
 	
-	return copyOfOriginal;
+	return objectToMerge;
+	
 }
 
 // Load image on all elements matching under given view id
