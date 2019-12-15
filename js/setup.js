@@ -156,6 +156,7 @@ function setup_setup() {
 			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
 			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
 			numberOfVoted: 0,
+			numberOfSeatsTaken: 0,
 			hasSkipped: false,
 			isDownloadDisabled: isDownloadDisabled,
 			candidates: tempCandidates,
@@ -183,7 +184,7 @@ function setup_setup() {
 	
 	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
 	
-	submitSharedSetupButton.addEventListener("click", e => {
+	submitSharedSetupButton.addEventListener("click", async e => {
 		e.preventDefault();
 		
 		const electionData = createData();
@@ -197,17 +198,15 @@ function setup_setup() {
 			contentType: 'application/json',
 		};
 		
-		const xhr = $.post(ajaxSettings).done(function (response) {
-			
-			let data = mergeObjectTo(electionJSONData, response.data, true);
-			
-			setup_votes(data, response.code);
-			
-			window.removeEventListener("beforeunload", prevent_data_loss);
-			
-			uninitialize_images("setup-page");
-			
-		});
+		const response = await $.post(ajaxSettings);
+		
+		let data = mergeObjectTo(electionJSONData, response.data, true);
+		
+		setup_votes(data, response.code);
+		
+		window.removeEventListener("beforeunload", prevent_data_loss);
+		
+		uninitialize_images("setup-page");
 		
 	});
 	

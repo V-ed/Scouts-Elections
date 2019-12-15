@@ -10,7 +10,7 @@ let auto_download_data = function() {
 	
 }
 
-function setup_votes(data, sharedElectionCode) {
+async function setup_votes(data, sharedElectionCode) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
@@ -23,6 +23,26 @@ function setup_votes(data, sharedElectionCode) {
 		switch_view("pre-voting-page", () => setup_pre_voting_session(data, sharedElectionCode));
 	}
 	else {
+		
+		if (sharedElectionCode) {
+			
+			if (data.numberOfVoted == data.numberOfSeatsTaken) {
+				
+				const ajaxSettings = {
+					type: 'GET',
+					url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+					cache: false,
+					contentType: 'application/json',
+				};
+				
+				const response = await $.ajax(ajaxSettings);
+				
+				mergeObjectTo(data, response.data, false, false);
+				
+			}
+			
+		}
+		
 		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 	}
 	
@@ -34,8 +54,26 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
-	document.getElementById("pre-voting-submit-button").addEventListener("click", e => {
+	document.getElementById("pre-voting-submit-button").addEventListener("click", async e => {
 		e.preventDefault();
+		
+		if (sharedElectionCode) {
+			
+			const ajaxSettings = {
+				type: 'GET',
+				url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+				cache: false,
+				contentType: 'application/json',
+			};
+			
+			const response = await $.ajax(ajaxSettings);
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		}
+		else {
+			data.numberOfSeatsTaken = data.numberOfSeatsTaken ? data.numberOfSeatsTaken + 1 : 1;
+		}
 		
 		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 		
@@ -306,7 +344,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		submitVotesButton.disabled = true;
 		votingOverlay.classList.add("active");
 		
-		setTimeout(() => {
+		setTimeout(async () => {
 			
 			if (sharedElectionCode) {
 				
@@ -320,13 +358,9 @@ function setup_voting_session(data, sharedElectionCode) {
 					contentType: 'application/json',
 				};
 				
-				const xhr = $.ajax(ajaxSettings).done(function (response) {
-					
-					mergeObjectTo(data, response.data, false, false);
-					
-					resetVotingState();
-					
-				});
+				const response = await $.ajax(ajaxSettings);
+				
+				mergeObjectTo(data, response.data, false, false);
 				
 			}
 			else {
@@ -337,17 +371,15 @@ function setup_voting_session(data, sharedElectionCode) {
 					
 				});
 				
-				resetVotingState();
-				
 				data.numberOfVoted++;
 				
 			}
 			
+			resetVotingState();
+			
 		}, 1200);
 		
 	});
-	
-	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	
 	document.body.onkeyup = e => {
 		e.preventDefault();
@@ -394,18 +426,67 @@ function setup_voting_session(data, sharedElectionCode) {
 	}
 	
 	const toastContainer = document.getElementById("voting-toasts-container");
+	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
+	const seatsRemainingCountToast = document.getElementById("seats-remaining-count-toast");
 	
-	function go_to_next_voter(data) {
+	function show_remaining_count_toast(data) {
 		
-		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
+		votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant(s) sur ${data.numberOfVoters}`;
+		
+		if (!seatsRemainingCountToast.hidden) {
+			seatsRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfSeatsTaken} place(s) restante(s) ${data.numberOfVoters} pour cette élection partagée`;
+		}
+		
+		toastContainer.classList.remove("i-am-away");
+		$("#voting-toasts-container > .toast").toast("show");
+		
+	}
+	
+	async function go_to_next_voter(data) {
+		
+		if (sharedElectionCode) {
+			
+			const ajaxSettings = {
+				type: 'GET',
+				url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve?numberOfSeatsTaken&numberOfVoted`,
+				cache: false,
+				contentType: 'application/json',
+			};
+			
+			const response = await $.ajax(ajaxSettings);
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		}
+		
+		if (isVoteFinished && data.numberOfSeatsTaken == data.numberOfVoters) {
 			end_voting_session(data);
 		}
 		else {
 			
-			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant sur ${data.numberOfVoters}`;
+			if (isVoteFinished) {
+				
+				if (sharedElectionCode) {
+					
+					const ajaxSettings = {
+						type: 'GET',
+						url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+						cache: false,
+						contentType: 'application/json',
+					};
+					
+					const response = await $.ajax(ajaxSettings);
+					
+					mergeObjectTo(data, response.data, false, false);
+					
+				}
+				else {
+					data.numberOfSeatsTaken++;
+				}
+				
+			}
 			
-			toastContainer.classList.remove("i-am-away")
-			$("#voting-toasts-container > .toast").toast("show");
+			show_remaining_count_toast(data);
 			
 		}
 		
