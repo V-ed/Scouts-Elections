@@ -1,3 +1,90 @@
+function setup_post_voting(data, sharedElectionCode) {
+	
+	initialize_images("post-shared-voting-page", data.groupImage);
+	
+	const sharedPostVoteButtonSkipWait = document.getElementById("shared-post-votes-skip-wait");
+	
+	sharedPostVoteButtonSkipWait.addEventListener("click", () => {
+		
+		setup_results(data);
+		
+		uninitialize_images("voting-page");
+		
+	});
+	
+	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
+	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
+	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
+	
+	function handleVerificationDisabling(data) {
+		
+		const didAllVoted = data.numberOfVoted == data.numberOfVoters
+		
+		sharedPostVoteButtonVerify.disabled = didAllVoted;
+		sharedPostVoteButtonGo.disabled = !didAllVoted;
+		sharedPostVoteButtonGoAndDelete.disabled = !didAllVoted;
+		
+	}
+	
+	handleVerificationDisabling(data);
+	
+	sharedPostVoteButtonVerify.addEventListener("click", async () => {
+		
+		const ajaxSettings = {
+			type: 'GET',
+			url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve?numberOfVoted&candidates`,
+			cache: false,
+			contentType: 'application/json',
+		};
+		
+		const response = await $.ajax(ajaxSettings);
+		
+		mergeObjectTo(data, response.data, false, false);
+		
+		handleVerificationDisabling(data);
+		
+	});
+	
+	sharedPostVoteButtonGo.addEventListener("click", async () => {
+		
+		const ajaxSettings = {
+			type: 'GET',
+			url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve`,
+			cache: false,
+			contentType: 'application/json',
+		};
+		
+		const response = await $.ajax(ajaxSettings);
+		
+		mergeObjectTo(data, response.data, false, false);
+		
+		setup_results(data);
+		
+		uninitialize_images("voting-page");
+		
+	});
+	
+	sharedPostVoteButtonGoAndDelete.addEventListener("click", async () => {
+		
+		const ajaxSettings = {
+			type: 'DELETE',
+			url: `${sharedElectionHostRoot}/${sharedElectionCode}/delete`,
+			cache: false,
+			contentType: 'application/json',
+		};
+		
+		const response = await $.ajax(ajaxSettings);
+		
+		mergeObjectTo(data, response.data, false, false);
+		
+		setup_results(data);
+		
+		uninitialize_images("voting-page");
+		
+	});
+	
+}
+
 function setup_results(data) {
 	
 	if (data.dbPsw || data.dbPsw == undefined) {
