@@ -503,7 +503,7 @@ function setup_voting_session(data, sharedElectionCode) {
 	}
 	
 	$("#voting-toasts-container > .toast").on("hidden.bs.toast", () => {
-		toastContainer.classList.add("i-am-away")
+		toastContainer.classList.add("i-am-away");
 	});
 	
 	const skipVotesButton = document.getElementById("voting-skip-button");

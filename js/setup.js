@@ -463,7 +463,7 @@ function add_input_for_verification(inputId, customValidator) {
 					clearTimeout(previousSpinnerTimer);
 					previousSpinnerTimer = setTimeout(() => {
 						if (document.activeElement != checkElement) {
-							$(checkElement).popover("hide")
+							$(checkElement).popover("hide");
 						}
 					}, 1500);
 				}

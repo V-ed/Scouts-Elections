@@ -332,7 +332,7 @@ elems.forEach(elem => {
 			
 			hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
 			
-		})
+		});
 		
 		// Actual keyboard and semi mobile behavior
 		input.addEventListener("keyup", () => {

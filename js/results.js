@@ -43,7 +43,7 @@ function setup_pre_results_page(data) {
 	
 	passwordInput.addEventListener("input", () => {
 		
-		passwordInput.classList.remove("is-invalid")
+		passwordInput.classList.remove("is-invalid");
 		preResultsSubmitButton.disabled = false;
 		
 	});
