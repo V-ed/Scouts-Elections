@@ -2,7 +2,7 @@
 
 const isTouchDevice = "ontouchstart" in document.documentElement;
 
-const sharedElectionHostRoot = "https://ved.ddnsfree.com/scouts-elections";
+const sharedElectionHostRoot = "https://ved.ddnsfree.com/scouts-elections/api";
 
 // Setup downloadable database function
 

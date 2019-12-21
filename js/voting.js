@@ -30,7 +30,7 @@ async function setup_votes(data, sharedElectionCode) {
 				
 				const ajaxSettings = {
 					type: 'GET',
-					url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 					cache: false,
 					contentType: 'application/json',
 				};
@@ -61,7 +61,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 			
 			const ajaxSettings = {
 				type: 'GET',
-				url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+				url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 				cache: false,
 				contentType: 'application/json',
 			};
@@ -352,7 +352,7 @@ function setup_voting_session(data, sharedElectionCode) {
 				
 				const ajaxSettings = {
 					type: 'PUT',
-					url: `${sharedElectionHostRoot}/${sharedElectionCode}/vote`,
+					url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
 					data: candidatesIndexesJSON,
 					cache: false,
 					contentType: 'application/json',
@@ -448,7 +448,7 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 			const ajaxSettings = {
 				type: 'GET',
-				url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve?numberOfSeatsTaken&numberOfVoted`,
+				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfSeatsTaken&numberOfVoted`,
 				cache: false,
 				contentType: 'application/json',
 			};
@@ -470,7 +470,7 @@ function setup_voting_session(data, sharedElectionCode) {
 					
 					const ajaxSettings = {
 						type: 'GET',
-						url: `${sharedElectionHostRoot}/${sharedElectionCode}/seat`,
+						url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 						cache: false,
 						contentType: 'application/json',
 					};

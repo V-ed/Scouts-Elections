@@ -19,7 +19,7 @@ document.getElementById("home-join-election-modal-button").addEventListener("cli
 	const code = codeElem.value.toUpperCase();
 	
 	const ajaxSettings = {
-		url: `${sharedElectionHostRoot}/${code}/join`,
+		url: `${sharedElectionHostRoot}/join/${code}`,
 		contentType: 'application/javascript; charset=UTF-16',
 	};
 	

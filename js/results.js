@@ -32,7 +32,7 @@ function setup_post_voting(data, sharedElectionCode) {
 		
 		const ajaxSettings = {
 			type: 'GET',
-			url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve?numberOfVoted&candidates`,
+			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&candidates`,
 			cache: false,
 			contentType: 'application/json',
 		};
@@ -49,7 +49,7 @@ function setup_post_voting(data, sharedElectionCode) {
 		
 		const ajaxSettings = {
 			type: 'GET',
-			url: `${sharedElectionHostRoot}/${sharedElectionCode}/retrieve`,
+			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
 			cache: false,
 			contentType: 'application/json',
 		};
@@ -68,7 +68,7 @@ function setup_post_voting(data, sharedElectionCode) {
 		
 		const ajaxSettings = {
 			type: 'DELETE',
-			url: `${sharedElectionHostRoot}/${sharedElectionCode}/delete`,
+			url: `${sharedElectionHostRoot}/delete/${sharedElectionCode}`,
 			cache: false,
 			contentType: 'application/json',
 		};
