@@ -103,25 +103,43 @@
 							</button>
 						</div>
 						<div class="modal-body text-left">
-							<form>
-								<div class="form-group">
-									<label for="recipient-name" class="col-form-label">Code de l'Élection Partagée :</label>
-									<div class="container mt-2">
-										<div class="row input-partition" data-hidden-input-id="fullCodeValue" style="font-family: monospace; font-size: 2rem;">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
-											<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+							
+							<div class="acceptance-form-div text-justify">
+								<p class="h3">Avertissement</p>
+								<p>Pour utiliser cette fonctionnalitée, un accès Internet est requis puisque le partage d'élection utilise un serveur pour synchroniser les données entre les différents appareils connectés à une élection partagée.</p>
+								<p>Des requêtes seront donc envoyées à ce serveur pendant le courant de la session de votes pour ainsi mettre à jour correctement l'élection.</p>
+								<p class="font-weight-bold">Acceptez vous que les données produites par l'élection (les votes des électeurs, entres autres) soient partagées avec ce serveur?</p>
+								<span><a href="./election-partagee-info.html" target="_blank">En savoir plus</a></span>
+							</div>
+							
+							<div class="accepted-server-div" hidden>
+								<form>
+									<div class="form-group">
+										<label for="recipient-name" class="col-form-label">Code de l'Élection Partagée :</label>
+										<div class="container mt-2">
+											<div class="row input-partition" data-hidden-input-id="fullCodeValue" style="font-family: monospace; font-size: 2rem;">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true" maxlength="1">
+											</div>
 										</div>
 									</div>
-								</div>
-							</form>
+								</form>
+							</div>
+							
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-							<button id="home-join-election-modal-button" type="button" class="btn btn-primary">Rejoindre Élection</button>
+							<div class="acceptance-form-div">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
+								<button type="button" class="btn btn-primary acceptance-form-div-accept-button">Accepter</button>
+							</div>
+							<div class="accepted-server-div" hidden>
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+								<button id="home-join-election-modal-button" type="button" class="btn btn-primary">Rejoindre Élection</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -251,10 +269,35 @@
 						<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Créer l'Élection</button>
 					</div>
 					<div class="col-12 col-md-6 mt-3 mt-md-0">
-						<button type="submit" id="setup-shared-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Créer comme Élection Partagée</button>
+						<button id="setup-shared-submit-button" class="btn btn-lg btn-block btn-primary" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
 					</div>
 				</div>
 			</form>
+			
+			<div class="modal fade" id="setup-create-election-modal" tabindex="-1" role="dialog" aria-labelledby="setup-create-election-modal-title" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="setup-create-election-modal-title">Créer une Élection Partagée</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body text-left">
+							<p class="h3">Avertissement</p>
+							<p>Pour utiliser cette fonctionnalitée, un accès Internet est requis puisque le partage d'élection utilise un serveur pour synchroniser les données entre les différents appareils connectés à une élection partagée.</p>
+							<p>Des requêtes seront donc envoyées à ce serveur pendant le courant de la session de votes pour ainsi mettre à jour correctement l'élection.</p>
+							<p class="font-weight-bold">Acceptez vous que les données de votre élection soient partagées avec ce serveur?</p>
+							<p class="text-danger">Le mot de passe sera aussi partagé avec le serveur et les autres appareils qui rejoindront cette élection&nbsp;:&nbsp;assurez vous de ne pas utiliser de mot de passe confidentiel!</p>
+							<span><a href="./election-partagee-info.html" target="_blank">En savoir plus</a></span>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
+							<button id="setup-create-election-modal-button" type="button" class="btn btn-primary acceptance-form-div-accept-button">Accepter</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			
 		</div>
 		

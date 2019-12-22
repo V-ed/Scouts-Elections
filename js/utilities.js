@@ -156,6 +156,23 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 	
 }
 
+// Initialize acceptance forms
+
+$(function () {
+	
+	Array.from(document.getElementsByClassName("acceptance-form-div-accept-button")).forEach(button => {
+		
+		button.addEventListener("click", () => {
+			
+			Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
+			Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
+			
+		});
+		
+	});
+	
+});
+
 // Merge objects
 
 function mergeObjectTo(original, newObject, originalIsJsonString, doCloneOriginal){

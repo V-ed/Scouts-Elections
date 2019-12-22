@@ -182,7 +182,7 @@ function setup_setup() {
 		
 	});
 	
-	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
+	const submitSharedSetupButton = document.getElementById("setup-create-election-modal-button");
 	
 	submitSharedSetupButton.addEventListener("click", async e => {
 		e.preventDefault();
