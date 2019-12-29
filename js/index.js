@@ -4,7 +4,6 @@ const joinElectionsButton = document.getElementById("home-join-button");
 // Javascript enabled, enable inputs...
 
 newElectionsButton.disabled = false;
-joinElectionsButton.disabled = false;
 document.getElementById("loader-file-input").disabled = false;
 document.getElementById("database-loader-zone").classList.remove("loader-disabled");
 
@@ -12,22 +11,64 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
-document.getElementById("home-join-election-modal-button").addEventListener("click", () => {
+sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false).done(() => {
+	
+	isServerAccessible = true;
+	
+	joinElectionsButton.disabled = false;
 	
 	const codeElem = document.getElementById("fullCodeValue");
 	
-	const code = codeElem.value.toUpperCase();
+	const modalButton = document.getElementById("home-join-election-modal-button");
+			
+	const errorSpan = document.getElementById("home-join-modal-error-span");
 	
-	const ajaxSettings = {
-		url: `${sharedElectionHostRoot}/join/${code}`,
-		contentType: 'application/javascript; charset=UTF-16',
-	};
+	const partitionnedInputs = Array.from(document.querySelectorAll("input[data-partition-for-id='fullCodeValue']"));
 	
-	var xhr = $.get(ajaxSettings).done(function (response) {
+	codeElem.addEventListener("change", () => {
+		modalButton.disabled = codeElem.value.length !== 6;
+		errorSpan.hidden = true;
+	});
+	
+	modalButton.addEventListener("click", async () => {
 		
-		$("#home-join-election-modal").modal("hide");
+		const code = codeElem.value.toUpperCase();
 		
-		setup_votes(response.data, code);
+		const ajaxSettings = {
+			url: `${sharedElectionHostRoot}/join/${code}`,
+			contentType: 'application/javascript; charset=UTF-16',
+		};
+		
+		modalButton.disabled = true;
+		partitionnedInputs.forEach(input => input.disabled = true);
+		
+		let test = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
+		
+		test.done(response => {
+			
+			$("#home-join-election-modal").modal("hide");
+			
+			errorSpan.hidden = true;
+			
+			setup_votes(response.data, code);
+			
+		})
+		.fail(response => {
+			
+			if (response.status == 400) {
+				errorSpan.textContent = "Ce code n'existe pas. Veuillez réessayer!";
+			}
+			else {
+				errorSpan.textContent = "Une erreur inconnue est survenue, veuillez réessayer!";
+			}
+			
+			errorSpan.hidden = false;
+			
+		})
+		.always(() => {
+			modalButton.disabled = false;
+			partitionnedInputs.forEach(input => input.disabled = false);
+		});
 		
 	});
 	

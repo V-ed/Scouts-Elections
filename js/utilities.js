@@ -4,6 +4,8 @@ const isTouchDevice = "ontouchstart" in document.documentElement;
 
 const sharedElectionHostRoot = "https://ved.ddnsfree.com/scouts-elections/api";
 
+let isServerAccessible = false;
+
 // Setup downloadable database function
 
 let didDownloadDb = false;
@@ -290,8 +292,13 @@ elems.forEach(elem => {
 	
 	const hiddenInputValue = document.createElement("input");
 	hiddenInputValue.setAttribute("type", "hidden");
-	hiddenInputValue.setAttribute("id", elem.hasAttribute("data-hidden-input-id") ? elem.getAttribute("data-hidden-input-id") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : ""));
+	
+	const hiddenInputId = elem.hasAttribute("data-hidden-input-id") ? elem.getAttribute("data-hidden-input-id") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : "");
+	hiddenInputValue.setAttribute("id", hiddenInputId);
+	
 	elem.appendChild(hiddenInputValue);
+	
+	inputs.forEach(input => input.setAttribute("data-partition-for-id", hiddenInputId));
 	
 	function updateHiddenInputValue() {
 		
