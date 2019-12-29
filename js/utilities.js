@@ -513,6 +513,60 @@ elems.forEach(elem => {
 	});
 	
 });
+
+// Send requests and handle UI spinners
+
+function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
+	
+	doHideContainerOnEnd = doHideContainerOnEnd !== false;
+	
+	if (typeof ajaxSettings == 'string') {
+		ajaxSettings = {
+			url: ajaxSettings
+		};
+	}
+	
+	if (!('type' in ajaxSettings)) {
+		ajaxSettings.type = 'GET';
+	}
+	if (!('contentType' in ajaxSettings)) {
+		ajaxSettings.contentType = 'application/json';
+	}
+	
+	if (typeof requesterContainer == 'string') {
+		requesterContainer = document.getElementById(requesterContainer);
+	}
+	
+	const requesterSpinners = Array.from(requesterContainer.getElementsByClassName("requester-spinner"));
+	const requesterSuccessIcons = Array.from(requesterContainer.getElementsByClassName("requester-success-icon"));
+	const requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
+	
+	requesterSpinners.forEach(elem => elem.hidden = false);
+	
+	requesterContainer.hidden = false;
+	
+	let request = $.ajax(ajaxSettings);
+	
+	// Return request with added default behaviors for handling spinners / response icons
+	return request.done(() => {
+		if (!doHideContainerOnEnd) {
+			requesterSuccessIcons.forEach(elem => elem.hidden = false);
+		}
+	})
+	.fail(() => {
+		if (!doHideContainerOnEnd) {
+			requesterErrorIcons.forEach(elem => elem.hidden = false);
+		}
+	})
+	.always(() => {
+		requesterSpinners.forEach(elem => elem.hidden = true);
+		
+		if (doHideContainerOnEnd) {
+			requesterContainer.hidden = true;
+		}
+	});
+	
+}
 	
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 
