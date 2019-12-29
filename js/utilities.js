@@ -293,6 +293,14 @@ elems.forEach(elem => {
 	hiddenInputValue.setAttribute("id", elem.hasAttribute("data-hidden-input-id") ? elem.getAttribute("data-hidden-input-id") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : ""));
 	elem.appendChild(hiddenInputValue);
 	
+	function updateHiddenInputValue() {
+		
+		hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
+		
+		hiddenInputValue.dispatchEvent(new Event("change"));
+		
+	}
+	
 	inputs.forEach(input => {
 		
 		// Mobile fix
@@ -347,13 +355,13 @@ elems.forEach(elem => {
 				
 			}
 			
-			hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
+			updateHiddenInputValue();
 			
 		});
 		
 		// Actual keyboard and semi mobile behavior
 		input.addEventListener("keyup", () => {
-			hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
+			updateHiddenInputValue();
 		});
 		
 		input.addEventListener("keypress", e => {
