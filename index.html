@@ -296,8 +296,17 @@
 					<div class="col-12 col-md-6">
 						<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Créer l'Élection</button>
 					</div>
-					<div class="col-12 col-md-6 mt-3 mt-md-0">
-						<button id="setup-shared-submit-button" class="btn btn-lg btn-block btn-primary" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
+					<div class="col-12 col-md-6 mt-3 mt-md-0 d-flex">
+						
+						<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
+						<div id="setup-shared-submit-requester-container" class="requester-container ml-3 align-self-center" hidden>
+							<div class="requester-spinner spinner-border is-popable-hover" role="status" data-placement="top" data-content="Vérification de l'accès au serveur de partage d'élection...">
+								<span class="sr-only">Chargement...</span>
+							</div>
+							<img class="requester-success-icon colorize-green is-popable-hover" src="./images/check.svg" alt="Succès" style="width: 2rem;" data-placement="top" data-content="Le serveur est accessible et la fonctionnalité est donc activée!" hidden>
+							<img class="requester-alert-icon colorize-red is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et la fonctionnalitée est donc désactivée. Veuillez vous assurer d'être connecté à l'internet!" hidden>
+						</div>
+						
 					</div>
 				</div>
 			</form>
@@ -318,10 +327,26 @@
 							<p class="font-weight-bold">Acceptez vous que les données de votre élection soient partagées avec ce serveur?</p>
 							<p class="text-danger">Le mot de passe sera aussi partagé avec le serveur et les autres appareils qui rejoindront cette élection&nbsp;:&nbsp;assurez vous de ne pas utiliser de mot de passe confidentiel!</p>
 							<span><a href="./election-partagee-info.html" target="_blank">En savoir plus</a></span>
+							<div id="setup-create-election-modal-error" hidden>
+								<hr>
+								<span id="setup-create-election-modal-error-span" class="text-danger">Une erreur imprévue est survenue, veuillez réessayer ou débuter une élection régulière!</span>
+							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
-							<button id="setup-create-election-modal-button" type="button" class="btn btn-primary acceptance-form-div-accept-button">Accepter</button>
+							
+							<div class="d-flex">
+									
+								<div id="setup-create-election-modal-requester-container" class="requester-container mr-3 align-self-center h-100">
+									<div class="requester-spinner spinner-border" role="status" hidden>
+										<span class="sr-only">Chargement...</span>
+									</div>
+								</div>
+								
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
+								<button id="setup-create-election-modal-button" type="button" class="btn btn-primary acceptance-form-div-accept-button ml-1">Accepter</button>
+								
+							</div>
+							
 						</div>
 					</div>
 				</div>

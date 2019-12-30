@@ -557,6 +557,8 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
 	const requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
 	
 	requesterSpinners.forEach(elem => elem.hidden = false);
+	requesterSuccessIcons.forEach(elem => elem.hidden = true);
+	requesterErrorIcons.forEach(elem => elem.hidden = true);
 	
 	requesterContainer.hidden = false;
 	

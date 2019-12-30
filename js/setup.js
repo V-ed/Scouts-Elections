@@ -182,31 +182,50 @@ function setup_setup() {
 		
 	});
 	
+	const errorDiv = document.getElementById("setup-create-election-modal-error");
 	const submitSharedSetupButton = document.getElementById("setup-create-election-modal-button");
 	
 	submitSharedSetupButton.addEventListener("click", async e => {
 		e.preventDefault();
+		
+		errorDiv.hidden = true;
+		
+		submitSharedSetupButton.disabled = true;
 		
 		const electionData = createData();
 		
 		const electionJSONData = JSON.stringify(electionData);
 		
 		const ajaxSettings = {
+			type: 'POST',
 			url: `${sharedElectionHostRoot}/create`,
 			data: electionJSONData,
 			cache: false,
 			contentType: 'application/json',
 		};
 		
-		const response = await $.post(ajaxSettings);
+		let response = await sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container');
 		
-		let data = mergeObjectTo(electionJSONData, response.data, true);
+		if (response.code) {
+			
+			let data = mergeObjectTo(electionJSONData, response.data, true);
+			
+			$("#setup-create-election-modal").modal("hide");
+			
+			setup_votes(data, response.code);
+			
+			window.removeEventListener("beforeunload", prevent_data_loss);
+			
+			uninitialize_images("setup-page");
+			
+		}
+		else {
+			
+			errorDiv.hidden = false;
+			
+		}
 		
-		setup_votes(data, response.code);
-		
-		window.removeEventListener("beforeunload", prevent_data_loss);
-		
-		uninitialize_images("setup-page");
+		submitSharedSetupButton.disabled = false;
 		
 	});
 	
@@ -496,7 +515,27 @@ function verify_all_valid() {
 	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
 	
 	submitSetupButton.disabled = !isValid;
-	submitSharedSetupButton.disabled = !isValid;
+	
+	if (!isValid) {
+		
+		if (!submitSharedSetupButton.disabled) {
+			document.getElementById("setup-shared-submit-requester-container").hidden = true;
+		}
+		
+		submitSharedSetupButton.disabled = true;
+		
+	}
+	else if (submitSharedSetupButton.disabled) {
+		
+		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).done(() => {
+		
+			isServerAccessible = true;
+			
+			submitSharedSetupButton.disabled = false;
+			
+		});
+		
+	}
 	
 }
 

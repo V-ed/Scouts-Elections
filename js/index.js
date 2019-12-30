@@ -42,9 +42,9 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 		modalButton.disabled = true;
 		partitionnedInputs.forEach(input => input.disabled = true);
 		
-		let test = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
+		let request = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
 		
-		test.done(response => {
+		request.done(response => {
 			
 			$("#home-join-election-modal").modal("hide");
 			
@@ -59,7 +59,7 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 				errorSpan.textContent = "Ce code n'existe pas. Veuillez réessayer!";
 			}
 			else {
-				errorSpan.textContent = "Une erreur inconnue est survenue, veuillez réessayer!";
+				errorSpan.textContent = "Une erreur imprévue est survenue, veuillez réessayer!";
 			}
 			
 			errorSpan.hidden = false;
