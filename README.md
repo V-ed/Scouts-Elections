@@ -65,7 +65,7 @@ Code is in English because code should always be in English.
 
 - Guillaume Marcoux ([V-ed](https://github.com/V-ed)) - Owner
 
-See also the list of [contributors](https://github.com/V-ed/jrequester/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/V-ed/Scouts-Elections/contributors) who participated in this project.
 
 ## License
 
