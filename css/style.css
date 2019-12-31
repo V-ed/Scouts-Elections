@@ -248,6 +248,10 @@ span.collapse.show + span.collapse-ellipsis
 
 /* Fix bootstrap border utilities */
 
+button:disabled {
+    cursor: not-allowed;
+}
+
 @media (max-width:768px){
     .border-right.border-right-no-medium {
         border-right: none !important;
