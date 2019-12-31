@@ -187,8 +187,13 @@
 						<div class="col-sm-3 col-md-2">
 							<label class="col-form-label" for="candidate-name-1">Candidat 1</label>
 						</div>
-						<div class="col-sm-9 col-md-10">
+						<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
 							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-placement="top" data-candidatenumber="1" autocomplete="off" required>
+							<div class="d-flex align-items-center justify-content-center ml-3">
+								<button id="candidate-remove-1" type="button" class="btn btn-outline-danger" tabindex="-1" disabled>
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
 						</div>
 					</div>
 					<div id="setup-candidates">
@@ -200,7 +205,7 @@
 						<button id="candidate-add" class="btn btn-secondary mx-auto mx-md-0" data-candidatecount="1">Ajouter Candidat</button>
 					</div>
 					<div class="mt-2 mt-md-0 mr-md-0 ml-md-5 col-auto px-3 px-md-0">
-						<button id="candidate-remove" class="btn btn-danger mx-auto mx-md-0" disabled="">Enlever dernier Candidat</button>
+						<button type="button" id="candidate-remove-all" class="btn btn-warning mx-auto mx-md-0" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Cette action est irréversible. Êtes-vous sûr de vouloir enlever tout les candidats?</p><button type='button' id='candidate-remove-all-confirm' class='btn btn-danger mx-auto'>Confirmer</button></div>" disabled>Enlever tout les candidats</button>
 					</div>
 				</div>
 				<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Soumettre</button>

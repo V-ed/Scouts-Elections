@@ -61,8 +61,59 @@ function setup_setup() {
 	pswVisibilityToggler.addEventListener("click", () => pswField.type = pswField.type == "password" ? "text" : "password");
 	
 	const candidateAddButton = document.getElementById("candidate-add");
-	const candidateRemoveButton = document.getElementById("candidate-remove");
+	const candidateRemoveButton = document.getElementById("candidate-remove-all");
 	const candidateContainer = document.getElementById("setup-candidates");
+	
+	const firstCandidateInput = document.getElementById("candidate-name-1");
+	const firstCandidateRemoveButton = document.getElementById("candidate-remove-1");
+	
+	function removeCandidate(candidateInput) {
+		
+		const candidateNumber = parseInt(candidateInput.dataset.candidatenumber);
+		
+		const allCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']"));
+		
+		if (allCandidates.length == 1) {
+			firstCandidateInput.value = "";
+			triggerInputEvent(firstCandidateInput, true);
+		}
+		else {
+			
+			const allCandidatesToUpdate = allCandidates.filter(input => input.dataset.candidatenumber > candidateNumber);
+			
+			allCandidatesToUpdate.forEach(candidateInput => {
+				
+				const currentCandidateNumber = candidateInput.dataset.candidatenumber;
+				
+				const previousInput = document.getElementById(`candidate-name-${currentCandidateNumber - 1}`);
+				
+				previousInput.value = candidateInput.value;
+				
+			});
+			
+			const inputToRemove = document.getElementById(`candidate-controls-${candidateNumber + allCandidatesToUpdate.length}`);
+			$(inputToRemove).popover("dispose");
+			inputToRemove.remove();
+			
+			allCandidates.forEach(candidateInput => triggerInputEvent(candidateInput, true));
+			
+			delete setupInputs[`candidate-name-${candidateNumber}`];
+			
+			const newCandidateCount = --candidateAddButton.dataset.candidatecount;
+		
+			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+		
+			if (newCandidateCount == 1) {
+				candidateRemoveButton.disabled = true;
+			}
+			
+		}
+		
+		verify_all_valid();
+		
+	}
+	
+	firstCandidateRemoveButton.addEventListener("click", () => removeCandidate(firstCandidateInput));
 	
 	candidateAddButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -74,8 +125,13 @@ function setup_setup() {
 				<div class="col-sm-3 col-md-2">
 					<label class="col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
 				</div>
-				<div class="col-sm-9 col-md-10">
+				<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
 					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
+					<div class="d-flex align-items-center justify-content-center ml-3">
+						<button id="candidate-remove-${number}" type="button" class="btn btn-outline-danger" tabindex="-1">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
 				</div>
 			</div>`);
 		
@@ -91,45 +147,74 @@ function setup_setup() {
 				e.preventDefault();
 			}
 		});
+		const newCandidateDeleteButton = document.getElementById(`candidate-remove-${number}`);
+		newCandidateDeleteButton.addEventListener("click", () => removeCandidate(newCandidateInput));
 		
 		newCandidateInput.scrollIntoView();
 		
 		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
 		triggerInputEvent(numberOfVoteInput, true);
 		
+		firstCandidateRemoveButton.disabled = false;
+		
 	});
 	
-	candidateRemoveButton.addEventListener("click", e => {
-		e.preventDefault();
+	// Enable / disable remove all custom handler for first candidate input
+	firstCandidateInput.addEventListener("input", () => {
 		
-		const number = candidateAddButton.dataset.candidatecount--;
+		if (document.querySelectorAll("div[id^='candidate-controls-']").length == 1) {
+			
+			const isFirstCandidateNameEmpty = firstCandidateInput.value.length == 0;
+			
+			candidateRemoveButton.disabled = isFirstCandidateNameEmpty;
+			firstCandidateRemoveButton.disabled = isFirstCandidateNameEmpty;
+			
+		}
 		
-		const input = document.getElementById(`candidate-name-${number}`);
-		$(input).popover("dispose");
-		document.getElementById(`candidate-controls-${number}`).remove();
+	});
+	
+	$(candidateRemoveButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
 		
-		delete setupInputs[`candidate-name-${number}`];
-		verify_all_valid();
+		const candidateRemoveConfirmButton = document.getElementById("candidate-remove-all-confirm");
 		
-		if (number == 2) {
+		candidateRemoveConfirmButton.addEventListener("click", () => {
+			
+			const number = candidateAddButton.dataset.candidatecount = 1;
+			
+			const allCandidatesToRemove = Array.from(document.querySelectorAll("div[id^='candidate-controls-']")).filter(control => control.querySelector("input[id^='candidate-name-']") != firstCandidateInput);
+			
+			allCandidatesToRemove.forEach(control => {
+				
+				const candidateInput = control.querySelector("input[id^='candidate-name-']");
+				$(candidateInput).popover("dispose");
+				
+				delete setupInputs[`candidate-name-${candidateInput.dataset.candidatenumber}`];
+				
+				control.remove();
+				
+			});
+			
+			firstCandidateInput.value = "";
+			triggerInputEvent(firstCandidateInput, true);
+			
+			firstCandidateRemoveButton.disabled = true;
 			candidateRemoveButton.disabled = true;
-		}
-		
-		if (input.dataset.dupevalue != null) {
 			
-			const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
-			const candidatesToRevalidate = otherCandidates.filter(candidateInput => candidateInput.value.toLowerCase() == input.dataset.dupevalue);
-			candidatesToRevalidate.forEach(candidate => triggerInputEvent(candidate, true));
+			if (number == 2) {
+				candidateRemoveButton.disabled = true;
+			}
 			
-		}
+			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+			
+			if (textFieldHadFocus) {
+				firstCandidateInput.focus();
+			}
+			
+			verify_all_valid();
 		
-		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
-		numberOfVoteInput.max = number - 2;
-		triggerInputEvent(numberOfVoteInput, true);
-		
-		if (textFieldHadFocus) {
-			document.getElementById(`candidate-name-${number - 1}`).focus();
-		}
+			$(this).popover("hide");
+			
+		});
 		
 	});
 	
