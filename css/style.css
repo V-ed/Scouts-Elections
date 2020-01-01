@@ -246,11 +246,17 @@ span.collapse.show + span.collapse-ellipsis
     opacity: 0;
 }
 
-/* Fix bootstrap border utilities */
+/* --------------- */
+/* BOOTSTRAP FIXES */
+/* --------------- */
 
-button:disabled {
+/* Fix bootstrap disabled buttons cursors */
+
+.btn:disabled {
     cursor: not-allowed;
 }
+
+/* Fix bootstrap border utilities */
 
 @media (max-width:768px){
     .border-right.border-right-no-medium {
