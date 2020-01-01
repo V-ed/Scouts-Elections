@@ -195,13 +195,13 @@
 				<div class="form-group row">
 					<div class="col-12 col-sm-3 col-md-5 col-lg-4">
 						<label class="col-form-label" for="db-psw">
-							Mot de passe de la base de données&nbsp;<span class="col-form-label is-popable-hover" data-placement="auto" data-html="true" data-title="<span class='text-danger'>Avertissement!</span>" data-content="Le mot de passe n'est pas sécurisé : ceci n'est qu'un mur pour empêcher les jeunes de voir les résultats si jamais l'appareil est déplacé dans le local lorsque la session de vote est terminé, par exemple.<br>Veuillez <strong>ne pas</strong> utiliser de mot de passe sensible que vous utilisez à tout les jours!">&#9888;</span>
+							Mot de passe de la base de données&nbsp;<span class="col-form-label is-popable-hover" data-placement="auto" data-html="true" data-title="<span class='text-danger'>Avertissement!</span>" data-content="Le mot de passe n'est pas sécurisé : ceci n'est qu'un mur pour empêcher les jeunes de voir les résultats si jamais l'appareil est déplacé dans le local lorsque la session de vote est terminé, par exemple.<br>Veuillez <strong>ne pas</strong> utiliser de mot de passe sensible que vous utilisez à tous les jours!">&#9888;</span>
 						</label>
 					</div>
 					<div class="col-12 col-sm-9 col-md-7 col-lg-8 d-flex flex-row align-self-center">
 						<input type="password" class="form-control" id="db-psw" aria-describedby="dbPsw" name="dbPsw" data-placement="top" autocomplete="off" spellcheck="false" placeholder="(optionnel)">
-						<div class="ml-2">
-							<input type="checkbox" id="password-visible" name="passwordVisible" class="boot-checkbox checkbox-eye">
+						<div class="bootstrap-checkbox ml-2">
+							<input type="checkbox" id="password-visible" name="passwordVisible" class="checkbox-eye">
 							<label for="password-visible"></label>
 						</div>
 					</div>
@@ -234,17 +234,17 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<div class="col-12 col-md-6 border-right border-right-no-medium d-flex flex-row justify-content-between">
+					<div class="col-12 col-md-6 mb-3 mb-md-0 border-right border-right-no-medium d-flex flex-row justify-content-between">
 						<label class="col-form-label is-popable-hover" data-placement="top" data-content="Permet de voter plusieurs fois pour le même candidat. Par défaut, un candidat ne peut avoir qu'un seul vote (case décochée).">Multiple votes par candidat</label>
-						<div>
-							<input type="checkbox" id="allow-multiple-same-candidate" name="allowMultipleSameCandidate" class="boot-checkbox">
+						<div class="bootstrap-checkbox">
+							<input type="checkbox" id="allow-multiple-same-candidate" name="allowMultipleSameCandidate">
 							<label for="allow-multiple-same-candidate"></label>
 						</div>
 					</div>
 					<div class="col-12 col-md-6 d-flex flex-row justify-content-between">
 						<label class="col-form-label is-popable-hover" data-placement="top" data-content="Permet de télécharger la base de données automatiquement pendant le vote si la page se ferme ou se fait rafraichir. Coché par défaut (recommandé).">Télécharger la bd automatiquement</label>
-						<div>
-							<input type="checkbox" id="auto-download-db" name="autoDownloadDb" class="boot-checkbox" checked>
+						<div class="bootstrap-checkbox">
+							<input type="checkbox" id="auto-download-db" name="autoDownloadDb" checked>
 							<label for="auto-download-db"></label>
 						</div>
 					</div>
@@ -276,8 +276,13 @@
 						<div class="col-sm-3 col-md-2">
 							<label class="col-form-label" for="candidate-name-1">Candidat 1</label>
 						</div>
-						<div class="col-sm-9 col-md-10">
+						<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
 							<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-placement="top" data-candidatenumber="1" autocomplete="off" required>
+							<div class="d-flex align-items-center justify-content-center ml-3">
+								<button id="candidate-remove-1" type="button" class="btn btn-outline-danger" tabindex="-1" disabled>
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
 						</div>
 					</div>
 					<div id="setup-candidates">
@@ -289,7 +294,7 @@
 						<button id="candidate-add" class="btn btn-secondary mx-auto mx-md-0" data-candidatecount="1">Ajouter Candidat</button>
 					</div>
 					<div class="mt-2 mt-md-0 mr-md-0 ml-md-5 col-auto px-3 px-md-0">
-						<button id="candidate-remove" class="btn btn-danger mx-auto mx-md-0" disabled="">Enlever dernier Candidat</button>
+						<button type="button" id="candidate-remove-all" class="btn btn-warning mx-auto mx-md-0" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Cette action est irréversible. Êtes-vous sûr de vouloir enlever tous les candidats?</p><button type='button' id='candidate-remove-all-confirm' class='btn btn-danger mx-auto'>Confirmer</button></div>" disabled>Enlever tous les candidats</button>
 					</div>
 				</div>
 				<div class="row">

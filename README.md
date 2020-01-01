@@ -61,4 +61,14 @@ The button to return to the homepage currently simply reloads the page, as this 
 All the text in here is in French, since our group is French-based.
 Code is in English because code should always be in English.
 
+## Author
+
+- Guillaume Marcoux ([V-ed](https://github.com/V-ed)) - Owner
+
+See also the list of [contributors](https://github.com/V-ed/Scouts-Elections/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details
+
 [reset-state]: https://github.com/V-ed/Scouts-Elections/issues/43

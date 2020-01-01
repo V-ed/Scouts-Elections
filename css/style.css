@@ -164,31 +164,36 @@ table.table-border {
 
 /* Custom checkbox style */
 
-.boot-checkbox {
+div.bootstrap-checkbox {
+    max-height: calc(1.5em + .75rem + 2px);
+}
+
+div.bootstrap-checkbox > input {
     display: none;
 }
 
-.boot-checkbox + label {
+div.bootstrap-checkbox > input + label {
     border: 1px solid #ced4da;
     border-radius: .25rem;
     position: relative;
     margin: 0;
     padding: 1.1rem;
     height: calc(1.5em + .75rem + 2px);
+    cursor: pointer;
 }
 
-.boot-checkbox + label:active,
-.boot-checkbox:checked + label:active
+div.bootstrap-checkbox > input + label:active,
+div.bootstrap-checkbox > input:checked + label:active
 {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.boot-checkbox:checked + label {
+div.bootstrap-checkbox > input:checked + label {
     border: 1px solid #9ca6ad;
     box-shadow: inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05), inset 15px 10px -12px rgba(255, 255, 255, 0.1);
 }
 
-.boot-checkbox + label:after {
+div.bootstrap-checkbox > input + label:after {
     font-size: 1.5rem;
     position: absolute;
     top: 0;
@@ -199,26 +204,26 @@ table.table-border {
     font-weight: bold;
 }
 
-.boot-checkbox:checked + label:after {
+div.bootstrap-checkbox > input:checked + label:after {
     content: '\2713';
 }
 
-.checkbox-eye.boot-checkbox {
+div.bootstrap-checkbox > input.checkbox-eye {
     /* Fix non-cached image not loading directly when toggling checked and not */
     background: url(../images/open-eye.png) -9999px -9999px no-repeat;
     background-size: 0 0;
 }
 
-.checkbox-eye.boot-checkbox:not(:checked) + label {
+div.bootstrap-checkbox > input.checkbox-eye:not(:checked) + label {
     background: url(../images/closed-eye.png) 0 0px no-repeat;
     background-size: 100% 100%;
 }
 
-.checkbox-eye.boot-checkbox:checked + label {
+div.bootstrap-checkbox > input.checkbox-eye:checked + label {
     border: 1px solid #ced4da;
 }
 
-.checkbox-eye.boot-checkbox:checked + label:after {
+div.bootstrap-checkbox > input.checkbox-eye:checked + label:after {
     background: url(../images/open-eye.png) 0 0px no-repeat;
     background-size: 100% 100%;
     content: '';
@@ -258,6 +263,16 @@ span.collapsing + span.collapse-ellipsis,
 span.collapse.show + span.collapse-ellipsis
 {
     opacity: 0;
+}
+
+/* --------------- */
+/* BOOTSTRAP FIXES */
+/* --------------- */
+
+/* Fix bootstrap disabled buttons cursors */
+
+.btn:disabled {
+    cursor: not-allowed;
 }
 
 /* Fix bootstrap border utilities */

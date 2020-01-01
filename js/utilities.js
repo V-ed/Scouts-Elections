@@ -36,6 +36,9 @@ function download_data(data, dbNameSuffix) {
 // Setup popovers
 
 $(function () {
+	// Accept buttons in tooltips and Popovers
+	$.fn.tooltip.Constructor.Default.whiteList.button = [];
+	
 	$(".is-popable").popover({trigger: "manual"});
 	$(".is-popable-hover").popover({trigger: "hover"});
 });
