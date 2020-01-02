@@ -352,8 +352,6 @@ function setup_voting_session(data, sharedElectionCode) {
 				
 			const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
 			
-			sharedElectionCode = "9ITOXC"; // TODO : REMOVE ME FOR PROD
-			
 			const ajaxSettings = {
 				type: 'PUT',
 				url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
@@ -491,8 +489,6 @@ function setup_voting_session(data, sharedElectionCode) {
 		}
 		
 		if (sharedElectionCode) {
-			
-			sharedElectionCode = "9ITOXC"; // TODO : REMOVE ME FOR PROD
 			
 			const ajaxSettings = {
 				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfSeatsTaken&numberOfVoted`,
