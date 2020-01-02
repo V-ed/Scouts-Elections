@@ -10,13 +10,17 @@ let auto_download_data = function() {
 	
 }
 
+function updateSharedElectionCode(newSharedElectionCode) {
+	document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = newSharedElectionCode);
+	document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = !newSharedElectionCode);
+}
+
 async function setup_votes(data, sharedElectionCode) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
 	if (sharedElectionCode) {
-		document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = sharedElectionCode);
-		document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = false);
+		updateSharedElectionCode(sharedElectionCode);
 	}
 	
 	if (data.numberOfVoted == 0) {
@@ -339,45 +343,65 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 	}
 	
+	const overlayRequestErrorSpan = document.getElementById("overlay-request-error-details");
+	let votesOnSubmitError = undefined;
+	
+	async function updateVotes(requestContainer) {
+		
+		if (sharedElectionCode) {
+				
+			const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
+			
+			sharedElectionCode = "9ITOXC"; // TODO : REMOVE ME FOR PROD
+			
+			const ajaxSettings = {
+				type: 'PUT',
+				url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
+				data: candidatesIndexesJSON,
+				cache: false,
+			};
+			
+			try {
+				
+				const response = await sendRequestFor(3, ajaxSettings, requestContainer);
+				
+				mergeObjectTo(data, response.data, false, false);
+				
+			} catch (error) {
+				
+				overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi des votes au serveur.";
+				
+				votesOnSubmitError = candidatesIndexes;
+				
+				return;
+				
+			}
+			
+		}
+		else {
+			
+			candidatesIndexes.forEach(voteIndex => {
+				
+				data.candidates[voteIndex].voteCount++;
+				
+			});
+			
+			data.numberOfVoted++;
+			
+		}
+		
+		resetVotingState();
+		
+		votesOnSubmitError = undefined;
+		
+	}
+	
 	submitVotesButton.addEventListener("click", () => {
 		
 		submitVotesButton.disabled = true;
 		votingOverlay.classList.add("active");
 		
-		setTimeout(async () => {
-			
-			if (sharedElectionCode) {
-				
-				const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
-				
-				const ajaxSettings = {
-					type: 'PUT',
-					url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
-					data: candidatesIndexesJSON,
-					cache: false,
-					contentType: 'application/json',
-				};
-				
-				const response = await $.ajax(ajaxSettings);
-				
-				mergeObjectTo(data, response.data, false, false);
-				
-			}
-			else {
-				
-				candidatesIndexes.forEach(voteIndex => {
-					
-					data.candidates[voteIndex].voteCount++;
-					
-				});
-				
-				data.numberOfVoted++;
-				
-			}
-			
-			resetVotingState();
-			
-		}, 1200);
+		setTimeout(async () => updateVotes(), 1200);
 		
 	});
 	
@@ -441,21 +465,57 @@ function setup_voting_session(data, sharedElectionCode) {
 		$("#voting-toasts-container > .toast").toast("show");
 		
 	}
+				
+	const overlayErrorModal = document.getElementById("overlay-request-error-modal");
+	
+	function showBadVoteSendRequestError() {
+		
+		overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi des votes au serveur.";
+		
+		$(overlayErrorModal).modal("show");
+		
+	}
 	
 	async function go_to_next_voter(data) {
 		
+		if (($(overlayErrorModal ).data("bs.modal") || {})._isShown) {
+			return;
+		}
+		
+		if (votesOnSubmitError) {
+			
+			showBadVoteSendRequestError();
+			
+			return;
+			
+		}
+		
 		if (sharedElectionCode) {
 			
+			sharedElectionCode = "9ITOXC"; // TODO : REMOVE ME FOR PROD
+			
 			const ajaxSettings = {
-				type: 'GET',
 				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfSeatsTaken&numberOfVoted`,
 				cache: false,
-				contentType: 'application/json',
 			};
 			
-			const response = await $.ajax(ajaxSettings);
-			
-			mergeObjectTo(data, response.data, false, false);
+			try {
+				
+				const response = await sendRequestFor(3, ajaxSettings, 'overlay-requester-container');
+				
+				mergeObjectTo(data, response.data, false, false);
+				
+				didUpdateVoteCount = true;
+				
+			} catch (error) {
+				
+				overlayRequestErrorSpan.textContent = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
+				
+				$(overlayErrorModal).modal("show");
+				
+				return;
+				
+			}
 			
 		}
 		
@@ -469,15 +529,25 @@ function setup_voting_session(data, sharedElectionCode) {
 				if (sharedElectionCode) {
 					
 					const ajaxSettings = {
-						type: 'GET',
 						url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 						cache: false,
-						contentType: 'application/json',
 					};
 					
-					const response = await $.ajax(ajaxSettings);
-					
-					mergeObjectTo(data, response.data, false, false);
+					try {
+						
+						const response = await sendRequestFor(3, ajaxSettings, 'overlay-requester-container');
+						
+						mergeObjectTo(data, response.data, false, false);
+						
+					} catch (error) {
+						
+						overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
+						
+						$(overlayErrorModal).modal("show");
+						
+						return;
+						
+					}
 					
 				}
 				else {
@@ -501,6 +571,48 @@ function setup_voting_session(data, sharedElectionCode) {
 		}
 		
 	}
+	
+	document.getElementById("overlay-request-error-local-button").addEventListener("click", () => {
+		
+		$(overlayErrorModal).modal("hide");
+		
+		sharedElectionCode = undefined;
+		updateSharedElectionCode(undefined);
+		
+		if (votesOnSubmitError) {
+			
+			updateVotes();
+			
+		}
+		else {
+			
+			go_to_next_voter(data);
+			
+		}
+		
+	});
+	
+	document.getElementById("overlay-request-error-retry-button").addEventListener("click", async () => {
+		
+		$(overlayErrorModal).modal("hide");
+		
+		if (votesOnSubmitError) {
+			
+			await updateVotes('overlay-requester-container');
+			
+			if (votesOnSubmitError) {
+				
+				showBadVoteSendRequestError();
+				
+				return;
+				
+			}
+			
+		}
+		
+		go_to_next_voter(data);
+		
+	});
 	
 	$("#voting-toasts-container > .toast").on("hidden.bs.toast", () => {
 		toastContainer.classList.add("i-am-away");

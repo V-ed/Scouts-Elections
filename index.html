@@ -26,12 +26,47 @@
 	
 	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex">
 		
+		<div id="overlay-requester-container" class="requester-container position-absolute mr-5 mt-5 mr-md-5 mt-md-5" style="top: 0; right: 0;" hidden>
+			<div class="align-self-center">
+				<div class="requester-spinner spinner-border" role="status">
+					<span class="sr-only">Chargement...</span>
+				</div>
+			</div>
+		</div>
+		
 		<div class="touch-skipper w-100 h-50 fixed-top"></div>
 		
 		<div class="m-auto text-center">
 			<img id="success-img" src="./images/success.png" width="25%" class="m-auto img-drop-shadow">
 			<h1 class="display-1">Votes enregistrés!</h1>
 			<h2 class="display-3">Merci!</h2>
+		</div>
+		
+		<div class="modal" id="overlay-request-error-modal" data-backdrop="false" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="overlay-request-error-modal-title" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header justify-content-start">
+						<img class="requester-alert-icon colorize-red mr-2 is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et la fonctionnalitée est donc désactivée. Veuillez vous assurer d'être connecté à l'internet!">
+						<h5 class="modal-title" id="overlay-request-error-modal-title">Une erreur est survenue</h5>
+					</div>
+					<div class="modal-body text-left">
+						
+						<div class="text-justify">
+							<p>
+								<span id="overlay-request-error-details"></span>
+								<span>Ceci est souvent dû à une erreur de connexion internet avec votre appareil ou le serveur est présentement inaccessible.</span>
+							</p>
+							<p>Vous pouvez tenter d'envoyer la requête au serveur à nouveau ou simplement continuer l'élection localement en utilisant les boutons ci-dessous.</p>
+							<span><span class="text-danger">NOTE : </span>Cependant, si vous continuez l'élection localement, les données des autres appareils ne seront pas synchronisées avec votre appareil!</span>
+						</div>
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="overlay-request-error-local-button" class="btn btn-secondary">Continuer localement</button>
+						<button type="button" id="overlay-request-error-retry-button" class="btn btn-primary">Réessayer</button>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 	</div>
