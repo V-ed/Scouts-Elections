@@ -286,7 +286,6 @@ function setup_setup() {
 			url: `${sharedElectionHostRoot}/create`,
 			data: electionJSONData,
 			cache: false,
-			contentType: 'application/json',
 		};
 		
 		let response = await sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container');
