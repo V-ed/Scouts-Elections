@@ -92,7 +92,7 @@ div#voting-voted-overlay.active > * {
     opacity: 1;
 }
 
-div#voting-voted-overlay img {
+div#voting-voted-overlay img.img-drop-shadow {
     -webkit-filter: drop-shadow(0px 5px 10px #222);
     filter:         drop-shadow(0px 5px 10px #222);
 }
