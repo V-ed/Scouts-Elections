@@ -551,43 +551,59 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
 		ajaxSettings.contentType = 'application/json';
 	}
 	
-	if (typeof requesterContainer == 'string') {
-		requesterContainer = document.getElementById(requesterContainer);
+	let requesterSpinners = undefined;
+	let requesterSuccessIcons = undefined;
+	let requesterErrorIcons = undefined;
+	
+	if (requesterContainer) {
+		
+		if (typeof requesterContainer == 'string') {
+			requesterContainer = document.getElementById(requesterContainer);
+		}
+		
+		requesterSpinners = Array.from(requesterContainer.getElementsByClassName("requester-spinner"));
+		requesterSuccessIcons = Array.from(requesterContainer.getElementsByClassName("requester-success-icon"));
+		requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
+		
+		requesterSpinners.forEach(elem => elem.hidden = false);
+		requesterSuccessIcons.forEach(elem => elem.hidden = true);
+		requesterErrorIcons.forEach(elem => elem.hidden = true);
+		
+		requesterContainer.hidden = false;
+		
 	}
-	
-	const requesterSpinners = Array.from(requesterContainer.getElementsByClassName("requester-spinner"));
-	const requesterSuccessIcons = Array.from(requesterContainer.getElementsByClassName("requester-success-icon"));
-	const requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
-	
-	requesterSpinners.forEach(elem => elem.hidden = false);
-	requesterSuccessIcons.forEach(elem => elem.hidden = true);
-	requesterErrorIcons.forEach(elem => elem.hidden = true);
-	
-	requesterContainer.hidden = false;
 	
 	let request = $.ajax(ajaxSettings);
 	
-	// Return request with added default behaviors for handling spinners / response icons
-	return request.done(() => {
-		if (!doHideContainerOnEnd) {
-			requesterSuccessIcons.forEach(elem => elem.hidden = false);
-		}
-	})
-	.fail(() => {
-		if (!doHideContainerOnEnd) {
-			requesterErrorIcons.forEach(elem => elem.hidden = false);
-		}
-	})
-	.always(() => {
-		requesterSpinners.forEach(elem => elem.hidden = true);
+	if (!requesterContainer) {
+		// Return plain request since no UI container was specified
+		return request;
+	}
+	else {
 		
-		if (doHideContainerOnEnd) {
-			requesterContainer.hidden = true;
-		}
-	});
+		// Return request with added default behaviors for handling spinners / response icons
+		return request.done(() => {
+			if (!doHideContainerOnEnd) {
+				requesterSuccessIcons.forEach(elem => elem.hidden = false);
+			}
+		})
+		.fail(() => {
+			if (!doHideContainerOnEnd) {
+				requesterErrorIcons.forEach(elem => elem.hidden = false);
+			}
+		})
+		.always(() => {
+			requesterSpinners.forEach(elem => elem.hidden = true);
+			
+			if (doHideContainerOnEnd) {
+				requesterContainer.hidden = true;
+			}
+		});
+		
+	}
 	
 }
-	
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
