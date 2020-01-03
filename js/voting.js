@@ -15,7 +15,7 @@ function updateSharedElectionCode(newSharedElectionCode) {
 	document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = !newSharedElectionCode);
 }
 
-async function setup_votes(data, sharedElectionCode) {
+async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, takeSeatRequestContainer) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
@@ -24,7 +24,13 @@ async function setup_votes(data, sharedElectionCode) {
 	}
 	
 	if (data.numberOfVoted == 0) {
+		
+		if (beforeSwitchCallback) {
+			beforeSwitchCallback();
+		}
+		
 		switch_view("pre-voting-page", () => setup_pre_voting_session(data, sharedElectionCode));
+		
 	}
 	else {
 		
@@ -37,7 +43,7 @@ async function setup_votes(data, sharedElectionCode) {
 					cache: false,
 				};
 				
-				const response = await sendRequest(ajaxSettings);
+				const response = await sendRequest(ajaxSettings, takeSeatRequestContainer);
 				
 				mergeObjectTo(data, response.data, false, false);
 				
@@ -45,7 +51,12 @@ async function setup_votes(data, sharedElectionCode) {
 			
 		}
 		
+		if (beforeSwitchCallback) {
+			beforeSwitchCallback();
+		}
+		
 		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+		
 	}
 	
 }
@@ -493,7 +504,7 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 			try {
 				
-				const response = await sendRequestFor(3, ajaxSettings, 'overlay-requester-container');
+				const response = await sendRequestFor(3, ajaxSettings, 'voting-requester-container');
 				
 				mergeObjectTo(data, response.data, false, false);
 				
@@ -527,7 +538,7 @@ function setup_voting_session(data, sharedElectionCode) {
 					
 					try {
 						
-						const response = await sendRequestFor(3, ajaxSettings, 'overlay-requester-container');
+						const response = await sendRequestFor(3, ajaxSettings, 'voting-requester-container');
 						
 						mergeObjectTo(data, response.data, false, false);
 						
@@ -590,7 +601,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		if (votesOnSubmitError) {
 			
-			await updateVotes('overlay-requester-container');
+			await updateVotes('voting-requester-container');
 			
 			if (votesOnSubmitError) {
 				

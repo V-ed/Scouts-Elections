@@ -24,15 +24,15 @@
 
 <body class="d-flex">
 	
-	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex">
-		
-		<div id="overlay-requester-container" class="requester-container position-absolute mr-5 mt-5 mr-md-5 mt-md-5" style="top: 0; right: 0;" hidden>
-			<div class="align-self-center">
-				<div class="requester-spinner spinner-border" role="status">
-					<span class="sr-only">Chargement...</span>
-				</div>
+	<div id="voting-requester-container" class="requester-container position-absolute mr-5 mt-5 mr-md-5 mt-md-5" style="top: 0; right: 0; z-index: 10001;" hidden>
+		<div class="align-self-center">
+			<div class="requester-spinner spinner-border" role="status">
+				<span class="sr-only">Chargement...</span>
 			</div>
 		</div>
+	</div>
+	
+	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex">
 		
 		<div class="touch-skipper w-100 h-50 fixed-top"></div>
 		

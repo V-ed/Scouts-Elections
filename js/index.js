@@ -20,7 +20,7 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 	const codeElem = document.getElementById("fullCodeValue");
 	
 	const modalButton = document.getElementById("home-join-election-modal-button");
-			
+	
 	const errorSpan = document.getElementById("home-join-modal-error-span");
 	
 	const partitionnedInputs = Array.from(document.querySelectorAll("input[data-partition-for-id='fullCodeValue']"));
@@ -41,16 +41,19 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 		
 		modalButton.disabled = true;
 		partitionnedInputs.forEach(input => input.disabled = true);
+		errorSpan.hidden = true;
 		
 		let request = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
 		
 		request.then(response => {
 			
-			$("#home-join-election-modal").modal("hide");
-			
-			errorSpan.hidden = true;
-			
-			setup_votes(response.data, code);
+			return setup_votes(response.data, code, () => {
+				
+				$("#home-join-election-modal").modal("hide");
+				
+				errorSpan.hidden = true;
+				
+			}, 'home-join-modal-requester-container');
 			
 		})
 		.catch(response => {
