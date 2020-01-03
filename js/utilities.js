@@ -600,10 +600,12 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, min
 	else {
 		
 		// Return request with added default behaviors for handling spinners / response icons
-		return request.then(() => {
+		return request.then(response => {
 			if (!doHideContainerOnEnd) {
 				requesterSuccessIcons.forEach(elem => elem.hidden = false);
 			}
+			
+			return Promise.resolve(response);
 		})
 		.catch(error => {
 			if (!doHideContainerOnEnd) {
