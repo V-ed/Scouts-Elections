@@ -636,7 +636,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 		
 		try {
 			
-			return await sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd);
+			return await sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
 			
 		}
 		catch (error) {
