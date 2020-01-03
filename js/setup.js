@@ -259,7 +259,7 @@ function setup_setup() {
 		
 		let data = createData();
 		
-		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+		setup_votes(data);
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
