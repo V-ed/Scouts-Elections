@@ -288,28 +288,35 @@ function setup_setup() {
 			cache: false,
 		};
 		
-		let response = await sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container');
-		
-		if (response.code) {
+		sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
+			
+			if (!response.code) {
+				throw "Missing election code!";
+			}
 			
 			let data = mergeObjectTo(electionJSONData, response.data, true);
 			
-			$("#setup-create-election-modal").modal("hide");
+			return setup_votes(data, response.code, () => {
+				
+				$("#setup-create-election-modal").modal("hide");
+				
+				window.removeEventListener("beforeunload", prevent_data_loss);
+				
+				uninitialize_images("setup-page");
+				
+			}, 'setup-create-election-modal-requester-container');
 			
-			setup_votes(data, response.code);
-			
-			window.removeEventListener("beforeunload", prevent_data_loss);
-			
-			uninitialize_images("setup-page");
-			
-		}
-		else {
+		})
+		.catch(error => {
 			
 			errorDiv.hidden = false;
 			
-		}
-		
-		submitSharedSetupButton.disabled = false;
+		})
+		.finally(() => {
+			
+			submitSharedSetupButton.disabled = false;
+			
+		});
 		
 	});
 	
