@@ -611,13 +611,13 @@ function verify_all_valid() {
 	}
 	else if (submitSharedSetupButton.disabled) {
 		
-		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).done(() => {
+		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).then(() => {
 		
 			isServerAccessible = true;
 			
 			submitSharedSetupButton.disabled = false;
 			
-		});
+		}).catch(error => {});
 		
 	}
 	

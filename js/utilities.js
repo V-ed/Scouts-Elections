@@ -534,7 +534,9 @@ elems.forEach(elem => {
 
 // Send requests and handle UI spinners
 
-function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
+function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+	
+	const dateAfterTimeout = Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500);
 	
 	doHideContainerOnEnd = doHideContainerOnEnd !== false;
 	
@@ -573,7 +575,23 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
 		
 	}
 	
-	let request = $.ajax(ajaxSettings);
+	let request = new Promise(function (resolve, reject) {
+		
+		$.ajax(ajaxSettings).done(function() {
+			
+			while (Date.now() <= dateAfterTimeout) {}
+			
+			resolve.apply(null, arguments);
+			
+		}).fail(function() {
+			
+			while (Date.now() <= dateAfterTimeout) {}
+			
+			reject.apply(null, arguments);
+			
+		});
+		
+	});
 	
 	if (!requesterContainer) {
 		// Return plain request since no UI container was specified
@@ -582,17 +600,19 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd) {
 	else {
 		
 		// Return request with added default behaviors for handling spinners / response icons
-		return request.done(() => {
+		return request.then(() => {
 			if (!doHideContainerOnEnd) {
 				requesterSuccessIcons.forEach(elem => elem.hidden = false);
 			}
 		})
-		.fail(() => {
+		.catch(error => {
 			if (!doHideContainerOnEnd) {
 				requesterErrorIcons.forEach(elem => elem.hidden = false);
 			}
+			
+			return Promise.reject(error);
 		})
-		.always(() => {
+		.finally(() => {
 			requesterSpinners.forEach(elem => elem.hidden = true);
 			
 			if (doHideContainerOnEnd) {

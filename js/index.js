@@ -11,7 +11,7 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
-sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false).done(() => {
+sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false).then(() => {
 	
 	isServerAccessible = true;
 	
@@ -44,7 +44,7 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 		
 		let request = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
 		
-		request.done(response => {
+		request.then(response => {
 			
 			$("#home-join-election-modal").modal("hide");
 			
@@ -53,7 +53,7 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 			setup_votes(response.data, code);
 			
 		})
-		.fail(response => {
+		.catch(response => {
 			
 			if (response.status == 400) {
 				errorSpan.textContent = "Ce code n'existe pas. Veuillez réessayer!";
@@ -65,14 +65,14 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 			errorSpan.hidden = false;
 			
 		})
-		.always(() => {
+		.finally(() => {
 			modalButton.disabled = false;
 			partitionnedInputs.forEach(input => input.disabled = false);
 		});
 		
 	});
 	
-});
+}).catch(error => {});
 
 create_file_loader("database-loader-zone", load_file, items => {
 	const count = items.length;
