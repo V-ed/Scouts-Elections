@@ -2,9 +2,72 @@ function setup_post_voting(data, sharedElectionCode) {
 	
 	initialize_images("post-shared-voting-page", data.groupImage);
 	
+	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
+	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
+	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
+	
+	const sharedPostVoteFinishedIcon = document.getElementById("post-shared-voting-verify-finished-icon");
+	const sharedPostVoteNotFinishedIcon = document.getElementById("post-shared-voting-verify-not-finished-icon");
+	
+	let autoClickVerifyTimerSeconds = 30;
+	const sharedPostVerifyAutoClickTimer = document.getElementById("shared-post-verify-auto-click-timer");
+	
+	function resetAutoClickVerifyTimer(count) {
+		
+		autoClickVerifyTimerSeconds = count;
+		
+		sharedPostVerifyAutoClickTimer.textContent = ` (${autoClickVerifyTimerSeconds})`;
+		
+		const intervalId = setInterval(() => {
+			
+			sharedPostVerifyAutoClickTimer.textContent = ` (${--autoClickVerifyTimerSeconds})`;
+			
+			if (autoClickVerifyTimerSeconds <= 0) {
+				
+				clearInterval(intervalId);
+				
+				sharedPostVoteButtonVerify.dispatchEvent(new Event("click"));
+				
+			}
+			
+		}, 1000);
+		
+		return intervalId;
+		
+	}
+	
+	let autoClickVerifyTimer = undefined;
+	
+	function handleVerificationDisabling(data) {
+		
+		const didAllVoted = data.numberOfVoted == data.numberOfVoters;
+		
+		sharedPostVoteButtonVerify.disabled = didAllVoted;
+		sharedPostVoteButtonGo.disabled = !didAllVoted;
+		sharedPostVoteButtonGoAndDelete.disabled = !didAllVoted;
+		
+		clearInterval(autoClickVerifyTimer);
+		
+		if (didAllVoted) {
+			sharedPostVoteFinishedIcon.hidden = false;
+			
+			sharedPostVerifyAutoClickTimer.hidden = true;
+		}
+		else {
+			sharedPostVoteNotFinishedIcon.hidden = false;
+			
+			autoClickVerifyTimer = resetAutoClickVerifyTimer(30);
+		}
+		
+	}
+	
+	handleVerificationDisabling(data);
+	
 	const sharedPostVoteButtonSkipWait = document.getElementById("shared-post-votes-skip-wait");
 	
 	sharedPostVoteButtonSkipWait.addEventListener("click", () => {
+		
+		clearInterval(autoClickVerifyTimer);
 		
 		setup_results(data);
 		
@@ -12,34 +75,39 @@ function setup_post_voting(data, sharedElectionCode) {
 		
 	});
 	
-	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
-	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
-	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
-	
-	function handleVerificationDisabling(data) {
-		
-		const didAllVoted = data.numberOfVoted == data.numberOfVoters
-		
-		sharedPostVoteButtonVerify.disabled = didAllVoted;
-		sharedPostVoteButtonGo.disabled = !didAllVoted;
-		sharedPostVoteButtonGoAndDelete.disabled = !didAllVoted;
-		
-	}
-	
-	handleVerificationDisabling(data);
+	const errorInternetErrorMessage = "Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!";
 	
 	sharedPostVoteButtonVerify.addEventListener("click", async () => {
 		
 		const ajaxSettings = {
-			type: 'GET',
 			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&candidates`,
 			cache: false,
-			contentType: 'application/json',
 		};
 		
-		const response = await $.ajax(ajaxSettings);
+		sharedPostVoteFinishedIcon.hidden = true;
+		sharedPostVoteNotFinishedIcon.hidden = true;
 		
-		mergeObjectTo(data, response.data, false, false);
+		sharedPostVoteButtonVerify.disabled = true;
+		clearInterval(autoClickVerifyTimer);
+		
+		const sharedPostVotesVerifyErrorSpan = document.getElementById("shared-post-votes-verify-error-span");
+		
+		try {
+			
+			sharedPostVotesVerifyErrorSpan.hidden = true;
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesVerifyErrorSpan.textContent = messageToShow;
+			sharedPostVotesVerifyErrorSpan.hidden = false;
+			
+		}
 		
 		handleVerificationDisabling(data);
 		
@@ -48,19 +116,36 @@ function setup_post_voting(data, sharedElectionCode) {
 	sharedPostVoteButtonGo.addEventListener("click", async () => {
 		
 		const ajaxSettings = {
-			type: 'GET',
 			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
 			cache: false,
-			contentType: 'application/json',
 		};
 		
-		const response = await $.ajax(ajaxSettings);
+		sharedPostVoteButtonGo.disabled = true;
 		
-		mergeObjectTo(data, response.data, false, false);
+		const sharedPostVotesGoErrorSpan = document.getElementById("shared-post-votes-go-error-span");
 		
-		setup_results(data);
+		try {
+			
+			sharedPostVotesGoErrorSpan.hidden = true;
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+			setup_results(data);
+			
+			uninitialize_images("voting-page");
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesGoErrorSpan.textContent = messageToShow;
+			sharedPostVotesGoErrorSpan.hidden = false;
+			
+		}
 		
-		uninitialize_images("voting-page");
+		sharedPostVoteButtonGo.disabled = false;
 		
 	});
 	
@@ -70,16 +155,34 @@ function setup_post_voting(data, sharedElectionCode) {
 			type: 'DELETE',
 			url: `${sharedElectionHostRoot}/delete/${sharedElectionCode}`,
 			cache: false,
-			contentType: 'application/json',
 		};
 		
-		const response = await $.ajax(ajaxSettings);
+		sharedPostVoteButtonGoAndDelete.disabled = true;
 		
-		mergeObjectTo(data, response.data, false, false);
+		const sharedPostVotesGoAndDeleteErrorSpan = document.getElementById("shared-post-votes-go-and-delete-error-span");
 		
-		setup_results(data);
+		try {
+			
+			sharedPostVotesGoAndDeleteErrorSpan.hidden = true;
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+			setup_results(data);
+			
+			uninitialize_images("voting-page");
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesGoAndDeleteErrorSpan.textContent = messageToShow;
+			sharedPostVotesGoAndDeleteErrorSpan.hidden = false;
+			
+		}
 		
-		uninitialize_images("voting-page");
+		sharedPostVoteButtonGoAndDelete.disabled = false;
 		
 	});
 	
