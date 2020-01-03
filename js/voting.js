@@ -33,13 +33,11 @@ async function setup_votes(data, sharedElectionCode) {
 			if (data.numberOfVoted == data.numberOfSeatsTaken) {
 				
 				const ajaxSettings = {
-					type: 'GET',
 					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 					cache: false,
-					contentType: 'application/json',
 				};
 				
-				const response = await $.ajax(ajaxSettings);
+				const response = await sendRequest(ajaxSettings);
 				
 				mergeObjectTo(data, response.data, false, false);
 				
@@ -64,13 +62,11 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		if (sharedElectionCode) {
 			
 			const ajaxSettings = {
-				type: 'GET',
 				url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 				cache: false,
-				contentType: 'application/json',
 			};
 			
-			const response = await $.ajax(ajaxSettings);
+			const response = await sendRequest(ajaxSettings, 'pre-voting-requester-container');
 			
 			mergeObjectTo(data, response.data, false, false);
 			
