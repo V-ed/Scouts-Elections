@@ -641,7 +641,8 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 		}
 		catch (error) {
 			
-			if (attemptCount == numberOfTries) {
+			// If the attempt count is full or the request was successfull but the server returned an error, stop trying
+			if (attemptCount == numberOfTries || error.readyState == 4) {
 				throw error;
 			}
 			
