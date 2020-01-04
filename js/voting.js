@@ -15,7 +15,7 @@ function updateSharedElectionCode(newSharedElectionCode) {
 	document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = !newSharedElectionCode);
 }
 
-async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, takeSeatRequestContainer) {
+async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
@@ -23,7 +23,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, takeS
 		updateSharedElectionCode(sharedElectionCode);
 	}
 	
-	if (data.numberOfVoted == 0) {
+	if (doForceShowPreVotingPage || data.numberOfVoted == 0) {
 		
 		if (beforeSwitchCallback) {
 			beforeSwitchCallback();
@@ -34,28 +34,31 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, takeS
 	}
 	else {
 		
+		let canGoToVotingPage = true;
+		
 		if (sharedElectionCode) {
 			
-			if (data.numberOfVoted == data.numberOfSeatsTaken) {
+			try {
 				
-				const ajaxSettings = {
-					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
-					cache: false,
-				};
+				canGoToVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true);
 				
-				const response = await sendRequest(ajaxSettings, takeSeatRequestContainer);
+			} catch (error) {
 				
-				mergeObjectTo(data, response.data, false, false);
+				return Promise.reject(error.error);
 				
 			}
 			
 		}
 		
-		if (beforeSwitchCallback) {
-			beforeSwitchCallback();
+		if (canGoToVotingPage) {
+			
+			if (beforeSwitchCallback) {
+				beforeSwitchCallback();
+			}
+			
+			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			
 		}
-		
-		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 		
 	}
 	
@@ -67,19 +70,78 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
-	document.getElementById("pre-voting-submit-button").addEventListener("click", async e => {
-		e.preventDefault();
+	const preVotingSubmitButton = document.getElementById("pre-voting-submit-button");
+	
+	if (sharedElectionCode) {
+		
+		// pre-voting-shared-force-local-button
+		
+		const preVotingSharedForceLocalButton = document.getElementById("pre-voting-shared-force-local-button");
+		
+		$(preVotingSharedForceLocalButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
+		
+			const preVotingSharedConfirmStartLocalButton = document.getElementById("pre-voting-shared-confirm-start-local-button");
+			
+			preVotingSharedConfirmStartLocalButton.addEventListener("click", () => {
+				
+				sharedElectionCode = undefined;
+				updateSharedElectionCode(undefined);
+				
+				data.numberOfSeatsTaken = data.numberOfVoted;
+				
+				$(this).popover("hide");
+				
+				activateVotingSession();
+				
+			});
+			
+		});
+		
+	}
+	
+	async function activateVotingSession() {
 		
 		if (sharedElectionCode) {
 			
-			const ajaxSettings = {
-				url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
-				cache: false,
-			};
+			const preVotingRequestErrorRow = document.getElementById("pre-voting-request-error-row");
 			
-			const response = await sendRequest(ajaxSettings, 'pre-voting-requester-container');
-			
-			mergeObjectTo(data, response.data, false, false);
+			try {
+				
+				preVotingRequestErrorRow.hidden = true;
+				
+				canGoToVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
+				
+			} catch (error) {
+				
+				const preVotingRequestErrorSpan = preVotingRequestErrorRow.querySelector(".text-danger.dynamic-error");
+				
+				let message = "Une erreur imprévue est survenue.";
+				
+				if (error.error.readyState == 0) {
+					message += " Veuillez vérifier votre connection internet!";
+				}
+				else {
+					
+					switch (error.at) {
+						case "retrieve":
+							message = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
+							break;
+						case "seat":
+							message = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
+							break;
+					}
+					
+				}
+				
+				preVotingRequestErrorSpan.textContent = message;
+				
+				preVotingRequestErrorRow.hidden = false;
+				
+				preVotingSubmitButton.scrollIntoView();
+				
+				return;
+				
+			}
 			
 		}
 		else {
@@ -89,6 +151,17 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
 		
 		uninitialize_images("pre-voting-page");
+		
+	}
+	
+	preVotingSubmitButton.addEventListener("click", async () => {
+		
+		preVotingSubmitButton.disabled = true;
+		
+		await activateVotingSession();
+		
+		preVotingSubmitButton.disabled = false;
+		
 	});
 	
 	initialize_images("pre-voting-page", data.groupImage);
@@ -374,8 +447,6 @@ function setup_voting_session(data, sharedElectionCode) {
 				
 			} catch (error) {
 				
-				overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi des votes au serveur.";
-				
 				votesOnSubmitError = candidatesIndexes;
 				
 				return;
@@ -470,7 +541,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		$("#voting-toasts-container > .toast").toast("show");
 		
 	}
-				
+	
 	const overlayErrorModal = document.getElementById("overlay-request-error-modal");
 	
 	function showBadVoteSendRequestError() {
@@ -483,87 +554,55 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	async function go_to_next_voter(data) {
 		
-		if (($(overlayErrorModal ).data("bs.modal") || {})._isShown) {
-			return;
+		if (($(overlayErrorModal).data("bs.modal") || {})._isShown) {
+			return false;
 		}
 		
 		if (votesOnSubmitError) {
 			
 			showBadVoteSendRequestError();
 			
-			return;
+			return false;
 			
 		}
 		
-		if (sharedElectionCode) {
+		let didFinishElection = false;
+		
+		try {
 			
-			const ajaxSettings = {
-				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfSeatsTaken&numberOfVoted`,
-				cache: false,
-			};
+			didFinishElection = await voting_go_to_next_voter(data, sharedElectionCode, false, 'voting-requester-container', false, isVoteFinished);
 			
-			try {
-				
-				const response = await sendRequestFor(3, ajaxSettings, 'voting-requester-container');
-				
-				mergeObjectTo(data, response.data, false, false);
-				
-				didUpdateVoteCount = true;
-				
-			} catch (error) {
-				
-				overlayRequestErrorSpan.textContent = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
-				
-				$(overlayErrorModal).modal("show");
-				
-				return;
-				
+		} catch (error) {
+			
+			let message = "Une erreur imprévue est survenue.";
+			
+			if (error.error.readyState == 0) {
+				message += " Veuillez vérifier votre connection internet!";
 			}
-			
-		}
-		
-		if (isVoteFinished && data.numberOfSeatsTaken == data.numberOfVoters) {
-			end_voting_session(data, sharedElectionCode);
-		}
-		else {
-			
-			if (isVoteFinished) {
+			else {
 				
-				if (sharedElectionCode) {
-					
-					const ajaxSettings = {
-						url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
-						cache: false,
-					};
-					
-					try {
-						
-						const response = await sendRequestFor(3, ajaxSettings, 'voting-requester-container');
-						
-						mergeObjectTo(data, response.data, false, false);
-						
-					} catch (error) {
-						
-						overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
-						
-						$(overlayErrorModal).modal("show");
-						
-						return;
-						
-					}
-					
-				}
-				else {
-					data.numberOfSeatsTaken++;
+				switch (error.at) {
+					case "retrieve":
+						message = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
+						break;
+					case "seat":
+						message = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
+						break;
 				}
 				
 			}
 			
-			show_remaining_count_toast(data);
+			overlayRequestErrorSpan.textContent = message;
+			
+			$(overlayErrorModal).modal("show");
+			
+			return false;
 			
 		}
 		
-		if (isVoteFinished) {
+		show_remaining_count_toast(data);
+		
+		if (!isNotInVotingSession && isVoteFinished) {
 			
 			isVoteFinished = false;
 			
@@ -573,6 +612,8 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 		}
 		
+		return didFinishElection;
+		
 	}
 	
 	document.getElementById("overlay-request-error-local-button").addEventListener("click", () => {
@@ -581,6 +622,8 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		sharedElectionCode = undefined;
 		updateSharedElectionCode(undefined);
+		
+		data.numberOfSeatsTaken = data.numberOfVoted;
 		
 		if (votesOnSubmitError) {
 			
@@ -632,21 +675,89 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 	});
 	
-	function end_voting_session(data, sharedElectionCode) {
+}
+
+async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished) {
+	
+	if (sharedElectionCode && !doSkipRetrievingElectionData) {
 		
-		document.getElementById("voting-toasts-container").classList.add("i-am-away");
+		const valuesToRetrieve = ["numberOfSeatsTaken", "numberOfVoted", "hasSkipped"];
 		
-		if (sharedElectionCode) {
-			switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode));
+		if (doForceNewVoter) {
+			// Remove all values to force query to fetch everything
+			valuesToRetrieve.length = 0;
 		}
-		else {
-			setup_results(data);
+		
+		const queryFromValuesToRetrieve = valuesToRetrieve.length > 0 ? "" : `?${valuesToRetrieve.join('&')}`
+		
+		const ajaxSettings = {
+			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
+			cache: false,
+		};
+		
+		try {
+			
+			const response = await sendRequestFor(3, ajaxSettings, requestsContainer);
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		} catch (error) {
+			return Promise.reject({error: error, at: "retrieve"});
 		}
-		
-		document.body.onkeyup = onKeyUpEventBefore;
-		
-		uninitialize_images("voting-page");
 		
 	}
+
+	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
+		end_voting_session(data, sharedElectionCode);
+		return true;
+	}
+	else {
+		
+		if (doForceNewVoter || isVoteFinished) {
+			
+			if (sharedElectionCode) {
+				
+				const ajaxSettings = {
+					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
+					cache: false,
+				};
+				
+				try {
+					
+					const response = await sendRequestFor(3, ajaxSettings, requestsContainer);
+					
+					mergeObjectTo(data, response.data, false, false);
+					
+				} catch (error) {
+					return Promise.reject({error: error, at: "seat"});
+				}
+				
+			}
+			else {
+				data.numberOfSeatsTaken++;
+			}
+			
+		}
+		
+	}
+	
+	return false;
+	
+}
+
+function end_voting_session(data, sharedElectionCode) {
+		
+	document.getElementById("voting-toasts-container").classList.add("i-am-away");
+	
+	if (sharedElectionCode && !data.hasSkipped) {
+		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode));
+	}
+	else {
+		setup_results(data);
+	}
+	
+	document.body.onkeyup = onKeyUpEventBefore;
+	
+	uninitialize_images("voting-page");
 	
 }
