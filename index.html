@@ -220,20 +220,22 @@
 			
 			<form id="setup-form" class="w-100">
 				<div class="form-group row">
-					<div class="col-sm-3 col-md-5 col-lg-4">
+					<div class="col-sm-5 col-lg-4">
 						<label class="col-form-label" for="db-name">Nom de la base de données</label>
 					</div>
-					<div class="col-sm-9 col-md-7 col-lg-8 align-self-center">
+					<div class="col-sm-7 col-lg-8 align-self-center">
 						<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" data-placement="top" autocomplete="off" spellcheck="false" required>
 					</div>
 				</div>
 				<div class="form-group row">
-					<div class="col-12 col-sm-3 col-md-5 col-lg-4">
-						<label class="col-form-label" for="db-psw">
-							Mot de passe de la base de données&nbsp;<span class="col-form-label is-popable-hover" data-placement="auto" data-html="true" data-title="<span class='text-danger'>Avertissement!</span>" data-content="Le mot de passe n'est pas sécurisé : ceci n'est qu'un mur pour empêcher les jeunes de voir les résultats si jamais l'appareil est déplacé dans le local lorsque la session de vote est terminé, par exemple.<br>Veuillez <strong>ne pas</strong> utiliser de mot de passe sensible que vous utilisez à tous les jours!">&#9888;</span>
-						</label>
+					<div class="col-12 col-sm-5 col-lg-4 d-flex pr-3 pr-sm-0 justify-content-start justify-content-sm-between">
+						<label class="col-form-label" for="db-psw">Mot de passe de la base de données</label>
+						<div class="d-flex align-items-center" style="width: 2.2rem;">
+							<span>&nbsp;</span>
+							<img src="./images/orangey-alert.svg" class="is-popable-hover w-100" data-placement="auto" data-html="true" data-title="<span class='text-danger'>Avertissement!</img>" data-content="Le mot de passe n'est pas sécurisé : ceci n'est qu'un mur pour empêcher les jeunes de voir les résultats si jamais l'appareil est déplacé dans le local lorsque la session de vote est terminé, par exemple.<br>Veuillez <strong>ne pas</strong> utiliser de mot de passe sensible que vous utilisez à tous les jours!">
+						</div>
 					</div>
-					<div class="col-12 col-sm-9 col-md-7 col-lg-8 d-flex flex-row align-self-center">
+					<div class="col-12 col-sm-7 col-lg-8 d-flex flex-row align-self-center">
 						<input type="password" class="form-control" id="db-psw" aria-describedby="dbPsw" name="dbPsw" data-placement="top" autocomplete="off" spellcheck="false" placeholder="(optionnel)">
 						<div class="bootstrap-checkbox ml-2">
 							<input type="checkbox" id="password-visible" name="passwordVisible" class="checkbox-eye">
@@ -242,10 +244,10 @@
 					</div>
 				</div>
 				<div class="form-group row">
-					<div class="col-sm-3 col-md-5 col-lg-4">
+					<div class="col-sm-5 col-lg-4">
 						<label class="col-form-label" for="number-of-voters">Nombre d'électeurs</label>
 					</div>
-					<div class="col-sm-9 col-md-7 col-lg-8 align-self-center">
+					<div class="col-sm-7 col-lg-8 align-self-center">
 						<input type="number" class="form-control spinner is-invalid is-popable" id="number-of-voters" min="1" max="9999" aria-describedby="numberOfVoters" name="numberOfVoters" data-placement="top" required>
 					</div>
 				</div>

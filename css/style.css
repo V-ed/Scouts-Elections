@@ -204,27 +204,29 @@ div.bootstrap-checkbox > input + label:after {
     font-weight: bold;
 }
 
-div.bootstrap-checkbox > input:checked + label:after {
-    content: '\2713';
+div.bootstrap-checkbox > input:checked + label {
+    background: url(../images/check.svg) 0 0px no-repeat;
+    background-size: 100% 100%;
 }
 
 div.bootstrap-checkbox > input.checkbox-eye {
     /* Fix non-cached image not loading directly when toggling checked and not */
-    background: url(../images/open-eye.png) -9999px -9999px no-repeat;
+    background: url(../images/eye-fill.svg) -9999px -9999px no-repeat;
     background-size: 0 0;
 }
 
 div.bootstrap-checkbox > input.checkbox-eye:not(:checked) + label {
-    background: url(../images/closed-eye.png) 0 0px no-repeat;
+    background: url(../images/eye-slash-fill.svg) 0 0px no-repeat;
     background-size: 100% 100%;
 }
 
 div.bootstrap-checkbox > input.checkbox-eye:checked + label {
     border: 1px solid #ced4da;
+    background-size: 0 0;
 }
 
 div.bootstrap-checkbox > input.checkbox-eye:checked + label:after {
-    background: url(../images/open-eye.png) 0 0px no-repeat;
+    background: url(../images/eye-fill.svg) 0 0px no-repeat;
     background-size: 100% 100%;
     content: '';
 }

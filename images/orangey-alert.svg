@@ -1,0 +1,19 @@
+<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" class="bi bi-alert-triangle-fill">
+ <defs>
+  <filter id="svg_1_blur">
+   <feGaussianBlur stdDeviation="0" in="SourceGraphic"/>
+  </filter>
+  <filter id="svg_2_blur">
+   <feGaussianBlur stdDeviation="0.1" in="SourceGraphic"/>
+  </filter>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path filter="url(#svg_2_blur)" stroke="#000000" id="svg_2" clip-rule="evenodd" d="m9.022702,3.567417a1.13,1.13 0 0 1 1.96,0l6.857,11.667c0.457,0.778 -0.092,1.767 -0.98,1.767l-13.715,0c-0.889,0 -1.437,-0.99 -0.98,-1.767l6.858,-11.667z" fill-rule="evenodd"/>
+  <path filter="url(#svg_1_blur)" fill="#ffae00" stroke="#1313db" stroke-width="0" id="svg_1" clip-rule="evenodd" d="m9.022702,3.566a1.13,1.13 0 0 1 1.96,0l6.857,11.667c0.457,0.778 -0.092,1.767 -0.98,1.767l-13.715,0c-0.889,0 -1.437,-0.99 -0.98,-1.767l6.858,-11.667zm-0.02,10.434a1,1 0 1 1 2,0a1,1 0 0 1 -2,0zm0.998,-7a0.905,0.905 0 0 0 -0.9,0.995l0.35,3.507a0.553,0.553 0 0 0 1.1,0l0.35,-3.507a0.905,0.905 0 0 0 -0.9,-0.995z" fill-rule="evenodd"/>
+ </g>
+</svg>
