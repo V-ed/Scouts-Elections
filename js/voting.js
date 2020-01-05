@@ -39,7 +39,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 			
 			try {
 				
-				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true);
+				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true, undefined, beforeSwitchCallback);
 				
 			} catch (error) {
 				
@@ -807,7 +807,7 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 }
 
-async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished) {
+async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
 	
 	if (sharedElectionCode && !doSkipRetrievingElectionData) {
 		
@@ -838,7 +838,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 	}
 	
 	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
-		end_voting_session(data, sharedElectionCode, false);
+		end_voting_session(data, sharedElectionCode, false, beforeSwitchCallback);
 		return true;
 	}
 	else {
@@ -875,9 +875,13 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 	
 }
 
-function end_voting_session(data, sharedElectionCode, didSkipRemainings) {
+function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeSwitchCallback) {
 		
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
+	
+	if (beforeSwitchCallback) {
+		beforeSwitchCallback();
+	}
 	
 	if (sharedElectionCode) {
 		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode, didSkipRemainings));
