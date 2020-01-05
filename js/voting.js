@@ -550,6 +550,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		toastTimerId = setTimeout(() => {
 			
+			$(toastElement).toast("hide");
 			$(toastElement).off("shown.bs.toast");
 			
 			toastTimerId = undefined;
