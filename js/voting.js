@@ -883,7 +883,7 @@ function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeS
 		beforeSwitchCallback();
 	}
 	
-	if (sharedElectionCode) {
+	if (sharedElectionCode && (data.hasSkipped && data.numberOfVoted != data.numberOfSeatsTaken || !data.hasSkipped && data.numberOfVoted != data.numberOfVoters)) {
 		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode, didSkipRemainings));
 	}
 	else {
