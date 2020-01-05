@@ -653,7 +653,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 	throw "Wait a second... how did you even get here? My method is flawed...";
 	
 }
-	
+
 // Reload if using back / forward button, therefore correctly cleaning the cache of variables
 
 if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {

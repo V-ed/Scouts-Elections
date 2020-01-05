@@ -100,9 +100,9 @@ function setup_setup() {
 			delete setupInputs[`candidate-name-${candidateNumber}`];
 			
 			const newCandidateCount = --candidateAddButton.dataset.candidatecount;
-		
+			
 			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
-		
+			
 			if (newCandidateCount == 1) {
 				candidateRemoveButton.disabled = true;
 			}
@@ -211,7 +211,7 @@ function setup_setup() {
 			}
 			
 			verify_all_valid();
-		
+			
 			$(this).popover("hide");
 			
 		});
@@ -619,7 +619,7 @@ function verify_all_valid() {
 	else if (submitSharedSetupButton.disabled) {
 		
 		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).then(() => {
-		
+			
 			isServerAccessible = true;
 			
 			submitSharedSetupButton.disabled = false;

@@ -78,7 +78,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		const preVotingSharedForceLocalButton = document.getElementById("pre-voting-shared-force-local-button");
 		
 		$(preVotingSharedForceLocalButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
-		
+			
 			const preVotingSharedConfirmStartLocalButton = document.getElementById("pre-voting-shared-confirm-start-local-button");
 			
 			preVotingSharedConfirmStartLocalButton.addEventListener("click", () => {
@@ -434,7 +434,7 @@ function setup_voting_session(data, sharedElectionCode) {
 	async function updateVotes(requestContainer) {
 		
 		if (sharedElectionCode) {
-				
+			
 			const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
 			
 			const ajaxSettings = {
@@ -876,7 +876,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 }
 
 function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeSwitchCallback) {
-		
+	
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
 	
 	if (beforeSwitchCallback) {
