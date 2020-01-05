@@ -34,14 +34,14 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 		
 		const code = codeElem.value.toUpperCase();
 		
+		modalButton.disabled = true;
+		partitionnedInputs.forEach(input => input.disabled = true);
+		errorSpan.hidden = true;
+		
 		const ajaxSettings = {
 			url: `${sharedElectionHostRoot}/join/${code}`,
 			contentType: 'application/javascript; charset=UTF-16',
 		};
-		
-		modalButton.disabled = true;
-		partitionnedInputs.forEach(input => input.disabled = true);
-		errorSpan.hidden = true;
 		
 		let request = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
 		
@@ -75,7 +75,9 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false)
 		
 	});
 	
-}).catch(error => {});
+}).catch(error => {
+	console.log(error);
+});
 
 create_file_loader("database-loader-zone", load_file, items => {
 	const count = items.length;
