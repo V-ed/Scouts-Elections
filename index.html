@@ -71,8 +71,8 @@
 		
 	</div>
 	
-	<div id="voting-toasts-container" class="fixed-top w-100 d-flex flex-column p-4 i-am-away" style="z-index: 99999;">
-		<div class="toast mx-auto" role="alert" data-delay="1500">
+	<div id="voting-toasts-container" class="fixed-top w-100 d-flex flex-column p-4 i-am-away" style="z-index: 1058;">
+		<div class="toast mx-auto" role="alert" data-autohide="false">
 			<div class="toast-header">
 				<strong class="mr-auto text-primary">Nombre électeur(s) restant</strong>
 				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -89,7 +89,28 @@
 				<p id="seats-remaining-count-toast" class="shared-election-container" hidden>
 					<!-- Text will be set here dynamically -->
 				</p>
-				<button type="submit" id="voting-skip-button" class="btn btn-primary">Sauter les votes</button>
+				<div id="shared-election-skip-request-error-toast" class="text-danger mb-3" hidden>
+					<span class="font-weight-bold dynamic-error">Temp</span>
+					<div class="row align-items-center justify-content-center">
+						<div class="col-6">
+							<span class="text-danger">Veuillez réessayer ou appuyer sur ce bouton pour sauter les votes localement&nbsp;:&nbsp;</span>
+						</div>
+						<div class="col-6">
+							<button type="button" id="shared-election-skip-request-error-local-button" class="btn btn-outline-danger">Sauter les votes localement</button>
+						</div>
+					</div>
+				</div>
+				<div class="non-shared-election-container">
+					<button type="button" id="voting-skip-button" class="btn btn-primary">Sauter les votes</button>
+				</div>
+				<div class="shared-election-container d-flex align-items-center justify-content-center">
+					<button type="button" id="voting-shared-skip-button" class="btn btn-secondary" data-placement="bottom" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1' disabled><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Performer cette action va sauter les votes pour les autres appareils connecté à cette élection! Les électeurs en train de voter auront tout de même la chance de terminer leur votes.</p><button type='button' id='voting-shared-skip-confirm-button' class='btn btn-danger mx-auto'>Confirmer</button></div>">Sauter les votes</button>
+					<div id="voting-skipper-requester-container" class="requester-container align-self-center ml-3" hidden>
+						<div class="requester-spinner spinner-border" role="status">
+							<span class="sr-only">Chargement...</span>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

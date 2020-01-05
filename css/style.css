@@ -52,7 +52,7 @@ div#voting-page input.spinner[type="number"] + div.input-group > input[readonly]
 
 div#voting-voted-overlay {
     position: absolute;
-    z-index: 10000;
+    z-index: 1065;
     background: radial-gradient(circle, #13a313, #107810);
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
