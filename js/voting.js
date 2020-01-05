@@ -673,7 +673,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		data.hasSkipped = true;
 		
-		end_voting_session(data);
+		end_voting_session(data, sharedElectionCode, true);
 		
 	});
 	
@@ -708,9 +708,9 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 		}
 		
 	}
-
+	
 	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
-		end_voting_session(data, sharedElectionCode);
+		end_voting_session(data, sharedElectionCode, false);
 		return true;
 	}
 	else {
@@ -747,12 +747,12 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 	
 }
 
-function end_voting_session(data, sharedElectionCode) {
+function end_voting_session(data, sharedElectionCode, didSkipRemainings) {
 		
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
 	
-	if (sharedElectionCode && !data.hasSkipped) {
-		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode));
+	if (sharedElectionCode) {
+		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode, didSkipRemainings));
 	}
 	else {
 		setup_results(data);

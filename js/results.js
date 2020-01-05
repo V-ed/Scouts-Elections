@@ -1,4 +1,4 @@
-function setup_post_voting(data, sharedElectionCode) {
+function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 	
 	initialize_images("post-shared-voting-page", data.groupImage);
 	
@@ -38,25 +38,63 @@ function setup_post_voting(data, sharedElectionCode) {
 	
 	let autoClickVerifyTimer = undefined;
 	
+	const sharedPostVotesSkippedErrorDiv = document.getElementById("post-shared-voting-skipped-error-div");
+	const sharedPostVotesSkippedErrorSpan = sharedPostVotesSkippedErrorDiv.querySelector(".text-danger.dynamic-error");
+	
 	function handleVerificationDisabling(data) {
 		
 		const didAllVoted = data.numberOfVoted == data.numberOfVoters;
+		const didSkippedAllSeatTakenVoted = data.hasSkipped && data.numberOfVoted == data.numberOfSeatsTaken;
 		
-		sharedPostVoteButtonVerify.disabled = didAllVoted;
-		sharedPostVoteButtonGo.disabled = !didAllVoted;
-		sharedPostVoteButtonGoAndDelete.disabled = !didAllVoted;
+		const isAllVotesDone = didAllVoted || didSkippedAllSeatTakenVoted;
+		
+		sharedPostVoteButtonVerify.disabled = isAllVotesDone;
+		sharedPostVoteButtonGo.disabled = !isAllVotesDone;
+		sharedPostVoteButtonGoAndDelete.disabled = !isAllVotesDone;
 		
 		clearInterval(autoClickVerifyTimer);
 		
-		if (didAllVoted) {
+		if (isAllVotesDone) {
+			
 			sharedPostVoteFinishedIcon.hidden = false;
 			
 			sharedPostVerifyAutoClickTimer.hidden = true;
+			
+			if (didSkippedAllSeatTakenVoted) {
+				
+				const sharedPostVotesVerifyErrorSpan = document.getElementById("shared-post-votes-verify-error-span");
+				
+				const messageToShow = didSkipRemainings ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+				
+				sharedPostVotesVerifyErrorSpan.textContent = messageToShow;
+				sharedPostVotesVerifyErrorSpan.hidden = false;
+				
+			}
+			
 		}
 		else {
 			sharedPostVoteNotFinishedIcon.hidden = false;
 			
 			autoClickVerifyTimer = resetAutoClickVerifyTimer(30);
+		}
+		
+		if (data.hasSkipped) {
+			
+			sharedPostVotesSkippedErrorDiv.hidden = false;
+			
+			let message = undefined;
+			
+			if (isAllVotesDone) {
+				message = `Tout les autres électeurs ont terminés de voter. L'élection fut arrêtée mais ${data.numberOfVoters - data.numberOfVoted} furent sautés.`;
+			}
+			else {
+				const info = didSkipRemainings ? "Aucun autre électeur ne pourras exécuter son vote sauf ceux déjà en cours" : "Un autre appareil a exécuter la commande pour sauter les derniers électeurs! Aucune autre place n'est disponible";
+				
+				message = `${info} : en attente des autres appareils où des électeurs sont présentement en train de voter...`
+			}
+			
+			sharedPostVotesSkippedErrorSpan.textContent = `${message}`;
+			
 		}
 		
 	}
@@ -79,12 +117,8 @@ function setup_post_voting(data, sharedElectionCode) {
 	
 	sharedPostVoteButtonVerify.addEventListener("click", async () => {
 		
-		const ajaxSettings = {
-			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&candidates`,
-			cache: false,
-		};
-		
 		sharedPostVoteFinishedIcon.hidden = true;
+		$(sharedPostVoteNotFinishedIcon).popover('hide');
 		sharedPostVoteNotFinishedIcon.hidden = true;
 		
 		sharedPostVoteButtonVerify.disabled = true;
@@ -95,6 +129,11 @@ function setup_post_voting(data, sharedElectionCode) {
 		try {
 			
 			sharedPostVotesVerifyErrorSpan.hidden = true;
+			
+			const ajaxSettings = {
+				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&hasSkipped&candidates`,
+				cache: false,
+			};
 			
 			const response = await sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
 			
@@ -188,18 +227,18 @@ function setup_post_voting(data, sharedElectionCode) {
 	
 }
 
-function setup_results(data) {
+function setup_results(data, didSkipRemainings) {
 	
 	if (data.dbPsw || data.dbPsw == undefined) {
-		switch_view("pre-results-page", () => setup_pre_results_page(data));
+		switch_view("pre-results-page", () => setup_pre_results_page(data, didSkipRemainings));
 	}
 	else {
-		switch_view("results-page", () => setup_results_page(data));
+		switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 	}
 	
 }
 
-function setup_pre_results_page(data) {
+function setup_pre_results_page(data, didSkipRemainings) {
 	
 	initialize_images("pre-results-page", data.groupImage);
 	
@@ -217,7 +256,7 @@ function setup_pre_results_page(data) {
 		
 		if (password == passwordToCheck) {
 			
-			switch_view("results-page", () => setup_results_page(data));
+			switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 			
 			uninitialize_images("pre-results-page");
 			
@@ -240,7 +279,7 @@ function setup_pre_results_page(data) {
 	
 }
 
-function setup_results_page(data) {
+function setup_results_page(data, didSkipRemainings) {
 	
 	initialize_images("results-page", data.groupImage);
 	
