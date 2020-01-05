@@ -33,13 +33,13 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 	}
 	else {
 		
-		let canGoToVotingPage = true;
+		let didSkipVotingPage = false;
 		
 		if (sharedElectionCode) {
 			
 			try {
 				
-				canGoToVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true);
+				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true);
 				
 			} catch (error) {
 				
@@ -49,7 +49,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 			
 		}
 		
-		if (canGoToVotingPage) {
+		if (!didSkipVotingPage) {
 			
 			if (beforeSwitchCallback) {
 				beforeSwitchCallback();
@@ -59,7 +59,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 			
 		}
 		
-		return Promise.resolve(canGoToVotingPage);
+		return Promise.resolve(didSkipVotingPage);
 		
 	}
 	
@@ -100,6 +100,8 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 	
 	async function activateVotingSession() {
 		
+		let didSkipVotingPage = false;
+		
 		if (sharedElectionCode) {
 			
 			const preVotingRequestErrorRow = document.getElementById("pre-voting-request-error-row");
@@ -108,7 +110,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 				
 				preVotingRequestErrorRow.hidden = true;
 				
-				canGoToVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
+				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
 				
 			} catch (error) {
 				
@@ -147,7 +149,11 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 			data.numberOfSeatsTaken = data.numberOfSeatsTaken ? data.numberOfSeatsTaken + 1 : 1;
 		}
 		
-		switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+		if (!didSkipVotingPage) {
+			
+			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			
+		}
 		
 		uninitialize_images("pre-voting-page");
 		
