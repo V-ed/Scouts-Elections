@@ -564,7 +564,12 @@ function setup_voting_session(data, sharedElectionCode) {
 		votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant(s) sur ${data.numberOfVoters}`;
 		
 		if (!seatsRemainingCountToast.hidden) {
-			seatsRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfSeatsTaken} place(s) restante(s) ${data.numberOfVoters} pour cette élection partagée`;
+			// If skipped, show number of remaining active voters instead
+			const numberOfPlaceRemaining = data.hasSkipped ? (data.numberOfSeatsTaken - 1) - data.numberOfVoted : data.numberOfVoters - data.numberOfSeatsTaken;
+			
+			const beginText = data.hasSkipped ? `${numberOfPlaceRemaining} électeur(s) restant(s)` : `${numberOfPlaceRemaining} place(s) restante(s)`;
+			
+			seatsRemainingCountToast.innerText = `${beginText} sur ${data.numberOfVoters} pour cette élection partagée`;
 		}
 		
 		toastContainer.classList.remove("i-am-away");

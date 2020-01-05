@@ -41,10 +41,12 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 	const sharedPostVotesSkippedErrorDiv = document.getElementById("post-shared-voting-skipped-error-div");
 	const sharedPostVotesSkippedErrorSpan = sharedPostVotesSkippedErrorDiv.querySelector(".text-danger.dynamic-error");
 	
+	const errorInternetErrorMessage = "Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!";
+	
 	function handleVerificationDisabling(data) {
 		
 		const didAllVoted = data.numberOfVoted == data.numberOfVoters;
-		const didSkippedAllSeatTakenVoted = data.hasSkipped && data.numberOfVoted == data.numberOfSeatsTaken;
+		const didSkippedAllSeatTakenVoted = data.hasSkipped && data.numberOfVoted == (data.numberOfSeatsTaken - 1);
 		
 		const isAllVotesDone = didAllVoted || didSkippedAllSeatTakenVoted;
 		
@@ -60,17 +62,6 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 			sharedPostVerifyAutoClickTimer.hidden = true;
 			
-			if (didSkippedAllSeatTakenVoted) {
-				
-				const sharedPostVotesVerifyErrorSpan = document.getElementById("shared-post-votes-verify-error-span");
-				
-				const messageToShow = didSkipRemainings ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
-				
-				sharedPostVotesVerifyErrorSpan.textContent = messageToShow;
-				sharedPostVotesVerifyErrorSpan.hidden = false;
-				
-			}
-			
 		}
 		else {
 			sharedPostVoteNotFinishedIcon.hidden = false;
@@ -85,7 +76,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			let message = undefined;
 			
 			if (isAllVotesDone) {
-				message = `Tout les autres électeurs ont terminés de voter. L'élection fut arrêtée mais ${data.numberOfVoters - data.numberOfVoted} furent sautés.`;
+				message = `Tout les autres électeurs ont terminés de voter. L'élection fut arrêtée mais ${data.numberOfVoters - data.numberOfVoted} électeur(s) furent sautés.`;
 			}
 			else {
 				const info = didSkipRemainings ? "Aucun autre électeur ne pourras exécuter son vote sauf ceux déjà en cours" : "Un autre appareil a exécuter la commande pour sauter les derniers électeurs! Aucune autre place n'est disponible";
@@ -113,8 +104,6 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 		
 	});
 	
-	const errorInternetErrorMessage = "Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!";
-	
 	sharedPostVoteButtonVerify.addEventListener("click", async () => {
 		
 		sharedPostVoteFinishedIcon.hidden = true;
@@ -131,7 +120,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			sharedPostVotesVerifyErrorSpan.hidden = true;
 			
 			const ajaxSettings = {
-				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&hasSkipped&candidates`,
+				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
 				cache: false,
 			};
 			
