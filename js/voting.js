@@ -60,6 +60,8 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 			
 		}
 		
+		return Promise.resolve(canGoToVotingPage);
+		
 	}
 	
 }
@@ -602,7 +604,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		show_remaining_count_toast(data);
 		
-		if (!isNotInVotingSession && isVoteFinished) {
+		if (isVoteFinished) {
 			
 			isVoteFinished = false;
 			
@@ -688,7 +690,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 			valuesToRetrieve.length = 0;
 		}
 		
-		const queryFromValuesToRetrieve = valuesToRetrieve.length > 0 ? "" : `?${valuesToRetrieve.join('&')}`
+		const queryFromValuesToRetrieve = valuesToRetrieve.length == 0 ? "" : `?${valuesToRetrieve.join('&')}`
 		
 		const ajaxSettings = {
 			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
