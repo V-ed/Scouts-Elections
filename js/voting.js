@@ -110,6 +110,10 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 				
 				preVotingRequestErrorRow.hidden = true;
 				
+				setTimeout(() => {
+					preVotingSubmitButton.scrollIntoView();
+				}, 30);
+				
 				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
 				
 			} catch (error) {
