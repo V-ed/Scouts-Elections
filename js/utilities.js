@@ -536,7 +536,7 @@ elems.forEach(elem => {
 
 function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
 	
-	const dateAfterTimeout = minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
+	const dateAfterTimeout = !minimumRequestDelay || minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
 	
 	doHideContainerOnEnd = doHideContainerOnEnd !== false;
 	
@@ -636,7 +636,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 		throw "The number of tries should be bigger than 0!";
 	}
 	
-	const dateAfterTimeout = minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
+	const dateAfterTimeout = !minimumRequestDelay || minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
 	
 	for (let attemptCount = 1; attemptCount <= numberOfTries; attemptCount++) {
 		
