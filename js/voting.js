@@ -11,9 +11,26 @@ let auto_download_data = function() {
 }
 
 function updateSharedElectionCode(newSharedElectionCode) {
+	
+	function handleHiddenAndFlex(element, doHide) {
+		
+		element.hidden = doHide;
+		
+		if (element.classList.contains("d-flex")) {
+			element.classList.remove("d-flex");
+			element.setAttribute("data-shared-did-flex", "true");
+		}
+		else if (element.getAttribute("data-shared-did-flex") == "true") {
+			element.classList.add("d-flex");
+			element.removeAttribute("data-shared-did-flex");
+		}
+		
+	}
+	
 	document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = newSharedElectionCode);
-	document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = !newSharedElectionCode);
-	document.querySelectorAll(".non-shared-election-container").forEach(elem => elem.hidden = !!newSharedElectionCode);
+	document.querySelectorAll(".shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !newSharedElectionCode));
+	document.querySelectorAll(".non-shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !!newSharedElectionCode));
+	
 }
 
 async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
