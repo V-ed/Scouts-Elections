@@ -5,11 +5,14 @@ html {
 
 body {
     min-height: 100%;
-    user-select: none;
 }
 
 a {
     cursor: pointer;
+}
+
+.non-selectable {
+    user-select: none;
 }
 
 /* Headings overrides */
