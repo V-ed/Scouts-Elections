@@ -100,9 +100,9 @@ function setup_setup() {
 			delete setupInputs[`candidate-name-${candidateNumber}`];
 			
 			const newCandidateCount = --candidateAddButton.dataset.candidatecount;
-		
+			
 			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
-		
+			
 			if (newCandidateCount == 1) {
 				candidateRemoveButton.disabled = true;
 			}
@@ -211,17 +211,14 @@ function setup_setup() {
 			}
 			
 			verify_all_valid();
-		
+			
 			$(this).popover("hide");
 			
 		});
 		
 	});
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
-	
-	submitSetupButton.addEventListener("click", e => {
-		e.preventDefault();
+	function createData() {
 		
 		const formData = new FormData(document.getElementById("setup-form"));
 		
@@ -232,7 +229,11 @@ function setup_setup() {
 			tempCandidates.push({ name: candidateData, voteCount: 0, selectedState: "unselected" });
 		});
 		
-		let data = {
+		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+		
+		const compressedImageData = groupImageData ? LZString.compressToUTF16(groupImageData) : undefined;
+		
+		const data = {
 			dbName: formData.get("dbName"),
 			dbPsw: formData.get("dbPsw"),
 			numberOfVoters: parseInt(formData.get("numberOfVoters")),
@@ -240,18 +241,82 @@ function setup_setup() {
 			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
 			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
 			numberOfVoted: 0,
+			numberOfSeatsTaken: 0,
 			hasSkipped: false,
+			isDownloadDisabled: isDownloadDisabled,
 			candidates: tempCandidates,
-			groupImage: groupImageData
+			groupImage: compressedImageData
 		};
 		
-		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+		return data;
 		
-		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
+	}
+	
+	const submitSetupButton = document.getElementById("setup-submit-button");
+	
+	submitSetupButton.addEventListener("click", e => {
+		e.preventDefault();
+		
+		let data = createData();
+		
+		setup_votes(data);
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
 		uninitialize_images("setup-page");
+		
+	});
+	
+	const errorDiv = document.getElementById("setup-create-election-modal-error");
+	const submitSharedSetupButton = document.getElementById("setup-create-election-modal-button");
+	
+	submitSharedSetupButton.addEventListener("click", async e => {
+		e.preventDefault();
+		
+		errorDiv.hidden = true;
+		
+		submitSharedSetupButton.disabled = true;
+		
+		const electionData = createData();
+		
+		const electionJSONData = JSON.stringify(electionData);
+		
+		const ajaxSettings = {
+			type: 'POST',
+			url: `${sharedElectionHostRoot}/create`,
+			data: electionJSONData,
+			cache: false,
+		};
+		
+		sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
+			
+			if (!response.code) {
+				throw "Missing election code!";
+			}
+			
+			let data = mergeObjectTo(electionJSONData, response.data, true);
+			
+			return setup_votes(data, response.code, () => {
+				
+				$("#setup-create-election-modal").modal("hide");
+				
+				window.removeEventListener("beforeunload", prevent_data_loss);
+				
+				uninitialize_images("setup-page");
+				
+			}, 'setup-create-election-modal-requester-container');
+			
+		})
+		.catch(error => {
+			
+			errorDiv.hidden = false;
+			
+		})
+		.finally(() => {
+			
+			submitSharedSetupButton.disabled = false;
+			
+		});
 		
 	});
 	
@@ -508,7 +573,7 @@ function add_input_for_verification(inputId, customValidator) {
 					clearTimeout(previousSpinnerTimer);
 					previousSpinnerTimer = setTimeout(() => {
 						if (document.activeElement != checkElement) {
-							$(checkElement).popover("hide")
+							$(checkElement).popover("hide");
 						}
 					}, 1500);
 				}
@@ -538,8 +603,30 @@ function verify_all_valid() {
 	}
 	
 	const submitSetupButton = document.getElementById("setup-submit-button");
+	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
 	
 	submitSetupButton.disabled = !isValid;
+	
+	if (!isValid) {
+		
+		if (!submitSharedSetupButton.disabled) {
+			document.getElementById("setup-shared-submit-requester-container").hidden = true;
+		}
+		
+		submitSharedSetupButton.disabled = true;
+		
+	}
+	else if (submitSharedSetupButton.disabled) {
+		
+		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).then(() => {
+			
+			isServerAccessible = true;
+			
+			submitSharedSetupButton.disabled = false;
+			
+		}).catch(error => {});
+		
+	}
 	
 }
 

@@ -1,15 +1,233 @@
-function setup_results(data) {
+function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
+	
+	initialize_images("post-shared-voting-page", data.groupImage);
+	
+	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
+	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
+	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
+	
+	const sharedPostVoteFinishedIcon = document.getElementById("post-shared-voting-verify-finished-icon");
+	const sharedPostVoteNotFinishedIcon = document.getElementById("post-shared-voting-verify-not-finished-icon");
+	
+	let autoClickVerifyTimerSeconds = 30;
+	const sharedPostVerifyAutoClickTimer = document.getElementById("shared-post-verify-auto-click-timer");
+	
+	function resetAutoClickVerifyTimer(count) {
+		
+		autoClickVerifyTimerSeconds = count;
+		
+		sharedPostVerifyAutoClickTimer.textContent = ` (${autoClickVerifyTimerSeconds})`;
+		
+		const intervalId = setInterval(() => {
+			
+			sharedPostVerifyAutoClickTimer.textContent = ` (${--autoClickVerifyTimerSeconds})`;
+			
+			if (autoClickVerifyTimerSeconds <= 0) {
+				
+				clearInterval(intervalId);
+				
+				sharedPostVoteButtonVerify.dispatchEvent(new Event("click"));
+				
+			}
+			
+		}, 1000);
+		
+		return intervalId;
+		
+	}
+	
+	let autoClickVerifyTimer = undefined;
+	
+	const sharedPostVotesSkippedErrorDiv = document.getElementById("post-shared-voting-skipped-error-div");
+	const sharedPostVotesSkippedErrorSpan = sharedPostVotesSkippedErrorDiv.querySelector(".text-danger.dynamic-error");
+	
+	const errorInternetErrorMessage = "Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!";
+	
+	function handleVerificationDisabling(data) {
+		
+		const didAllVoted = data.numberOfVoted == data.numberOfVoters;
+		const didSkippedAllSeatTakenVoted = data.hasSkipped && data.numberOfVoted == (data.numberOfSeatsTaken - 1);
+		
+		const isAllVotesDone = didAllVoted || didSkippedAllSeatTakenVoted;
+		
+		sharedPostVoteButtonVerify.disabled = isAllVotesDone;
+		sharedPostVoteButtonGo.disabled = !isAllVotesDone;
+		sharedPostVoteButtonGoAndDelete.disabled = !isAllVotesDone;
+		
+		clearInterval(autoClickVerifyTimer);
+		
+		if (isAllVotesDone) {
+			
+			sharedPostVoteFinishedIcon.hidden = false;
+			
+			sharedPostVerifyAutoClickTimer.hidden = true;
+			
+		}
+		else {
+			sharedPostVoteNotFinishedIcon.hidden = false;
+			
+			autoClickVerifyTimer = resetAutoClickVerifyTimer(30);
+		}
+		
+		if (data.hasSkipped) {
+			
+			sharedPostVotesSkippedErrorDiv.hidden = false;
+			
+			let message = undefined;
+			
+			if (isAllVotesDone) {
+				message = `Tout les autres électeurs ont terminés de voter. L'élection fut arrêtée mais ${data.numberOfVoters - data.numberOfVoted} électeur(s) furent sautés.`;
+			}
+			else {
+				const info = didSkipRemainings ? "Aucun autre électeur ne pourras exécuter son vote sauf ceux déjà en cours" : "Un autre appareil a exécuter la commande pour sauter les derniers électeurs! Aucune autre place n'est disponible";
+				
+				message = `${info} : en attente des autres appareils où des électeurs sont présentement en train de voter...`
+			}
+			
+			sharedPostVotesSkippedErrorSpan.textContent = `${message}`;
+			
+		}
+		
+	}
+	
+	handleVerificationDisabling(data);
+	
+	const sharedPostVoteButtonSkipWait = document.getElementById("shared-post-votes-skip-wait");
+	
+	sharedPostVoteButtonSkipWait.addEventListener("click", () => {
+		
+		clearInterval(autoClickVerifyTimer);
+		
+		setup_results(data);
+		
+		uninitialize_images("voting-page");
+		
+	});
+	
+	sharedPostVoteButtonVerify.addEventListener("click", async () => {
+		
+		sharedPostVoteFinishedIcon.hidden = true;
+		$(sharedPostVoteNotFinishedIcon).popover('hide');
+		sharedPostVoteNotFinishedIcon.hidden = true;
+		
+		sharedPostVoteButtonVerify.disabled = true;
+		clearInterval(autoClickVerifyTimer);
+		
+		const sharedPostVotesVerifyErrorSpan = document.getElementById("shared-post-votes-verify-error-span");
+		
+		try {
+			
+			sharedPostVotesVerifyErrorSpan.hidden = true;
+			
+			const ajaxSettings = {
+				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
+				cache: false,
+			};
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesVerifyErrorSpan.textContent = messageToShow;
+			sharedPostVotesVerifyErrorSpan.hidden = false;
+			
+		}
+		
+		handleVerificationDisabling(data);
+		
+	});
+	
+	sharedPostVoteButtonGo.addEventListener("click", async () => {
+		
+		const ajaxSettings = {
+			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
+			cache: false,
+		};
+		
+		sharedPostVoteButtonGo.disabled = true;
+		
+		const sharedPostVotesGoErrorSpan = document.getElementById("shared-post-votes-go-error-span");
+		
+		try {
+			
+			sharedPostVotesGoErrorSpan.hidden = true;
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+			setup_results(data);
+			
+			uninitialize_images("voting-page");
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesGoErrorSpan.textContent = messageToShow;
+			sharedPostVotesGoErrorSpan.hidden = false;
+			
+		}
+		
+		sharedPostVoteButtonGo.disabled = false;
+		
+	});
+	
+	sharedPostVoteButtonGoAndDelete.addEventListener("click", async () => {
+		
+		const ajaxSettings = {
+			type: 'DELETE',
+			url: `${sharedElectionHostRoot}/delete/${sharedElectionCode}`,
+			cache: false,
+		};
+		
+		sharedPostVoteButtonGoAndDelete.disabled = true;
+		
+		const sharedPostVotesGoAndDeleteErrorSpan = document.getElementById("shared-post-votes-go-and-delete-error-span");
+		
+		try {
+			
+			sharedPostVotesGoAndDeleteErrorSpan.hidden = true;
+			
+			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+			setup_results(data);
+			
+			uninitialize_images("voting-page");
+			
+		} catch (error) {
+			
+			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			
+			sharedPostVotesGoAndDeleteErrorSpan.textContent = messageToShow;
+			sharedPostVotesGoAndDeleteErrorSpan.hidden = false;
+			
+		}
+		
+		sharedPostVoteButtonGoAndDelete.disabled = false;
+		
+	});
+	
+}
+
+function setup_results(data, didSkipRemainings) {
 	
 	if (data.dbPsw || data.dbPsw == undefined) {
-		switch_view("pre-results-page", () => setup_pre_results_page(data));
+		switch_view("pre-results-page", () => setup_pre_results_page(data, didSkipRemainings));
 	}
 	else {
-		switch_view("results-page", () => setup_results_page(data));
+		switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 	}
 	
 }
 
-function setup_pre_results_page(data) {
+function setup_pre_results_page(data, didSkipRemainings) {
 	
 	initialize_images("pre-results-page", data.groupImage);
 	
@@ -27,7 +245,7 @@ function setup_pre_results_page(data) {
 		
 		if (password == passwordToCheck) {
 			
-			switch_view("results-page", () => setup_results_page(data));
+			switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 			
 			uninitialize_images("pre-results-page");
 			
@@ -43,14 +261,14 @@ function setup_pre_results_page(data) {
 	
 	passwordInput.addEventListener("input", () => {
 		
-		passwordInput.classList.remove("is-invalid")
+		passwordInput.classList.remove("is-invalid");
 		preResultsSubmitButton.disabled = false;
 		
 	});
 	
 }
 
-function setup_results_page(data) {
+function setup_results_page(data, didSkipRemainings) {
 	
 	initialize_images("results-page", data.groupImage);
 	

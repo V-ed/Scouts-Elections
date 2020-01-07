@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Élections Scoutes - Info Élections Partagées</title>
+	
+	<link rel="icon" href="./images/envelope.png">
+	
+	<link rel="stylesheet" href="./css/libraries/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+	
+	<script src="./js/libraries/jquery-3.4.1.min.js"></script>
+	<script src="./js/libraries/popper.min.js"></script>
+	<script src="./js/libraries/bootstrap.min.js"></script>
+	
+</head>
+<body>
+	
+	<div class="container py-5">
+		
+		<h1 class="display-1 text-center mb-5" style="font-size: 4vmax;">Élections Scoutes : Élections Partagées</h1>
+		
+		<h2 id="but">Le but de cette fonctionnalitée</h2>
+		
+		<p>Le but des élections partagées est de permettre aux animateurs d'utiliser plusieurs appareils pour exécuter une seule élection, permettant ainsi de passer plusieurs jeunes à la fois et ainsi avoir plus de temps pour faire d'autres activités.</p>
+		
+		<p>
+			<span>
+				Ces élections sont disponible à tout ceux ayant le code pour y rentrer, peu importe où est-ce qu'il se trouve dans le monde : une élection pourrait être créée aux États-Unis et, si le code est partagé, l'élection pourrait être partagée à un appareil au Canada, si tel serait le besoin.
+			</span>
+			<br>
+			<span>
+				Ainsi, si votre groupe est à deux places en même temps, il est aussi possible grâce aux élections partagées d'avoir une élection complète.
+			</span>
+		</p>
+		
+		<h2 id="serveur">Le serveur</h2>
+		
+		<p>Pour permettre à une élection de se faire partager, elle doit être envoyée à un serveur qui fera la gestion des requêtes entrantes et permettra de créer un code pour partager l'élection.</p>
+		
+		<p>Ce serveur fut programmé et est maintenu par le créateur de ce site, soit Guillaume Marcoux. Pour me contacter, veuillez vous référer à mes coordonnées ci-bas.</p>
+		
+		<p>
+			Le serveur fut programmé pour ne pas garder les données de élections pour plus de 24 heures : pour toute opération (joindre l'élection partagée, envoyer un vote, etc), les données sur le serveur sont considérées "renouvelée" et le compteur est remis à 0.
+			Ceci veut donc dire que dans le cas où l'élection partagée serait créée le 24 Juillet en soirée, et qu'un appareil rejoindrait l'élection avec son code le 25 Juillet en matinée et que rien ne se passe par la suite, l'élection sera supprimée du serveur le 26 Juillet en matinée.
+		</p>
+		
+		<p>Une option est cependant disponible à la fin de la session de vote d'une élection partagée pour supprimer les données du serveur immédiatement.</p>
+		
+		<p>Le code de ce serveur est disponible pour ceux qui s'y connaissent et veulent savoir le fonctionnement interne du serveur : <a href="https://github.com/V-ed/Scouts-Elections-Server">vous trouverez le code ici (GitHub)</a>.</p>
+		
+		<h2 id="contact">Pour me contacter</h2>
+		
+		<p>Si vous voulez plus de précision par rapport au fonctionnement&nbsp;/&nbsp;déroulement des élections partagées, ou que vous avez manquez l'option de supprimer les données et vous voulez les supprimer immédiatement, vous pouvez me contacter par les moyens ci-bas :</p>
+		
+		<p class="border-top border-bottom p-3">
+			Guillaume Marcoux
+			<br>
+			Courriel : <a href="mailto:guillaumemarcoux@gmail.com">guillaumemarcoux@gmail.com</a>
+			<br>
+			Créez un <i>issue</i> ici : <a href="https://github.com/V-ed/Scouts-Elections-Server/issues">https://github.com/V-ed/Scouts-Elections-Server/issues</a>
+		</p>
+		
+	</div>
+	
+</body>
+</html>

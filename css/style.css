@@ -18,6 +18,25 @@ a {
     font-size: 3rem;
 }
 
+/* Partitionned inputs style */
+
+.row.input-partition > input {
+    border: 0;
+    border-bottom: 1px solid black !important;
+    width: 3rem;
+    padding-bottom: 3px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.row.input-partition > input:focus {
+    outline: none;
+    border-bottom: 3px double blue !important;
+    border-bottom-style: double !important;
+    padding-bottom: 1px;
+}
+
 /* Voting tweaks */
 
 div#voting-page input.spinner[type="number"] + div.input-group > input:not([readonly]) {
@@ -33,7 +52,7 @@ div#voting-page input.spinner[type="number"] + div.input-group > input[readonly]
 
 div#voting-voted-overlay {
     position: absolute;
-    z-index: 10000;
+    z-index: 1065;
     background: radial-gradient(circle, #13a313, #107810);
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
@@ -73,7 +92,7 @@ div#voting-voted-overlay.active > * {
     opacity: 1;
 }
 
-div#voting-voted-overlay img {
+div#voting-voted-overlay img.img-drop-shadow {
     -webkit-filter: drop-shadow(0px 5px 10px #222);
     filter:         drop-shadow(0px 5px 10px #222);
 }

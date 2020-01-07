@@ -10,27 +10,174 @@ let auto_download_data = function() {
 	
 }
 
-function setup_pre_voting_session(data) {
+function updateSharedElectionCode(newSharedElectionCode) {
+	document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = newSharedElectionCode);
+	document.querySelectorAll(".shared-election-container").forEach(elem => elem.hidden = !newSharedElectionCode);
+	document.querySelectorAll(".non-shared-election-container").forEach(elem => elem.hidden = !!newSharedElectionCode);
+}
+
+async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
+	
+	updateSharedElectionCode(sharedElectionCode);
+	
+	if (doForceShowPreVotingPage || data.numberOfVoted == 0) {
+		
+		if (beforeSwitchCallback) {
+			beforeSwitchCallback();
+		}
+		
+		switch_view("pre-voting-page", () => setup_pre_voting_session(data, sharedElectionCode));
+		
+	}
+	else {
+		
+		let didSkipVotingPage = false;
+		
+		if (sharedElectionCode) {
+			
+			try {
+				
+				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true, undefined, beforeSwitchCallback);
+				
+			} catch (error) {
+				
+				return Promise.reject(error.error);
+				
+			}
+			
+		}
+		
+		if (!didSkipVotingPage) {
+			
+			if (beforeSwitchCallback) {
+				beforeSwitchCallback();
+			}
+			
+			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			
+		}
+		
+		return Promise.resolve(didSkipVotingPage);
+		
+	}
+	
+}
+
+function setup_pre_voting_session(data, sharedElectionCode) {
 	
 	if (isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
-	document.getElementById("pre-voting-submit-button").addEventListener("click", e => {
-		e.preventDefault();
+	const preVotingSubmitButton = document.getElementById("pre-voting-submit-button");
+	
+	if (sharedElectionCode) {
 		
-		switch_view("voting-page", () => setup_voting_session(data));
+		const preVotingSharedForceLocalButton = document.getElementById("pre-voting-shared-force-local-button");
+		
+		$(preVotingSharedForceLocalButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
+			
+			const preVotingSharedConfirmStartLocalButton = document.getElementById("pre-voting-shared-confirm-start-local-button");
+			
+			preVotingSharedConfirmStartLocalButton.addEventListener("click", () => {
+				
+				sharedElectionCode = undefined;
+				updateSharedElectionCode(undefined);
+				
+				data.numberOfSeatsTaken = data.numberOfVoted;
+				
+				$(this).popover("hide");
+				
+				activateVotingSession();
+				
+			});
+			
+		});
+		
+	}
+	
+	async function activateVotingSession() {
+		
+		let didSkipVotingPage = false;
+		
+		if (sharedElectionCode) {
+			
+			const preVotingRequestErrorRow = document.getElementById("pre-voting-request-error-row");
+			
+			try {
+				
+				preVotingRequestErrorRow.hidden = true;
+				
+				setTimeout(() => {
+					preVotingSubmitButton.scrollIntoView();
+				}, 30);
+				
+				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
+				
+			} catch (error) {
+				
+				const preVotingRequestErrorSpan = preVotingRequestErrorRow.querySelector(".text-danger.dynamic-error");
+				
+				let message = "Une erreur imprévue est survenue.";
+				
+				if (error.error.readyState == 0) {
+					message += " Veuillez vérifier votre connection internet!";
+				}
+				else {
+					
+					switch (error.at) {
+						case "retrieve":
+							message = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
+							break;
+						case "seat":
+							message = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
+							break;
+					}
+					
+				}
+				
+				preVotingRequestErrorSpan.textContent = message;
+				
+				preVotingRequestErrorRow.hidden = false;
+				
+				preVotingSubmitButton.scrollIntoView();
+				
+				return;
+				
+			}
+			
+		}
+		else {
+			data.numberOfSeatsTaken = data.numberOfSeatsTaken ? data.numberOfSeatsTaken + 1 : 1;
+		}
+		
+		if (!didSkipVotingPage) {
+			
+			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			
+		}
 		
 		uninitialize_images("pre-voting-page");
+		
+	}
+	
+	preVotingSubmitButton.addEventListener("click", async () => {
+		
+		preVotingSubmitButton.disabled = true;
+		
+		await activateVotingSession();
+		
+		preVotingSubmitButton.disabled = false;
+		
 	});
 	
 	initialize_images("pre-voting-page", data.groupImage);
 	
 }
 
-function setup_voting_session(data) {
+function setup_voting_session(data, sharedElectionCode) {
 	
 	initialize_images("voting-page", data.groupImage);
 	
@@ -221,12 +368,102 @@ function setup_voting_session(data) {
 	
 	const votingOverlay = document.getElementById("voting-voted-overlay");
 	
-	submitVotesButton.addEventListener("click", () => {
+	function resetVotingState() {
+		
+		candidatesIndexes = [];
+		
+		minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
+		maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
+		
+		if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
+			
+			const backwardCompatibleNumber = data.numberOfVotePerVoter;
+			
+			minNumberOfVotesLeft = backwardCompatibleNumber;
+			maxNumberOfVotesLeft = backwardCompatibleNumber;
+			
+		}
+		
+		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
+			
+			voteRemainingCounter.textContent = minNumberOfVotesLeft;
+			
+			document.getElementById("voting-remaining-text-absolute").hidden = false;
+			
+		}
+		else {
+			
+			voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
+			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+			
+			document.getElementById("voting-remaining-text-multiple").hidden = false;
+			
+		}
+		
+		if (isMultipleSameCandidateAllowed) {
+			
+			const inputs = document.querySelectorAll("input.spinner[type='number']");
+			
+			inputs.forEach(input => {
+				
+				input.max = maxNumberOfVotesLeft;
+				input.readOnly = false;
+				$(input).val(0);
+				
+			});
+			
+		}
+		else {
+			
+			const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+			const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+			
+			votingButtons.forEach(button => {
+				button.hidden = false;
+				button.disabled = false;
+			});
+			unvoteButtons.forEach(button => button.hidden = true);
+			
+		}
 		
 		submitVotesButton.disabled = true;
-		votingOverlay.classList.add("active");
 		
-		setTimeout(() => {
+		isVoteFinished = true;
+		
+	}
+	
+	const overlayRequestErrorSpan = document.getElementById("overlay-request-error-details");
+	let votesOnSubmitError = undefined;
+	
+	async function updateVotes(requestContainer) {
+		
+		if (sharedElectionCode) {
+			
+			const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
+			
+			const ajaxSettings = {
+				type: 'PUT',
+				url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
+				data: candidatesIndexesJSON,
+				cache: false,
+			};
+			
+			try {
+				
+				const response = await sendRequestFor(3, ajaxSettings, requestContainer);
+				
+				mergeObjectTo(data, response.data, false, false);
+				
+			} catch (error) {
+				
+				votesOnSubmitError = candidatesIndexes;
+				
+				return;
+				
+			}
+			
+		}
+		else {
 			
 			candidatesIndexes.forEach(voteIndex => {
 				
@@ -234,73 +471,24 @@ function setup_voting_session(data) {
 				
 			});
 			
-			candidatesIndexes = [];
-			
-			minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
-			maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
-			
-			if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
-				
-				const backwardCompatibleNumber = data.numberOfVotePerVoter;
-				
-				minNumberOfVotesLeft = backwardCompatibleNumber;
-				maxNumberOfVotesLeft = backwardCompatibleNumber;
-				
-			}
-			
-			if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-				
-				voteRemainingCounter.textContent = minNumberOfVotesLeft;
-				
-				document.getElementById("voting-remaining-text-absolute").hidden = false;
-				
-			}
-			else {
-				
-				voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
-				voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
-				
-				document.getElementById("voting-remaining-text-multiple").hidden = false;
-				
-			}
-			
-			if (isMultipleSameCandidateAllowed) {
-				
-				const inputs = document.querySelectorAll("input.spinner[type='number']");
-				
-				inputs.forEach(input => {
-					
-					input.max = maxNumberOfVotesLeft;
-					input.readOnly = false;
-					$(input).val(0);
-					
-				});
-				
-			}
-			else {
-				
-				const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
-				const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
-				
-				votingButtons.forEach(button => {
-					button.hidden = false;
-					button.disabled = false;
-				});
-				unvoteButtons.forEach(button => button.hidden = true);
-				
-			}
-			
-			submitVotesButton.disabled = true;
-			
-			isVoteFinished = true;
-			
 			data.numberOfVoted++;
 			
-		}, 1200);
+		}
+		
+		resetVotingState();
+		
+		votesOnSubmitError = undefined;
+		
+	}
+	
+	submitVotesButton.addEventListener("click", () => {
+		
+		submitVotesButton.disabled = true;
+		votingOverlay.classList.add("active");
+		
+		setTimeout(async () => updateVotes(), 1200);
 		
 	});
-	
-	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	
 	document.body.onkeyup = e => {
 		e.preventDefault();
@@ -347,20 +535,130 @@ function setup_voting_session(data) {
 	}
 	
 	const toastContainer = document.getElementById("voting-toasts-container");
+	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
+	const seatsRemainingCountToast = document.getElementById("seats-remaining-count-toast");
 	
-	function go_to_next_voter(data) {
+	const toastElement = document.querySelector("#voting-toasts-container > .toast");
+	
+	let toastTimerId = undefined;
+	
+	let doPrepareToastTimer = true;
+	
+	function prepare_toast_timer(timeout) {
 		
-		if (isVoteFinished && data.numberOfVoted == data.numberOfVoters) {
-			end_voting_session(data);
+		timeout = timeout || 1500;
+		
+		doPrepareToastTimer = true;
+		
+		clearTimeout(toastTimerId);
+		
+		toastTimerId = setTimeout(() => {
+			
+			$(toastElement).toast("hide");
+			$(toastElement).off("shown.bs.toast");
+			
+			toastTimerId = undefined;
+			
+		}, timeout);
+		
+	}
+	
+	function show_remaining_count_toast(data) {
+		
+		votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant(s) sur ${data.numberOfVoters}`;
+		
+		if (!seatsRemainingCountToast.hidden) {
+			// If skipped, show number of remaining active voters instead
+			const numberOfPlaceRemaining = data.hasSkipped ? (data.numberOfSeatsTaken - 1) - data.numberOfVoted : data.numberOfVoters - data.numberOfSeatsTaken;
+			
+			const beginText = data.hasSkipped ? `${numberOfPlaceRemaining} électeur(s) restant(s)` : `${numberOfPlaceRemaining} place(s) restante(s)`;
+			
+			seatsRemainingCountToast.innerText = `${beginText} sur ${data.numberOfVoters} pour cette élection partagée`;
 		}
-		else {
+		
+		toastContainer.classList.remove("i-am-away");
+		
+		$(toastElement).toast("show");
+		
+		$(toastElement).on("shown.bs.toast", () => {
 			
-			votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant sur ${data.numberOfVoters}`;
+			prepare_toast_timer();
 			
-			toastContainer.classList.remove("i-am-away")
-			$("#voting-toasts-container > .toast").toast("show");
+		});
+		
+	}
+	
+	const overlayErrorModal = document.getElementById("overlay-request-error-modal");
+	
+	function showBadVoteSendRequestError() {
+		
+		overlayRequestErrorSpan.textContent = "Une erreur est survenue lors de l'envoi des votes au serveur.";
+		
+		$(overlayErrorModal).modal("show");
+		
+	}
+	
+	const skipSharedVotesButton = document.getElementById("voting-shared-skip-button");
+	
+	async function go_to_next_voter(data) {
+		
+		if (($(overlayErrorModal).data("bs.modal") || {})._isShown) {
+			return false;
+		}
+		
+		if (toastTimerId) {
+			
+			if (!skipSharedVotesButton.hasAttribute("aria-describedby")) {
+				prepare_toast_timer();
+			}
+			
+			return false;
 			
 		}
+		
+		if (votesOnSubmitError) {
+			
+			showBadVoteSendRequestError();
+			
+			return false;
+			
+		}
+		
+		let didFinishElection = false;
+		
+		try {
+			
+			didFinishElection = await voting_go_to_next_voter(data, sharedElectionCode, false, 'voting-requester-container', false, isVoteFinished);
+			
+		} catch (error) {
+			
+			let message = "Une erreur imprévue est survenue.";
+			
+			if (error.error.readyState == 0) {
+				message += " Veuillez vérifier votre connection internet!";
+			}
+			else {
+				
+				switch (error.at) {
+					case "retrieve":
+						message = "Une erreur est survenue lors du téléchargement des dernières données présentes sur le serveur.";
+						break;
+					case "seat":
+						message = "Une erreur est survenue lors de l'envoi d'une demande au serveur pour prendre une nouvelle place.";
+						break;
+				}
+				
+			}
+			
+			overlayRequestErrorSpan.textContent = message;
+			
+			$(overlayErrorModal).modal("show");
+			
+			return false;
+			
+		}
+		
+		show_remaining_count_toast(data);
 		
 		if (isVoteFinished) {
 			
@@ -372,32 +670,232 @@ function setup_voting_session(data) {
 			
 		}
 		
+		return didFinishElection;
+		
 	}
 	
-	$("#voting-toasts-container > .toast").on("hidden.bs.toast", () => {
-		toastContainer.classList.add("i-am-away")
+	document.getElementById("overlay-request-error-local-button").addEventListener("click", () => {
+		
+		$(overlayErrorModal).modal("hide");
+		
+		sharedElectionCode = undefined;
+		updateSharedElectionCode(undefined);
+		
+		data.numberOfSeatsTaken = data.numberOfVoted;
+		
+		if (votesOnSubmitError) {
+			
+			updateVotes();
+			
+		}
+		else {
+			
+			go_to_next_voter(data);
+			
+		}
+		
 	});
 	
-	const skipVotesButton = document.getElementById("voting-skip-button");
+	document.getElementById("overlay-request-error-retry-button").addEventListener("click", async () => {
+		
+		$(overlayErrorModal).modal("hide");
+		
+		if (votesOnSubmitError) {
+			
+			await updateVotes('voting-requester-container');
+			
+			if (votesOnSubmitError) {
+				
+				showBadVoteSendRequestError();
+				
+				return;
+				
+			}
+			
+		}
+		
+		go_to_next_voter(data);
+		
+	});
 	
-	skipVotesButton.addEventListener("click", e => {
-		e.preventDefault();
+	$(toastElement).on("hidden.bs.toast", () => {
+		toastContainer.classList.add("i-am-away");
+	});
+	
+	function execute_local_skip_votes(data) {
 		
 		data.hasSkipped = true;
 		
 		end_voting_session(data);
 		
-	});
+	}
 	
-	function end_voting_session(data) {
+	const skipVotesButton = document.getElementById("voting-skip-button");
+	
+	skipVotesButton.addEventListener("click", () => execute_local_skip_votes(data));
+	
+	const sharedElectionSkipRequestErrorDiv = document.getElementById("shared-election-skip-request-error-toast");
+	
+	async function executeConfirmedSharedSkipVotes() {
 		
-		document.getElementById("voting-toasts-container").classList.add("i-am-away");
+		doPrepareToastTimer = false;
 		
-		setup_results(data);
-		document.body.onkeyup = onKeyUpEventBefore;
+		skipSharedVotesButton.disabled = true;
+		sharedElectionSkipRequestErrorDiv.hidden = true;
 		
-		uninitialize_images("voting-page");
+		const ajaxSettings = {
+			type: 'PUT',
+			url: `${sharedElectionHostRoot}/skip/${sharedElectionCode}`,
+		};
+		
+		try {
+			
+			const response = await sendRequest(ajaxSettings, 'voting-skipper-requester-container');
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+			end_voting_session(data, sharedElectionCode, true);
+			
+			doPrepareToastTimer = true;
+			prepare_toast_timer(0);
+			
+			$(toastElement).toast("hide");
+			$(toastElement).off("shown.bs.toast");
+			
+		} catch (error) {
+			
+			let message = "Une erreur imprévue est survenue.";
+			
+			if (error.readyState == 0) {
+				message += " Veuillez vérifier votre connection internet!";
+			}
+			
+			sharedElectionSkipRequestErrorDiv.querySelector(".dynamic-error").textContent = message;
+			sharedElectionSkipRequestErrorDiv.hidden = false;
+			
+		}
+		
+		skipSharedVotesButton.disabled = false;
 		
 	}
+	
+	$(skipSharedVotesButton).popover({trigger: "focus"})
+	.on("show.bs.popover", function() {
+		
+		clearTimeout(toastTimerId);
+		
+	}).on("shown.bs.popover", function() {
+		
+		const skipSharedVotesConfirmButton = document.getElementById("voting-shared-skip-confirm-button");
+		
+		skipSharedVotesConfirmButton.disabled = false;
+		
+		skipSharedVotesConfirmButton.addEventListener("click", executeConfirmedSharedSkipVotes);
+		
+	}).on("hidden.bs.popover", function() {
+		
+		if (doPrepareToastTimer) {
+			prepare_toast_timer();
+		}
+		
+	});
+	
+	document.getElementById("shared-election-skip-request-error-local-button").addEventListener("click", () => {
+		
+		sharedElectionCode = undefined;
+		updateSharedElectionCode(undefined);
+		
+		execute_local_skip_votes(data);
+		
+	});
+	
+}
+
+async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
+	
+	if (sharedElectionCode && !doSkipRetrievingElectionData) {
+		
+		const valuesToRetrieve = ["numberOfSeatsTaken", "numberOfVoted", "hasSkipped"];
+		
+		if (doForceNewVoter) {
+			// Remove all values to force query to fetch everything
+			valuesToRetrieve.length = 0;
+		}
+		
+		const queryFromValuesToRetrieve = valuesToRetrieve.length == 0 ? "" : `?${valuesToRetrieve.join('&')}`
+		
+		const ajaxSettings = {
+			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
+			cache: false,
+		};
+		
+		try {
+			
+			const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 200);
+			
+			mergeObjectTo(data, response.data, false, false);
+			
+		} catch (error) {
+			return Promise.reject({error: error, at: "retrieve"});
+		}
+		
+	}
+	
+	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
+		end_voting_session(data, sharedElectionCode, false, beforeSwitchCallback);
+		return true;
+	}
+	else {
+		
+		if (doForceNewVoter || isVoteFinished) {
+			
+			if (sharedElectionCode) {
+				
+				const ajaxSettings = {
+					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
+					cache: false,
+				};
+				
+				try {
+					
+					const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 200);
+					
+					mergeObjectTo(data, response.data, false, false);
+					
+				} catch (error) {
+					return Promise.reject({error: error, at: "seat"});
+				}
+				
+			}
+			else {
+				data.numberOfSeatsTaken++;
+			}
+			
+		}
+		
+	}
+	
+	return false;
+	
+}
+
+function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeSwitchCallback) {
+	
+	document.getElementById("voting-toasts-container").classList.add("i-am-away");
+	
+	if (beforeSwitchCallback) {
+		beforeSwitchCallback();
+	}
+	
+	if (sharedElectionCode && (data.hasSkipped && data.numberOfVoted != data.numberOfSeatsTaken || !data.hasSkipped && data.numberOfVoted != data.numberOfVoters)) {
+		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode, didSkipRemainings));
+	}
+	else {
+		setup_results(data);
+	}
+	
+	document.body.onkeyup = onKeyUpEventBefore;
+	
+	uninitialize_images("voting-page");
 	
 }
