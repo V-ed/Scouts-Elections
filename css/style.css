@@ -11,6 +11,10 @@ a {
     cursor: pointer;
 }
 
+a:not([href]):hover {
+    color: #0000EE;
+}
+
 .non-selectable {
     user-select: none;
 }
