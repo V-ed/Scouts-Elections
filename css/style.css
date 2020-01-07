@@ -48,6 +48,38 @@ div#voting-page input.spinner[type="number"] + div.input-group > input[readonly]
     font-weight: normal !important;
 }
 
+button#voting-submit-button:not(:disabled) {
+    animation: available 7s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes available {
+    0% { transform: scale(1); }
+    5% { transform: scale(1.02); }
+    10% { transform: scale(0.99); }
+    15% { transform: scale(1.02); }
+    20% { transform: scale(0.99); }
+    25% { transform: scale(1.02); }
+    30% { transform: scale(0.99); }
+    35% { transform: scale(1.02); }
+    40% { transform: scale(0.99); }
+    45% { transform: scale(1.02); }
+    50% { transform: scale(0.99); }
+    55% { transform: scale(1.02); }
+    60% { transform: scale(0.99); }
+    65% { transform: scale(1.02); }
+    70% { transform: scale(0.99); }
+    75% { transform: scale(1.02); }
+    80% { transform: scale(0.99); }
+    85% { transform: scale(1.02); }
+    87.5% { transform: scale(1.005) rotate(0deg); }
+    90% { transform: scale(0.99) rotate(1deg); }
+    92.5% { transform: scale(1.005) rotate(-1deg); }
+    95% { transform: scale(1.02) rotate(1deg); }
+    97.5% { transform: scale(0.99) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
 /* Voting overlay */
 
 div#voting-voted-overlay {

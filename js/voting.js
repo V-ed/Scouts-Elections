@@ -261,6 +261,8 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	if(minNumberOfVotesLeft == 0){
 		submitVotesButton.disabled = false;
+		submitVotesButton.classList.remove("btn-secondary");
+		submitVotesButton.classList.add("btn-success");
 	}
 	
 	if (isMultipleSameCandidateAllowed) {
@@ -361,6 +363,15 @@ function setup_voting_session(data, sharedElectionCode) {
 		}
 		
 		submitVotesButton.disabled = minNumberOfVotesLeft > 0;
+		
+		if (submitVotesButton.disabled) {
+			submitVotesButton.classList.add("btn-secondary");
+			submitVotesButton.classList.remove("btn-success");
+		}
+		else {
+			submitVotesButton.classList.remove("btn-secondary");
+			submitVotesButton.classList.add("btn-success");
+		}
 		
 	}
 	
@@ -484,9 +495,15 @@ function setup_voting_session(data, sharedElectionCode) {
 	submitVotesButton.addEventListener("click", () => {
 		
 		submitVotesButton.disabled = true;
+		
 		votingOverlay.classList.add("active");
 		
-		setTimeout(async () => updateVotes(), 1200);
+		setTimeout(async () => {
+			updateVotes()
+			
+			submitVotesButton.classList.remove("btn-success");
+			submitVotesButton.classList.add("btn-secondary");
+		}, 1200);
 		
 	});
 	
