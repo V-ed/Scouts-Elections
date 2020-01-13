@@ -17,6 +17,7 @@ a:not([href]):hover {
 
 .non-selectable {
     user-select: none;
+    user-drag: none;
 }
 
 /* Headings overrides */
