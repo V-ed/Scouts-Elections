@@ -534,9 +534,9 @@ elems.forEach(elem => {
 
 // Send requests and handle UI spinners
 
-function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+async function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
 	
-	const dateAfterTimeout = !minimumRequestDelay || minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
+	const delayer = new MinimalDelayer(!minimumRequestDelay || minimumRequestDelay > 0 ? (minimumRequestDelay ? minimumRequestDelay : 500) : undefined);
 	
 	doHideContainerOnEnd = doHideContainerOnEnd !== false;
 	
@@ -579,19 +579,11 @@ function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, min
 		
 		$.ajax(ajaxSettings).done(function() {
 			
-			if (dateAfterTimeout) {
-				while (Date.now() <= dateAfterTimeout) {}
-			}
-				
-			resolve.apply(null, arguments);
+			delayer.execute(() => resolve.apply(null, arguments));
 			
 		}).fail(function() {
 			
-			if (dateAfterTimeout) {
-				while (Date.now() <= dateAfterTimeout) {}
-			}
-				
-			reject.apply(null, arguments);
+			delayer.execute(() => reject.apply(null, arguments));
 			
 		});
 		
@@ -636,7 +628,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 		throw "The number of tries should be bigger than 0!";
 	}
 	
-	const dateAfterTimeout = !minimumRequestDelay || minimumRequestDelay > 0 ? Date.now() + (minimumRequestDelay ? minimumRequestDelay : 500) : undefined;
+	const delayer = new MinimalDelayer(!minimumRequestDelay || minimumRequestDelay > 0 ? (minimumRequestDelay ? minimumRequestDelay : 500) : undefined);
 	
 	for (let attemptCount = 1; attemptCount <= numberOfTries; attemptCount++) {
 		
@@ -644,9 +636,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 			
 			const response = await sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
 			
-			if (dateAfterTimeout) {
-				while (Date.now() <= dateAfterTimeout) {}
-			}
+			await delayer.wait();
 			
 			return response;
 			
