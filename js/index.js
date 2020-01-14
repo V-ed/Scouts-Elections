@@ -11,7 +11,7 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
-sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false).then(() => {
+sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false, 150).then(() => {
 	
 	isServerAccessible = true;
 	

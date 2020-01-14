@@ -630,7 +630,7 @@ function verify_all_valid() {
 		
 		sharedValidityTimeout = setTimeout(() => {
 			
-			sendRequest(`${sharedElectionHostRoot}`, setupSharedRequesterContainer, false).then(() => {
+			sendRequest(`${sharedElectionHostRoot}`, setupSharedRequesterContainer, false, 150).then(() => {
 				
 				if (submitSetupButton.disabled) {
 					clearSharedVisuals();
