@@ -543,7 +543,7 @@ function add_input_for_verification(inputId, customValidator) {
 		
 	}
 	
-	inputElement.addEventListener("input", (e) => {
+	inputElement.addEventListener("input", e => {
 		
 		const isManual = e.detail ? e.detail.isManual : false;
 		
@@ -590,6 +590,8 @@ function add_input_for_verification(inputId, customValidator) {
 	
 }
 
+let sharedValidityTimeout = undefined;
+
 function verify_all_valid() {
 	
 	let isValid = true;
@@ -607,24 +609,43 @@ function verify_all_valid() {
 	
 	submitSetupButton.disabled = !isValid;
 	
-	if (!isValid) {
+	const setupSharedRequesterContainer = document.getElementById("setup-shared-submit-requester-container");
+	
+	function clearSharedVisuals() {
 		
-		if (!submitSharedSetupButton.disabled) {
-			document.getElementById("setup-shared-submit-requester-container").hidden = true;
-		}
+		clearTimeout(sharedValidityTimeout);
+		
+		setupSharedRequesterContainer.hidden = true;
 		
 		submitSharedSetupButton.disabled = true;
 		
 	}
+	
+	if (!isValid) {
+		clearSharedVisuals();
+	}
 	else if (submitSharedSetupButton.disabled) {
 		
-		sendRequest(`${sharedElectionHostRoot}`, 'setup-shared-submit-requester-container', false).then(() => {
+		clearTimeout(sharedValidityTimeout);
+		
+		sharedValidityTimeout = setTimeout(() => {
 			
-			isServerAccessible = true;
+			sendRequest(`${sharedElectionHostRoot}`, setupSharedRequesterContainer, false).then(() => {
+				
+				if (submitSetupButton.disabled) {
+					clearSharedVisuals();
+				}
+				else{
+					
+					isServerAccessible = true;
+					
+					submitSharedSetupButton.disabled = false;
+					
+				}
+				
+			}).catch(error => {});
 			
-			submitSharedSetupButton.disabled = false;
-			
-		}).catch(error => {});
+		}, 250);
 		
 	}
 	
