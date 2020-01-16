@@ -180,6 +180,11 @@ table.table-border {
     color: white;
 }
 
+.loader:not(.loader-disabled):active {
+    background-color: #1c732f;
+    transition: background-color 0.1s ease-in-out;
+}
+
 .loader:not(.loader-disabled) .loader-input label {
     transition: text-shadow 0.3s ease-in-out;
 }
