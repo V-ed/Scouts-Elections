@@ -43,6 +43,21 @@ This allows some sort of protection in case a smart kid decides he wants to pres
 In the case you want to disable that, there is a checkbox in the setup page that is checked by default - simply uncheck it and the database won't download automatically.
 Even with the automatic download disabled, you will still be able to download the database manually in the end if desired.
 
+As how does the voting process goes, a page gets shown before the actual votes to give a quick reminder to the scout leaders on how the voting process goes (as described below).
+
+The way it works is that all the candidates are shown with an input that is only available to the mouse (or touch) input which is configured based on the informations given at the setup page :
+
+If multiple votes is allowed per candidates, then an input that lets multiple votes on one candidate is used (with a plus and a minus button), otherwise, a simple utton is shown under each candidate that gives the possibility of voting for that candidate.
+Under the candidates cards stack rests a button to submit the votes : it is only enabled once the minimum number of votes (defined at setup!) was reached.
+This button also giggles a bit to let the kids know this button is clickable, to (hopefully) remind them that they need to press it.
+Above this buttton is a small text line showing how many votes are remaining for the current voter (or two lines if the minimum and the maximum are not the same).
+
+When the minimum number of votes was reached and the voter presses the submit button, an overlay shows up saying "Votes saved, thanks!", which is a signal that the voter can now leave and do something else.
+Nothing on this page is clickable, so using the mouse is now useless in this overlay.
+This is where the scout leader comes into play : to go to the next voter, you press the space button on the keyboard and everything is reset in a state that lets another voter give its votes.
+On a device with a touch screen (i.e. : a phone), you can press the top half of the screen for a little time (about half a second should do it) and the same behavior will happen.
+Once no more voters is remaining, the results flow will kick in - you can follow the next section to learn more about it.
+
 ## Results
 
 Before showing results, a password is asked to prevent kids from viewing the results by accident.
