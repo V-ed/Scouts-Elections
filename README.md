@@ -77,14 +77,14 @@ A warning is shown when using this functionality in the shared election context,
 If you skip the shared election, no *new* voters will be available to input their vote(s) : however, devices that already had a voter on it will still be able to send their vote(s).
 
 When no more "seats" are available (when every voter has voted or there are voter that are currenty voting), a page will be shown on devices that have no voters left that lets you know when there is no more voters remaining : it will verify automatically every 30 seconds, or you can manually verify yourself by pressing the button dedicated for it.
-This page allows you go bypass the remaining voters if that's what you need (in case of issues, such has loss of Internet connectivity, for example) - this option however does not delete or skips the election, it simply shows the data that your device currently has.
+This page allows you to bypass the remaining voters if that's what you need (in case of issues, such has loss of Internet connectivity, for example) - this option however does not delete or skips the election, it simply shows the data that your device currently has.
 This page also allows you to send a request to delete the data on the server once the election is over.
 
 Finally, after 24 hours of inactivity (no one joins the shared election, send a vote request, fetches the results, etc), the data will be automatically deleted from my server.
 
 During the whole proceess, errors are handled and if you lose Internet connection, you will, most of the time, have the option to fallback to a local election instead.
 This option is there mostly to prevent your data from being lost, so that you can handle problems more easily.
-There errors are explained when they happen, and their text will be red to signal that it was an error.
+These errors are explained when they happen, and their text will be red to signal that it was an error.
 
 ## Miscellaneous
 
