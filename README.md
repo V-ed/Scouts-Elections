@@ -47,9 +47,10 @@ As how does the voting process goes, a page gets shown before the actual votes t
 
 The way it works is that all the candidates are shown with an input that is only available to the mouse (or touch) input which is configured based on the informations given at the setup page :
 
-If multiple votes is allowed per candidates, then an input that lets multiple votes on one candidate is used (with a plus and a minus button), otherwise, a simple utton is shown under each candidate that gives the possibility of voting for that candidate.
+If multiple votes is allowed per candidates, then an input that lets multiple votes on one candidate is used (with a plus and a minus button).
+Otherwise, a simple button is shown under each candidate that gives the possibility of voting for that candidate.
 Under the candidates cards stack rests a button to submit the votes : it is only enabled once the minimum number of votes (defined at setup!) was reached.
-This button also giggles a bit to let the kids know this button is clickable, to (hopefully) remind them that they need to press it.
+This button also giggles a bit (when enabled) to let the kids know this button is clickable, to (hopefully) remind them that they need to press it.
 Above this buttton is a small text line showing how many votes are remaining for the current voter (or two lines if the minimum and the maximum are not the same).
 
 When the minimum number of votes was reached and the voter presses the submit button, an overlay shows up saying "Votes saved, thanks!", which is a signal that the voter can now leave and do something else.
