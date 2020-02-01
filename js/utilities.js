@@ -624,6 +624,8 @@ async function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEn
 
 async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
 	
+	numberOfTries = parseInt(numberOfTries);
+	
 	if (numberOfTries <= 0) {
 		throw "The number of tries should be bigger than 0!";
 	}
