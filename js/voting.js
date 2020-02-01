@@ -865,7 +865,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 		
 		try {
 			
-			const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 200);
+			const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 			
 			mergeObjectTo(data, response.data, false, false);
 			
@@ -892,7 +892,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 				
 				try {
 					
-					const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 200);
+					const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 					
 					mergeObjectTo(data, response.data, false, false);
 					
