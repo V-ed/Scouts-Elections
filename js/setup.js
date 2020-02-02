@@ -22,9 +22,15 @@ function setup_setup() {
 		groupImageData = undefined;
 	}
 	
-	create_file_loader("image-loader-zone", (files, $file_zone) => {
+	const MAXIMUM_IMAGE_SIZE_MB = 2;
+	
+	create_file_loader("image-loader-zone", files => {
 		
 		const file = files[0];
+		
+		if (file.size > MAXIMUM_IMAGE_SIZE_MB * 1024 * 1024) {
+			return "L'image ne peut pas dépasser 2 MB! Veuillez utiliser une image plus petite ou optimiser l'image.";
+		}
 		
 		const reader  = new FileReader();
 		
