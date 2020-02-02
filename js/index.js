@@ -75,8 +75,8 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false,
 		
 	});
 	
-}).catch(error => {
-	console.log(error);
+}).catch(_error => {
+	// Nothing to do here in case of errors, the sendRequest method handles it all
 });
 
 create_file_loader("database-loader-zone", load_file, items => {
