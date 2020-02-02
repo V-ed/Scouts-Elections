@@ -133,9 +133,15 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 			}
 			
 		})
-		.on("drop", e => {
+		.on("drop", async e => {
 			if (!("haderror" in $jqueryElem[0].dataset)) {
-				loadFilesFn(e.originalEvent.dataTransfer.files, $jqueryElem);
+				
+				const result = await loadFilesFn(e.originalEvent.dataTransfer.files, $jqueryElem);
+				
+				if (result) {
+					showLoaderErrorFn($jqueryElem, result);
+				}
+				
 			}
 		});
 		
