@@ -24,7 +24,7 @@ function setup_setup() {
 	
 	const MAXIMUM_IMAGE_SIZE_MB = 2;
 	
-	create_file_loader("image-loader-zone", files => {
+	Utils.create_file_loader("image-loader-zone", files => {
 		
 		const file = files[0];
 		
@@ -235,7 +235,7 @@ function setup_setup() {
 			tempCandidates.push({ name: candidateData, voteCount: 0, selectedState: "unselected" });
 		});
 		
-		isDownloadDisabled = formData.get("autoDownloadDb") != "on";
+		Utils.isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
 		const compressedImageData = groupImageData ? LZString.compressToUTF16(groupImageData) : undefined;
 		
@@ -249,7 +249,7 @@ function setup_setup() {
 			numberOfVoted: 0,
 			numberOfSeatsTaken: 0,
 			hasSkipped: false,
-			isDownloadDisabled: isDownloadDisabled,
+			isDownloadDisabled: Utils.isDownloadDisabled,
 			candidates: tempCandidates,
 			groupImage: compressedImageData
 		};
@@ -269,7 +269,7 @@ function setup_setup() {
 		
 		window.removeEventListener("beforeunload", prevent_data_loss);
 		
-		uninitialize_images("setup-page");
+		Utils.uninitialize_images("setup-page");
 		
 	});
 	
@@ -289,18 +289,18 @@ function setup_setup() {
 		
 		const ajaxSettings = {
 			type: 'POST',
-			url: `${sharedElectionHostRoot}/create`,
+			url: `${Utils.sharedElectionHostRoot}/create`,
 			data: electionJSONData,
 			cache: false,
 		};
 		
-		sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
+		Utils.sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
 			
 			if (!response.code) {
 				throw "Missing election code!";
 			}
 			
-			let data = mergeObjectTo(electionJSONData, response.data, true);
+			let data = Utils.mergeObjectTo(electionJSONData, response.data, true);
 			
 			return setup_votes(data, response.code, () => {
 				
@@ -308,7 +308,7 @@ function setup_setup() {
 				
 				window.removeEventListener("beforeunload", prevent_data_loss);
 				
-				uninitialize_images("setup-page");
+				Utils.uninitialize_images("setup-page");
 				
 			}, 'setup-create-election-modal-requester-container');
 			
@@ -636,14 +636,14 @@ function verify_all_valid() {
 		
 		sharedValidityTimeout = setTimeout(() => {
 			
-			sendRequest(`${sharedElectionHostRoot}`, setupSharedRequesterContainer, false, 150).then(() => {
+			Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, setupSharedRequesterContainer, false, 150).then(() => {
 				
 				if (submitSetupButton.disabled) {
 					clearSharedVisuals();
 				}
 				else{
 					
-					isServerAccessible = true;
+					Utils.isServerAccessible = true;
 					
 					submitSharedSetupButton.disabled = false;
 					

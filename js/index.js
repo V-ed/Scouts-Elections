@@ -11,9 +11,9 @@ document.getElementById("database-loader-zone").classList.remove("loader-disable
 
 newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
 
-sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false, 150).then(() => {
+Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, 'home-join-requester-container', false, 150).then(() => {
 	
-	isServerAccessible = true;
+	Utils.isServerAccessible = true;
 	
 	joinElectionsButton.disabled = false;
 	
@@ -39,11 +39,11 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false,
 		errorSpan.hidden = true;
 		
 		const ajaxSettings = {
-			url: `${sharedElectionHostRoot}/join/${code}`,
+			url: `${Utils.sharedElectionHostRoot}/join/${code}`,
 			contentType: 'application/javascript; charset=UTF-16',
 		};
 		
-		let request = sendRequest(ajaxSettings, 'home-join-modal-requester-container');
+		let request = Utils.sendRequest(ajaxSettings, 'home-join-modal-requester-container');
 		
 		request.then(response => {
 			
@@ -79,7 +79,7 @@ sendRequest(`${sharedElectionHostRoot}`, 'home-join-requester-container', false,
 	// Nothing to do here in case of errors, the sendRequest method handles it all
 });
 
-create_file_loader("database-loader-zone", load_file, items => {
+Utils.create_file_loader("database-loader-zone", load_file, items => {
 	const count = items.length;
 	
 	if (count > 1) {
@@ -128,7 +128,7 @@ function route_data(data) {
 	
 	if (data.hasSkipped || data.numberOfVoted == data.numberOfVoters) {
 		
-		isDownloadDisabled = true;
+		Utils.isDownloadDisabled = true;
 		
 		setup_results(data);
 		

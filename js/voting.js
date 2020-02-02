@@ -2,7 +2,7 @@ let onKeyUpEventBefore;
 
 let auto_download_data = function() {
 	
-	if (should_download_data()) {
+	if (Utils.should_download_data()) {
 		
 		download_data(this.data, "_en_cours");
 		
@@ -84,7 +84,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 
 function setup_pre_voting_session(data, sharedElectionCode) {
 	
-	if (isTouchDevice) {
+	if (Utils.isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
@@ -176,7 +176,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 			
 		}
 		
-		uninitialize_images("pre-voting-page");
+		Utils.uninitialize_images("pre-voting-page");
 		
 	}
 	
@@ -190,15 +190,15 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		
 	});
 	
-	initialize_images("pre-voting-page", data.groupImage);
+	Utils.initialize_images("pre-voting-page", data.groupImage);
 	
 }
 
 function setup_voting_session(data, sharedElectionCode) {
 	
-	initialize_images("voting-page", data.groupImage);
+	Utils.initialize_images("voting-page", data.groupImage);
 	
-	dbIsDirty = true;
+	Utils.dbIsDirty = true;
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
@@ -471,16 +471,16 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 			const ajaxSettings = {
 				type: 'PUT',
-				url: `${sharedElectionHostRoot}/vote/${sharedElectionCode}`,
+				url: `${Utils.sharedElectionHostRoot}/vote/${sharedElectionCode}`,
 				data: candidatesIndexesJSON,
 				cache: false,
 			};
 			
 			try {
 				
-				const response = await sendRequestFor(3, ajaxSettings, requestContainer);
+				const response = await Utils.sendRequestFor(3, ajaxSettings, requestContainer);
 				
-				mergeObjectTo(data, response.data, false, false);
+				Utils.mergeObjectTo(data, response.data, false, false);
 				
 			} catch (error) {
 				
@@ -534,7 +534,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		}
 	}
 	
-	if (isTouchDevice) {
+	if (Utils.isTouchDevice) {
 		
 		let timer;
 		const touchDuration = 500;
@@ -779,14 +779,14 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		const ajaxSettings = {
 			type: 'PUT',
-			url: `${sharedElectionHostRoot}/skip/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/skip/${sharedElectionCode}`,
 		};
 		
 		try {
 			
-			const response = await sendRequest(ajaxSettings, 'voting-skipper-requester-container');
+			const response = await Utils.sendRequest(ajaxSettings, 'voting-skipper-requester-container');
 			
-			mergeObjectTo(data, response.data, false, false);
+			Utils.mergeObjectTo(data, response.data, false, false);
 			
 			end_voting_session(data, sharedElectionCode, true);
 			
@@ -859,15 +859,15 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 		const queryFromValuesToRetrieve = valuesToRetrieve.length == 0 ? "" : `?${valuesToRetrieve.join('&')}`
 		
 		const ajaxSettings = {
-			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
+			url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
 			cache: false,
 		};
 		
 		try {
 			
-			const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
+			const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 			
-			mergeObjectTo(data, response.data, false, false);
+			Utils.mergeObjectTo(data, response.data, false, false);
 			
 		} catch (error) {
 			return Promise.reject({error: error, at: "retrieve"});
@@ -886,15 +886,15 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 			if (sharedElectionCode) {
 				
 				const ajaxSettings = {
-					url: `${sharedElectionHostRoot}/seat/${sharedElectionCode}`,
+					url: `${Utils.sharedElectionHostRoot}/seat/${sharedElectionCode}`,
 					cache: false,
 				};
 				
 				try {
 					
-					const response = await sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
+					const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 					
-					mergeObjectTo(data, response.data, false, false);
+					Utils.mergeObjectTo(data, response.data, false, false);
 					
 				} catch (error) {
 					return Promise.reject({error: error, at: "seat"});
@@ -930,6 +930,6 @@ function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeS
 	
 	document.body.onkeyup = onKeyUpEventBefore;
 	
-	uninitialize_images("voting-page");
+	Utils.uninitialize_images("voting-page");
 	
 }

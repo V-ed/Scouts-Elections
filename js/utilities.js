@@ -1,27 +1,109 @@
-// Set default variables
+const Utils = {};
 
-const isTouchDevice = "ontouchstart" in document.documentElement;
-
-const isDev = false && window.location.hostname.includes("localhost");
-
-const sharedElectionHostRoot = isDev ? "http://localhost:5678" : "https://ved.ddnsfree.com/scouts-elections/api";
-
-let isServerAccessible = false;
-
-// Setup downloadable database function
-
-let didDownloadDb = false;
-let isDownloadDisabled = false;
-let dbIsDirty = false;
-
-function should_download_data() {
-	if (isDownloadDisabled) {
-		return false;
-	}
-	return dbIsDirty || !didDownloadDb;
+Utils.resetVars = function() {
+	
+	// Set default variables
+	
+	Utils.isTouchDevice = "ontouchstart" in document.documentElement;
+	
+	Utils.isDev = false && window.location.hostname.includes("localhost");
+	
+	Utils.sharedElectionHostRoot = Utils.isDev ? "http://localhost:5678" : "https://ved.ddnsfree.com/scouts-elections/api";
+	
+	Utils.isServerAccessible = false;
+	
+	// Setup downloadable database function
+	
+	Utils.didDownloadDb = false;
+	Utils.isDownloadDisabled = false;
+	Utils.dbIsDirty = false;
+	
 }
 
-function download_data(data, dbNameSuffix) {
+Utils.resetVars();
+
+Utils.init = function(doPreventVarsReset) {
+	
+	if (!doPreventVarsReset) {
+		Utils.resetVars();
+	}
+	
+	// --------------------------------
+	// Setup popovers
+	// --------------------------------
+	
+	// Accept buttons in tooltips and Popovers
+	$.fn.tooltip.Constructor.Default.whiteList.button = [];
+	
+	$(".is-popable").popover({trigger: "manual"});
+	$(".is-popable-hover").popover({trigger: "hover"});
+	
+	// --------------------------------
+	// Initialize acceptance forms
+	// --------------------------------
+	
+	Array.from(document.getElementsByClassName("acceptance-form-div-accept-button")).forEach(button => {
+		
+		button.addEventListener("click", () => {
+			
+			Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
+			Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
+			
+		});
+		
+	});
+	
+	// --------------------------------
+	// Miscellaneous
+	// --------------------------------
+	
+	Utils.set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
+	
+	// Restore current focus when changing screen orientation
+	// Especially useful for mobile
+	
+	window.addEventListener("orientationchange", function() {
+		setTimeout(() => {
+			document.activeElement.scrollIntoView();
+		}, 500);
+	});
+	
+	// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
+	
+	if (!!window.chrome) {
+		
+		window.addEventListener("orientationchange", function() {
+			
+			if (screen.orientation.angle % 180 == 0) {
+				
+				const bodyElem = document.querySelector("body");
+				bodyElem.classList.toggle("d-flex");
+				setTimeout(() => {
+					bodyElem.classList.toggle("d-flex");
+				}, 150);
+				
+			}
+			
+		});
+		
+	}
+	
+	// Reload if using back / forward button, therefore correctly cleaning the cache of variables
+
+	if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
+		document.location.reload(true);
+	}
+	
+}
+
+Utils.should_download_data = function() {
+	if (Utils.isDownloadDisabled) {
+		return false;
+	}
+	return Utils.dbIsDirty || !Utils.didDownloadDb;
+}
+
+Utils.download_data = function(data, dbNameSuffix) {
 	
 	const stringData = JSON.stringify(data);
 	
@@ -30,24 +112,14 @@ function download_data(data, dbNameSuffix) {
 	const file = new File([stringData], `${data.dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
 	saveAs(file);
 	
-	didDownloadDb = true;
-	dbIsDirty = false;
+	Utils.didDownloadDb = true;
+	Utils.dbIsDirty = false;
 	
 }
 
-// Setup popovers
-
-$(function () {
-	// Accept buttons in tooltips and Popovers
-	$.fn.tooltip.Constructor.Default.whiteList.button = [];
-	
-	$(".is-popable").popover({trigger: "manual"});
-	$(".is-popable-hover").popover({trigger: "hover"});
-});
-
 // File loader initiator and utility functions
 
-function show_loader_error($file_zone, error) {
+Utils.show_loader_error = function($file_zone, error) {
 	
 	$file_zone.addClass("bg-danger");
 	
@@ -57,7 +129,7 @@ function show_loader_error($file_zone, error) {
 	
 }
 
-function clear_loader_errors($file_zone) {
+Utils.clear_loader_errors = function($file_zone) {
 	
 	$file_zone.removeClass("bg-danger");
 	$file_zone.popover("hide");
@@ -68,23 +140,23 @@ function clear_loader_errors($file_zone) {
 	
 }
 
-const isAdvancedUpload = function() {
+Utils.isAdvancedUpload = function() {
 	const divElement = document.createElement("div");
-	return !isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
+	return !Utils.isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
 }();
 
-function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoaderErrorFn, clearErrorsFn) {
+Utils.create_file_loader = function(formId, loadFilesFn, handleItemsForErrorsFn, showLoaderErrorFn, clearErrorsFn) {
 	
 	if (!showLoaderErrorFn) {
-		showLoaderErrorFn = show_loader_error;
+		showLoaderErrorFn = Utils.show_loader_error;
 	}
 	if (!clearErrorsFn) {
-		clearErrorsFn = clear_loader_errors;
+		clearErrorsFn = Utils.clear_loader_errors;
 	}
 	
 	const $jqueryElem = $(`#${formId}`);
 	
-	if (isAdvancedUpload) {
+	if (Utils.isAdvancedUpload) {
 		
 		$jqueryElem.addClass("has-advanced-upload");
 		
@@ -169,26 +241,9 @@ function create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoa
 	
 }
 
-// Initialize acceptance forms
-
-$(function () {
-	
-	Array.from(document.getElementsByClassName("acceptance-form-div-accept-button")).forEach(button => {
-		
-		button.addEventListener("click", () => {
-			
-			Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
-			Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
-			
-		});
-		
-	});
-	
-});
-
 // Merge objects
 
-function mergeObjectTo(original, newObject, originalIsJsonString, doCloneOriginal){
+Utils.mergeObjectTo = function(original, newObject, originalIsJsonString, doCloneOriginal){
 	
 	const objectToMerge = doCloneOriginal === false ? original : (JSON.parse(originalIsJsonString ? original : JSON.stringify(original)));
 	
@@ -202,14 +257,14 @@ function mergeObjectTo(original, newObject, originalIsJsonString, doCloneOrigina
 
 // Load image on all elements matching under given view id
 
-function initialize_images(viewId, imageData) {
+Utils.initialize_images = function(viewId, imageData) {
 	
 	if (imageData) {
 		const uncompressedImage = LZString.decompressFromUTF16(imageData);
-		viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
+		Utils.viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
 	}
 	else {
-		viewImageIterator(viewId, false, container => {
+		Utils.viewImageIterator(viewId, false, container => {
 			container.classList.add("d-none");
 			container.classList.remove("d-flex");
 		});
@@ -217,11 +272,11 @@ function initialize_images(viewId, imageData) {
 	
 }
 
-function uninitialize_images(viewId) {
-	viewImageIterator(viewId, true, imageElem => imageElem.src = "");
+Utils.uninitialize_images = function(viewId) {
+	Utils.viewImageIterator(viewId, true, imageElem => imageElem.src = "");
 }
 
-function viewImageIterator(viewId, iterateOnImages, iteratorFn) {
+Utils.viewImageIterator = function(viewId, iterateOnImages, iteratorFn) {
 	
 	const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
 	
@@ -248,7 +303,7 @@ function viewImageIterator(viewId, iterateOnImages, iteratorFn) {
 
 // Set bootstrap labels to not focus input on click
 
-function set_label_non_clickable(labels) {
+Utils.set_label_non_clickable = function(labels) {
 	
 	Array.from(labels).forEach(label => {
 		
@@ -260,42 +315,9 @@ function set_label_non_clickable(labels) {
 	
 }
 
-$(function () {
-	set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
-});
-
-// Restore current focus when changing screen orientation
-// Especially useful for mobile
-
-window.addEventListener("orientationchange", function() {
-	setTimeout(() => {
-		document.activeElement.scrollIntoView();
-	}, 500);
-});
-
-// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
-
-if (!!window.chrome) {
-	
-	window.addEventListener("orientationchange", function() {
-		
-		if (screen.orientation.angle % 180 == 0) {
-			
-			const bodyElem = document.querySelector("body");
-			bodyElem.classList.toggle("d-flex");
-			setTimeout(() => {
-				bodyElem.classList.toggle("d-flex");
-			}, 150);
-			
-		}
-		
-	});
-	
-}
-
 // Send requests and handle UI spinners
 
-async function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+Utils.sendRequest = async function(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
 	
 	const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
 	
@@ -383,7 +405,7 @@ async function sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEn
 	
 }
 
-async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
 	
 	numberOfTries = parseInt(numberOfTries);
 	
@@ -397,7 +419,7 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 		
 		try {
 			
-			const response = await sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
+			const response = await Util.sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
 			
 			await delayer.wait();
 			
@@ -417,10 +439,4 @@ async function sendRequestFor(numberOfTries, ajaxSettings, requesterContainer, d
 	
 	throw "Wait a second... how did you even get here? My method is flawed...";
 	
-}
-
-// Reload if using back / forward button, therefore correctly cleaning the cache of variables
-
-if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
-	document.location.reload(true);
 }

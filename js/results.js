@@ -1,6 +1,6 @@
 function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 	
-	initialize_images("post-shared-voting-page", data.groupImage);
+	Utils.initialize_images("post-shared-voting-page", data.groupImage);
 	
 	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
 	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
@@ -100,7 +100,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 		
 		setup_results(data);
 		
-		uninitialize_images("voting-page");
+		Utils.uninitialize_images("voting-page");
 		
 	});
 	
@@ -120,13 +120,13 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			sharedPostVotesVerifyErrorSpan.hidden = true;
 			
 			const ajaxSettings = {
-				url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
+				url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
 				cache: false,
 			};
 			
-			const response = await sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
+			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
 			
-			mergeObjectTo(data, response.data, false, false);
+			Utils.mergeObjectTo(data, response.data, false, false);
 			
 		} catch (error) {
 			
@@ -144,7 +144,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 	sharedPostVoteButtonGo.addEventListener("click", async () => {
 		
 		const ajaxSettings = {
-			url: `${sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
 			cache: false,
 		};
 		
@@ -156,13 +156,13 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 			sharedPostVotesGoErrorSpan.hidden = true;
 			
-			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
+			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
 			
-			mergeObjectTo(data, response.data, false, false);
+			Utils.mergeObjectTo(data, response.data, false, false);
 			
 			setup_results(data);
 			
-			uninitialize_images("voting-page");
+			Utils.uninitialize_images("voting-page");
 			
 		} catch (error) {
 			
@@ -181,7 +181,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 		
 		const ajaxSettings = {
 			type: 'DELETE',
-			url: `${sharedElectionHostRoot}/delete/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/delete/${sharedElectionCode}`,
 			cache: false,
 		};
 		
@@ -193,13 +193,13 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 			sharedPostVotesGoAndDeleteErrorSpan.hidden = true;
 			
-			const response = await sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
+			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
 			
-			mergeObjectTo(data, response.data, false, false);
+			Utils.mergeObjectTo(data, response.data, false, false);
 			
 			setup_results(data);
 			
-			uninitialize_images("voting-page");
+			Utils.uninitialize_images("voting-page");
 			
 		} catch (error) {
 			
@@ -229,7 +229,7 @@ function setup_results(data, didSkipRemainings) {
 
 function setup_pre_results_page(data, didSkipRemainings) {
 	
-	initialize_images("pre-results-page", data.groupImage);
+	Utils.initialize_images("pre-results-page", data.groupImage);
 	
 	// Default password if not set is "VL" for "Vieux-Loups"
 	let passwordToCheck = data.dbPsw || "VL";
@@ -247,7 +247,7 @@ function setup_pre_results_page(data, didSkipRemainings) {
 			
 			switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 			
-			uninitialize_images("pre-results-page");
+			Utils.uninitialize_images("pre-results-page");
 			
 		}
 		else {
@@ -270,7 +270,7 @@ function setup_pre_results_page(data, didSkipRemainings) {
 
 function setup_results_page(data, didSkipRemainings) {
 	
-	initialize_images("results-page", data.groupImage);
+	Utils.initialize_images("results-page", data.groupImage);
 	
 	const resultsTableBody = document.getElementById("results-body");
 	
@@ -352,7 +352,7 @@ function setup_results_page(data, didSkipRemainings) {
 		
 		candidateObject.selectedState = candidateState;
 		
-		dbIsDirty = true;
+		Utils.dbIsDirty = true;
 		
 	});
 	
@@ -372,7 +372,7 @@ function setup_results_page(data, didSkipRemainings) {
 	downloadDbButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		download_data(data);
+		Utils.download_data(data);
 	});
 	
 	const homepageButton = document.getElementById("results-homepage-button");
@@ -381,7 +381,7 @@ function setup_results_page(data, didSkipRemainings) {
 		
 		let canReload = true;
 		
-		if (should_download_data()) {
+		if (Utils.should_download_data()) {
 			
 			canReload = confirm("La base de données n'est pas enregistrée. Êtes vous sûr de vouloir continuer?");
 			
@@ -391,7 +391,7 @@ function setup_results_page(data, didSkipRemainings) {
 			
 			window.removeEventListener("beforeunload", auto_download_data);
 			
-			isDownloadDisabled = true;
+			Utils.isDownloadDisabled = true;
 			document.location.reload(true);
 			
 		}
