@@ -239,6 +239,50 @@ elems.forEach(elem => {
 			
 		});
 		
+		input.addEventListener("paste", e => {
+			
+			e.stopPropagation();
+			e.preventDefault();
+			
+			const clipboardData = e.clipboardData || window.clipboardData;
+			const pastedData = clipboardData.getData('Text');
+			
+			for (let i = 0, currentInput = input; currentInput && i < pastedData.length; i++) {
+				
+				let currentChar = pastedData[i];
+				
+				const inputPattern = currentInput.getAttribute("pattern");
+				
+				if (inputPattern) {
+					
+					const patternRegex = new RegExp("^".concat(inputPattern, "$"));
+					
+					while (!patternRegex.test(currentChar)) {
+						
+						++i;
+						
+						if (i >= pastedData.length) {
+							return;
+						}
+						
+						currentChar = pastedData[i];
+						
+					}
+					
+				}
+				
+				currentInput.value = pastedData[i];
+				
+				currentInput = currentInput.nextElementSibling;
+				
+				if (currentInput) {
+					currentInput.focus();
+				}
+				
+			}
+			
+		});
+		
 	});
 	
 });
