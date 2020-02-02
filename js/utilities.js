@@ -2,7 +2,9 @@
 
 const isTouchDevice = "ontouchstart" in document.documentElement;
 
-const sharedElectionHostRoot = "https://ved.ddnsfree.com/scouts-elections/api";
+const isDev = false && window.location.hostname.includes("localhost");
+
+const sharedElectionHostRoot = isDev ? "http://localhost:5678" : "https://ved.ddnsfree.com/scouts-elections/api";
 
 let isServerAccessible = false;
 
