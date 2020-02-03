@@ -109,7 +109,7 @@ function setup_setup() {
 			
 			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
 			
-			if (newCandidateCount == 1) {
+			if (newCandidateCount == 1 && firstCandidateInput.value.length == 0) {
 				candidateRemoveButton.disabled = true;
 			}
 			
