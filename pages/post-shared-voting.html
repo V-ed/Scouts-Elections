@@ -1,0 +1,147 @@
+<div class="d-flex flex-column h-100">
+	
+	<h2 class="display-2 pt-2 pt-md-5 text-center">Élection partagée <u style="font-family: monospace;"><span class="shared-election-code h4 text-primary"></span></u> : attente de complétion</h2>
+	
+	<div class="flex-grow-1">
+		<div class="h-100 d-flex flex-column justify-content-center">
+			
+			<div class="mb-auto mt-sm-5">
+				<div class="my-3 mt-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+					<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+				</div>
+			</div>
+			
+			<div class="container-fluid pb-md-5 mb-auto">
+				
+				<div id="post-shared-voting-skipped-error-div" class="row justify-content-center" hidden>
+					<span class="text-center text-danger dynamic-error"></span>
+				</div>
+				
+				<div class="row">
+					
+					<div class="col-sm-6 my-3">
+						<div class="card h-100">
+							<div class="card-body d-flex flex-column">
+								<h5 class="card-title">Aller aux résultats localement</h5>
+								<p class="card-text">Cette action permet de ne pas attendre après les autres appareils et voir directement les résultats présentement en mémoire.<br><a href="" data-toggle="modal" data-target="#shared-post-votes-skip-wait-modal">En&nbsp;savoir&nbsp;plus</a></p>
+								<button id="shared-post-votes-skip-wait" class="btn btn-primary mt-auto">Appuyez moi!</button>
+							</div>
+						</div>
+						<div class="modal fade" id="shared-post-votes-skip-wait-modal" tabindex="-1" role="dialog" aria-labelledby="shared-post-votes-skip-wait-modal-title" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="shared-post-votes-skip-wait-modal-title">Aller aux résultats localement</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body text-justify">
+										<p>Cette action ne fera pas de requête supplémentaire au serveur et ira simplement à l'affichage des résultats (demandant le mot de passe s'il fut définit).</p>
+										<p class="mb-0">Cette action est aussi utile lorsque la connexion au serveur est inaccessible&nbsp;;&nbsp;Les résultats locals seront alors affichés.</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 my-3">
+						<div class="card h-100">
+							<div class="card-body d-flex flex-column">
+								<h5 class="card-title">Vérifier si l'élection est terminée</h5>
+								<p class="card-text">
+									<p>Cette action permet de faire une requête au server pour vérifier si tous les votes sont complétés pour l'élection.</p>
+									<span>Une vérification automatique sera effectuée à chaque 30 secondes!</span>
+								</p>
+								<div class="mt-auto d-flex flex-column">
+									<div class="d-flex align-items-center justify-content-start">
+										<span>Indicateur élection terminé&nbsp;:</span>
+										<div class="d-flex align-items-center ml-2">
+											<div id="post-shared-voting-verify-requester-container" class="requester-container ml-3 align-self-center" style="width: 2rem; height: 2rem;" hidden>
+												<div class="requester-spinner spinner-border" role="status">
+													<span class="sr-only">Chargement...</span>
+												</div>
+											</div>
+											<img id="post-shared-voting-verify-finished-icon" class="colorize-green is-popable-hover" src="./images/check-circle.svg" alt="Terminé!" style="width: 2rem;" data-placement="top" data-content="L'élection sur le serveur est terminée! Utilisez les boutons pour aller aux résultats pour voir la table des résultats!" hidden>
+											<img id="post-shared-voting-verify-not-finished-icon" class="colorize-red is-popable-hover" src="./images/x-circle.svg" alt="Non terminé!" style="width: 2rem;" data-placement="top" data-content="Des électeurs sont encore en train de voter sur d'autres appareils! Vérifiez à nouveau dans quelques instants pour voir si l'élection sera terminée!" hidden>
+										</div>
+									</div>
+									<span id="shared-post-votes-verify-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
+									<button id="shared-post-votes-verify" class="btn btn-primary flex-fill mt-2">Appuyez moi!<span id="shared-post-verify-auto-click-timer"></span></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 my-3">
+						<div class="card h-100">
+							<div class="card-body d-flex flex-column">
+								<h5 class="card-title">Aller aux résultats</h5>
+								<p class="card-text">Cette action permet de télécharger les données les plus récentes des votes et d'aller aux résultats.</p>
+								<div class="mt-auto d-flex flex-column">
+									<span id="shared-post-votes-go-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
+									<button id="shared-post-votes-go" class="btn btn-primary d-flex align-items-center justify-content-center" disabled>
+										<span>Appuyez moi!</span>
+										<div id="post-shared-votes-go-requester-container" class="requester-container ml-3 align-self-center" hidden>
+											<div class="requester-spinner spinner-border" role="status">
+												<span class="sr-only">Chargement...</span>
+											</div>
+										</div>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 my-3">
+						<div class="card h-100">
+							<div class="card-body d-flex flex-column">
+								<h5 class="card-title">Aller aux résultats et supprimer les données</h5>
+								<p class="card-text">Cette action permet de télécharger les données les plus récentes des votes et d'aller aux résultats, ainsi que de supprimer les données du serveur.<br><a href="" data-toggle="modal" data-target="#shared-post-votes-go-and-delete-modal">En&nbsp;savoir&nbsp;plus</a></p>
+								<div class="mt-auto d-flex flex-column">
+									<span id="shared-post-votes-go-and-delete-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
+									<button id="shared-post-votes-go-and-delete" class="btn btn-primary d-flex align-items-center justify-content-center" disabled>
+										<span>Appuyez moi!</span>
+										<div id="post-shared-votes-go-and-delete-requester-container" class="requester-container ml-3 align-self-center" hidden>
+											<div class="requester-spinner spinner-border" role="status">
+												<span class="sr-only">Chargement...</span>
+											</div>
+										</div>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="modal fade" id="shared-post-votes-go-and-delete-modal" tabindex="-1" role="dialog" aria-labelledby="shared-post-votes-go-and-delete-modal-title" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="shared-post-votes-go-and-delete-modal-title">Aller aux résultats et supprimer les données</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body text-justify">
+										<p>La requête contiendra la demande de suppression pour enlever cette élection du serveur immédiatement.</p>
+										<p>Veuillez prendre note que si vous faites cette action, les autres appareils ne pourront plus télécharger les données les plus récentes et ne vont qu'avoir que leur données actuelles lors de l'affichage de leur résultats.</p>
+										<span>Ainsi, il est recommandé d'utiliser cette action sous suivant l'une des deux situation:</span>
+										<ul class="mb-0">
+											<li>après avoir ouvert les résultats avec tous les autres appareils participant à cette élection</li>
+											<li>seul cet appareil affichera les résultats de cette élection partagée</li>
+										</ul>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+</div>

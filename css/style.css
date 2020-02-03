@@ -20,6 +20,12 @@ a:not([href]):hover {
     user-drag: none;
 }
 
+/* Views override */
+
+div#views > div {
+    height: 100% !important;
+}
+
 /* Headings overrides */
 
 #views h2.display-2 {
