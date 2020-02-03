@@ -1,0 +1,181 @@
+<div class="position-absolute" style="top: 0; left: 0;">
+	<button type="submit" id="setup-homepage-button" class="btn btn-secondary mt-3 mt-xl-5 ml-3 ml-xl-5">Retour à la page d'accueil</button>
+</div>
+
+<h2 class="display-2 text-center pt-5 pt-lg-4 pb-3">Préparation élections Scoutes</h2>
+
+<form id="setup-form" class="w-100">
+	<div class="form-group row">
+		<div class="col-sm-5 col-lg-4">
+			<label class="col-form-label" for="db-name">Nom de la base de données</label>
+		</div>
+		<div class="col-sm-7 col-lg-8 align-self-center">
+			<input type="text" class="form-control is-invalid is-popable" id="db-name" aria-describedby="dbName" name="dbName" data-placement="top" autocomplete="off" spellcheck="false" required>
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-12 col-sm-5 col-lg-4 d-flex pr-3 pr-sm-0 justify-content-start justify-content-sm-between">
+			<label class="col-form-label" for="db-psw">Mot de passe de la base de données</label>
+			<div class="d-flex align-items-center" style="width: 2.2rem;">
+				<span class="non-selectable">&nbsp;</span>
+				<img src="./images/orangey-alert.svg" class="is-popable-hover w-100" data-placement="auto" data-html="true" data-title="<span class='text-danger'>Avertissement!</img>" data-content="Le mot de passe n'est pas sécurisé : ceci n'est qu'un mur pour empêcher les jeunes de voir les résultats si jamais l'appareil est déplacé dans le local lorsque la session de vote est terminé, par exemple.<br>Veuillez <strong>ne pas</strong> utiliser de mot de passe sensible que vous utilisez à tous les jours!">
+			</div>
+		</div>
+		<div class="col-12 col-sm-7 col-lg-8 d-flex flex-row align-self-center">
+			<input type="password" class="form-control" id="db-psw" aria-describedby="dbPsw" name="dbPsw" data-placement="top" autocomplete="off" spellcheck="false" placeholder="(optionnel)">
+			<div class="bootstrap-checkbox ml-2">
+				<input type="checkbox" id="password-visible" name="passwordVisible" class="checkbox-eye">
+				<label for="password-visible"></label>
+			</div>
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-sm-5 col-lg-4">
+			<label class="col-form-label" for="number-of-voters">Nombre d'électeurs</label>
+		</div>
+		<div class="col-sm-7 col-lg-8 align-self-center">
+			<input type="number" class="form-control spinner is-invalid is-popable" id="number-of-voters" min="1" max="9999" aria-describedby="numberOfVoters" name="numberOfVoters" data-placement="top" required>
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-sm-3 col-md-5 col-lg-4 align-self-center">
+			<label class="col-form-label" for="number-of-votes">Nombre de votes par électeur</label>
+		</div>
+		<div class="col-sm-9 col-md-7 col-lg-8 row pr-0 align-items-center">
+			<div class="col-4 col-lg-2 py-0 col-form-label">
+				<label class="col-form-label" for="number-of-votes-minimum">Minimum&nbsp;:</label>
+			</div>
+			<div class="col-8 col-lg-4 pr-0">
+				<input type="number" class="form-control spinner is-invalid is-popable" id="number-of-votes-minimum" min="0" max="9999" name="numberOfVotesMin" data-placement="top" required>
+			</div>
+			<div class="col-4 col-lg-2 py-0 col-form-label mt-3 mt-lg-0">
+				<label class="col-form-label" for="number-of-votes-maximum">Maximum&nbsp;:</label>
+			</div>
+			<div class="col-8 col-lg-4 mt-3 mt-lg-0 pr-0">
+				<input type="number" class="form-control spinner is-invalid is-popable" id="number-of-votes-maximum" min="1" max="9999" name="numberOfVotesMax" data-placement="top" required>
+			</div>
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-12 col-md-6 mb-3 mb-md-0 border-right border-right-no-medium d-flex flex-row justify-content-between">
+			<label class="col-form-label is-popable-hover" data-placement="top" data-content="Permet de voter plusieurs fois pour le même candidat. Par défaut, un candidat ne peut avoir qu'un seul vote (case décochée).">Multiple votes par candidat</label>
+			<div class="bootstrap-checkbox">
+				<input type="checkbox" id="allow-multiple-same-candidate" name="allowMultipleSameCandidate">
+				<label for="allow-multiple-same-candidate"></label>
+			</div>
+		</div>
+		<div class="col-12 col-md-6 d-flex flex-row justify-content-between">
+			<label class="col-form-label is-popable-hover" data-placement="top" data-content="Permet de télécharger la base de données automatiquement pendant le vote si la page se ferme ou se fait rafraichir. Coché par défaut (recommandé).">Télécharger la bd automatiquement</label>
+			<div class="bootstrap-checkbox">
+				<input type="checkbox" id="auto-download-db" name="autoDownloadDb" checked>
+				<label for="auto-download-db"></label>
+			</div>
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-12 col-md-6">
+			<div id="image-loader-zone" class="loader is-popable-hover" data-placement="bottom">
+				<div class="loader-input">
+					<input id="image-loader-input" class="loader-file" type="file" name="file" accept="image/*" />
+					<label for="image-loader-input" class="h-100 w-100 p-3 m-0 text-center"><strong>Cliquez dans cette boite pour choisir une image de groupe (optionnelle)</strong><span class="loader-dragndrop"> ou glissez la ici</span>.</label>
+				</div>
+			</div>
+		</div>
+		<div class="col-12 col-md-6 mt-3 mt-md-0 d-flex flex-row align-self-center justify-content-center">
+			<div class="w-100">
+				<div class="border border-success text-center d-flex align-items-center justify-content-center h-100 election-group-image">
+					<img id="setup-preview-image" src="./images/no_image.png" class="img-fluid d-block" alt="Image preview..." style="max-height: 82px;">
+				</div>
+			</div>
+			<div class="d-flex align-items-center justify-content-center ml-3">
+				<button id="setup-preview-image-closer" type="button" class="btn btn-outline-danger is-popable-hover" data-placement="top" data-content="Enlever l'image choisie." disabled>
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="pb-2 pb-md-3">
+		<div id="candidate-controls-1" class="form-group row mb-2 mb-md-3">
+			<div class="col-sm-3 col-md-2">
+				<label class="col-form-label" for="candidate-name-1">Candidat 1</label>
+			</div>
+			<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
+				<input type="text" class="form-control is-invalid is-popable" id="candidate-name-1" aria-describedby="candidate-1" placeholder="Nom" name="candidate-name-1" data-placement="top" data-candidatenumber="1" autocomplete="off" required>
+				<div class="d-flex align-items-center justify-content-center ml-3">
+					<button id="candidate-remove-1" type="button" class="btn btn-outline-danger" tabindex="-1" disabled>
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="setup-candidates">
+			<!-- More inputs will dynamically be added here -->
+		</div>
+	</div>
+	<div class="row mt-1 mt-md-0 mb-4 mx-auto justify-content-center d-flex flex-md-row flex-row-reverse">
+		<div class="mt-2 mt-md-0 col-auto px-3 px-md-0">				
+			<button id="candidate-add" class="btn btn-secondary mx-auto mx-md-0" data-candidatecount="1">Ajouter Candidat</button>
+		</div>
+		<div class="mt-2 mt-md-0 mr-md-0 ml-md-5 col-auto px-3 px-md-0">
+			<button type="button" id="candidate-remove-all" class="btn btn-warning mx-auto mx-md-0" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Cette action est irréversible. Êtes-vous sûr de vouloir enlever tous les candidats?</p><button type='button' id='candidate-remove-all-confirm' class='btn btn-danger mx-auto'>Confirmer</button></div>" disabled>Enlever tous les candidats</button>
+		</div>
+	</div>
+	<div class="row align-items-center">
+		<div class="col-12 col-md-6">
+			<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Créer l'Élection</button>
+		</div>
+		<div class="col-12 col-md-6 mt-3 mt-md-0 d-flex">
+			
+			<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
+			<div id="setup-shared-submit-requester-container" class="requester-container ml-3 align-self-center" hidden>
+				<div class="requester-spinner spinner-border is-popable-hover" role="status" data-placement="top" data-content="Vérification de l'accès au serveur de partage d'élection...">
+					<span class="sr-only">Chargement...</span>
+				</div>
+				<img class="requester-success-icon colorize-green is-popable-hover" src="./images/check.svg" alt="Succès" style="width: 2rem;" data-placement="top" data-content="Le serveur est accessible et la fonctionnalité est donc activée!" hidden>
+				<img class="requester-alert-icon colorize-red is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et la fonctionnalitée est donc désactivée. Veuillez vous assurer d'être connecté à l'internet!" hidden>
+			</div>
+			
+		</div>
+	</div>
+</form>
+
+<div class="modal fade" id="setup-create-election-modal" tabindex="-1" role="dialog" aria-labelledby="setup-create-election-modal-title" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="setup-create-election-modal-title">Créer une Élection Partagée</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body text-left">
+				<p class="h3">Avertissement</p>
+				<p>Pour utiliser cette fonctionnalitée, un accès Internet est requis puisque le partage d'élection utilise un serveur pour synchroniser les données entre les différents appareils connectés à une élection partagée.</p>
+				<p>Des requêtes seront donc envoyées à ce serveur pendant le courant de la session de votes pour ainsi mettre à jour correctement l'élection.</p>
+				<p class="font-weight-bold">Acceptez vous que les données de votre élection soient partagées avec ce serveur?</p>
+				<p class="text-danger">Le mot de passe sera aussi partagé avec le serveur et les autres appareils qui rejoindront cette élection&nbsp;:&nbsp;assurez vous de ne pas utiliser de mot de passe confidentiel!</p>
+				<span><a href="./election-partagee-info.html" target="_blank">En savoir plus</a></span>
+				<div id="setup-create-election-modal-error" hidden>
+					<hr>
+					<span id="setup-create-election-modal-error-span" class="text-danger">Une erreur imprévue est survenue, veuillez réessayer ou débutez une élection régulière!</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				
+				<div class="d-flex">
+						
+					<div id="setup-create-election-modal-requester-container" class="requester-container mr-3 align-self-center h-100">
+						<div class="requester-spinner spinner-border" role="status" hidden>
+							<span class="sr-only">Chargement...</span>
+						</div>
+					</div>
+					
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
+					<button id="setup-create-election-modal-button" type="button" class="btn btn-primary acceptance-form-div-accept-button ml-1">Accepter</button>
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>

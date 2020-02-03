@@ -1,0 +1,65 @@
+<div class="d-flex flex-column h-100">
+	
+	<h2 class="display-2 pt-2 pt-md-5 text-center">Rappel : Vote Scouts</h2>
+	
+	<div class="flex-grow-1">
+		<div class="h-100 d-flex flex-column justify-content-center">
+			
+			<div class="mb-auto mt-sm-5">
+				<div class="my-3 mt-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+					<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+				</div>
+			</div>
+			
+			<div class="container-fluid pb-md-5 mb-auto">
+				
+				<div class="row mb-3 border-bottom shared-election-container" hidden>
+					<p class="h3">Voici le code de votre élection partagée : <u style="font-family: monospace;"><span class="shared-election-code h2 text-primary"></span></u>.</p>
+				</div>
+				<div class="row text-center justify-content-center mb-2">
+					<p class="h4">Ceci est un rappel du fonctionnement lors de la session de vote :</p>
+				</div>
+				<div class="row text-justify justify-content-center">
+					<span>
+						Pour passer à un prochain électeur, lorsque l'écran est <span id="pre-voting-overlay-color">vert</span> et affiche "<span class="font-italic">Votes enregistrés</span>", vous pouvez appuyer sur la <span class="font-weight-bold">barre d'espace</span> sur votre clavier.
+						<br>
+						Ceci affichera de plus une notification en haut de l'écran affichant le nombre d'électeurs restant. Cette notification s'affichera à chaque fois que la barre d'espace sera appuyée, même pendant qu'un vote est en cours!
+					</span>
+				</div>
+				<div id="pre-voting-touchscreen-reminder" class="row text-justify justify-content-center mt-2 pt-2 border-top" hidden>
+					<span>De plus, puisque vous avez un écran tactile, dans ce même écran, vous pouvez appuyer le <span class="font-weight-bold">haut de l'écran (la moitié supérieure)</span> pendant quelques instants pour passer aussi au prochain électeur (particulièrement utile pour les appareils n'ayant pas de claviers de connecté).</span>
+				</div>
+				<div class="row text-center justify-content-center mt-4" style="font-size: 1.2rem;">
+					<span>Bonnes élections!</span>
+				</div>
+				
+				<div id="pre-voting-request-error-row" class="text-center mt-4 justify-content-center" hidden>
+					<p class="text-danger dynamic-error"></p>
+					<div class="row align-items-center justify-content-center">
+						<div class="col-6 col-lg-auto">
+							<span class="text-danger">Veuillez réessayer ou appuyez sur ce bouton pour débuter l'élection localement&nbsp;:&nbsp;</span>
+						</div>
+						<div class="col-6 col-lg-auto">
+							<button type="button" id="pre-voting-shared-force-local-button" class="btn btn-secondary" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Vous allez débuter une élection avec les données téléchargées de l&apos;élection partagée mais en étant pas connecté à l&apos;élection partagée. Vous ne pourrez plus rejoindre cette élection partagée à moins de rafraichir l&apos;application. Êtes vous sûr de vouloir continuer?</p><button type='button' id='pre-voting-shared-confirm-start-local-button' class='btn btn-danger mx-auto'>Confirmer</button></div>">Débuter élection locale</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="d-flex align-items-center justify-content-center">
+					<div id="pre-voting-requester-container" class="requester-container mt-4" hidden>
+						<div class="requester-spinner spinner-border" role="status">
+							<span class="sr-only">Chargement...</span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row text-center mt-4 justify-content-center">
+					<button type="button" id="pre-voting-submit-button" class="btn btn-primary">Débuter la session de votes</button>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+</div>
