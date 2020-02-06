@@ -285,7 +285,7 @@ elems.forEach(elem => {
 			}
 			
 			if (didChangeValue) {
-				input.dispatchEvent(new Event("change"));
+				hiddenInputValue.dispatchEvent(new Event("change"));
 			}
 			
 		});
