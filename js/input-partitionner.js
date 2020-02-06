@@ -247,6 +247,8 @@ elems.forEach(elem => {
 			const clipboardData = e.clipboardData || window.clipboardData;
 			const pastedData = clipboardData.getData('Text');
 			
+			let didChangeValue = false;
+			
 			for (let i = 0, currentInput = input; currentInput && i < pastedData.length; i++) {
 				
 				let currentChar = pastedData[i];
@@ -271,7 +273,8 @@ elems.forEach(elem => {
 					
 				}
 				
-				currentInput.value = pastedData[i];
+				currentInput.value = currentChar;
+				didChangeValue = true;
 				
 				currentInput = currentInput.nextElementSibling;
 				
@@ -279,6 +282,10 @@ elems.forEach(elem => {
 					currentInput.focus();
 				}
 				
+			}
+			
+			if (didChangeValue) {
+				input.dispatchEvent(new Event("change"));
 			}
 			
 		});
