@@ -27,7 +27,7 @@ function setup_index() {
 		
 		const partitionnedInputs = Array.from(document.querySelectorAll("input[data-partition-for-id='fullCodeValue']"));
 		
-		codeElem.addEventListener("change", () => {
+		codeElem.addEventListener("input", () => {
 			modalButton.disabled = codeElem.value.length !== 6;
 			errorSpan.hidden = true;
 		});

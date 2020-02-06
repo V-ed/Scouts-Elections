@@ -18,7 +18,7 @@ elems.forEach(elem => {
 		
 		hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
 		
-		hiddenInputValue.dispatchEvent(new Event("change"));
+		hiddenInputValue.dispatchEvent(new Event("input"));
 		
 	}
 	
