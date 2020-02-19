@@ -59,6 +59,8 @@ Utils.init = function(doPreventVarsReset) {
 	
 	Utils.set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
 	
+	InputPartition.init(document.querySelectorAll("div.row.input-partition"));
+	
 	// Restore current focus when changing screen orientation
 	// Especially useful for mobile
 	
