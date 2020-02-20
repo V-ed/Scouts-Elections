@@ -4,7 +4,7 @@ let auto_download_data = function() {
 	
 	if (Utils.should_download_data()) {
 		
-		download_data(this.data, "_en_cours");
+		Utils.download_data(this.data, "_en_cours");
 		
 	}
 	
