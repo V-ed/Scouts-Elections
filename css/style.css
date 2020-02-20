@@ -17,7 +17,10 @@ a:not([href]):hover {
 
 .non-selectable {
     user-select: none;
-    user-drag: none;
+}
+
+.selectable {
+    user-select: auto;
 }
 
 /* Views override */
