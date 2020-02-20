@@ -107,7 +107,11 @@ Utils.should_download_data = function() {
 
 Utils.download_data = function(data, dbNameSuffix) {
 	
-	const stringData = data.getAsJSON();
+	let stringData = data;
+	
+	if (data instanceof ElectionData) {
+		stringData = data.getAsJSON();
+	}
 	
 	dbNameSuffix = dbNameSuffix || "";
 	

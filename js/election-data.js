@@ -15,8 +15,22 @@ class ElectionData {
 		this.groupImage = groupImage;
 	}
 	
-	getAsJSON() {
-		return JSON.stringify(this);
+	getAsJSON(excludeSharedElectionCode) {
+		
+		const sharedCode = this.sharedElectionCode;
+		
+		if (excludeSharedElectionCode) {
+			delete this.sharedElectionCode;
+		}
+		
+		const jsoned = JSON.stringify(this);
+		
+		if (excludeSharedElectionCode) {
+			this.sharedElectionCode = sharedCode;
+		}
+		
+		return jsoned;
+		
 	}
 	
 	validatePassword(passwordToCheck) {

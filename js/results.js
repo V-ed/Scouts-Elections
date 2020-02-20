@@ -369,7 +369,7 @@ function setup_results_page(data, didSkipRemainings) {
 	downloadDbButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		Utils.download_data(data);
+		Utils.download_data(data.getAsJSON(true));
 	});
 	
 	const homepageButton = document.getElementById("results-homepage-button");
