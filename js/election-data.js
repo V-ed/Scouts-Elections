@@ -19,6 +19,11 @@ class ElectionData {
 		return JSON.stringify(this);
 	}
 	
+	validatePassword(passwordToCheck) {
+		// Default password if not set is "VL" for "Vieux-Loups"
+		return (this.dbPsw || "VL") == passwordToCheck;
+	}
+	
 	setSharedElectionCode(sharedElectionCode) {
 		
 		function handleHiddenAndFlex(element, doHide) {

@@ -231,9 +231,6 @@ function setup_pre_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("pre-results-page", data.groupImage);
 	
-	// Default password if not set is "VL" for "Vieux-Loups"
-	let passwordToCheck = data.dbPsw || "VL";
-	
 	const preResultsSubmitButton = document.getElementById("pre-results-submit-button");
 	
 	const passwordInput = document.getElementById("pre-results-password-input");
@@ -243,7 +240,7 @@ function setup_pre_results_page(data, didSkipRemainings) {
 		
 		const password = passwordInput.value;
 		
-		if (password == passwordToCheck) {
+		if (data.validatePassword(password)) {
 			
 			switch_view("results-page", () => setup_results_page(data, didSkipRemainings));
 			
