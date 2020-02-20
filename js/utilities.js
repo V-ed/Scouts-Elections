@@ -107,7 +107,7 @@ Utils.should_download_data = function() {
 
 Utils.download_data = function(data, dbNameSuffix) {
 	
-	const stringData = JSON.stringify(data);
+	const stringData = data.getAsJSON();
 	
 	dbNameSuffix = dbNameSuffix || "";
 	

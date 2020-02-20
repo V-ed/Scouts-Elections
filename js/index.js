@@ -102,26 +102,14 @@ function setup_index() {
 		
 		const text = await file.text();
 		
-		let data = undefined;
-		
 		try {
-			data = JSON.parse(text);
-		} catch (error) {
-			return "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.";
-		}
-		
-		const isValid = data.dbName !== undefined
-			&& data.numberOfVoters !== undefined
-			&& (data.numberOfVotePerVoter !== undefined || (data.numberOfVotePerVoterMin !== undefined && data.numberOfVotePerVoterMax !== undefined))
-			&& data.numberOfVoted !== undefined
-			&& data.hasSkipped !== undefined
-			&& data.candidates !== undefined;
-		
-		if (isValid) {
+			
+			const data = ElectionData.fromJSON(text);
+			
 			route_data(data);
-		}
-		else{
-			return "La base de données manque des informations cruciales - veuillez valider les données dans le fichier.";
+			
+		} catch (error) {
+			return error;
 		}
 		
 	}

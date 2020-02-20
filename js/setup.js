@@ -228,31 +228,13 @@ function setup_setup() {
 		
 		const formData = new FormData(document.getElementById("setup-form"));
 		
-		let tempCandidates = [];
-		
-		document.querySelectorAll("input[id^='candidate-name-']").forEach(candidate => {
-			const candidateData = formData.get(candidate.name);
-			tempCandidates.push({ name: candidateData, voteCount: 0, selectedState: "unselected" });
-		});
+		const tempCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).map(candidateInput => formData.get(candidateInput.name));
 		
 		Utils.isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
 		const compressedImageData = groupImageData ? LZString.compressToUTF16(groupImageData) : undefined;
 		
-		const data = {
-			dbName: formData.get("dbName"),
-			dbPsw: formData.get("dbPsw"),
-			numberOfVoters: parseInt(formData.get("numberOfVoters")),
-			numberOfVotePerVoterMin: parseInt(formData.get("numberOfVotesMin")),
-			numberOfVotePerVoterMax: parseInt(formData.get("numberOfVotesMax")),
-			allowMultipleSameCandidate: formData.get("allowMultipleSameCandidate") == "on",
-			numberOfVoted: 0,
-			numberOfSeatsTaken: 0,
-			hasSkipped: false,
-			isDownloadDisabled: Utils.isDownloadDisabled,
-			candidates: tempCandidates,
-			groupImage: compressedImageData
-		};
+		const data = ElectionData.fromFormData(formData, tempCandidates, compressedImageData);
 		
 		return data;
 		
@@ -263,13 +245,15 @@ function setup_setup() {
 	submitSetupButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		let data = createData();
+		const data = createData();
 		
-		setup_votes(data);
-		
-		window.removeEventListener("beforeunload", prevent_data_loss);
-		
-		Utils.uninitialize_images("setup-page");
+		setup_votes(data, undefined, () => {
+			
+			window.removeEventListener("beforeunload", prevent_data_loss);
+			
+			Utils.uninitialize_images("setup-page");
+			
+		});
 		
 	});
 	
@@ -285,7 +269,7 @@ function setup_setup() {
 		
 		const electionData = createData();
 		
-		const electionJSONData = JSON.stringify(electionData);
+		const electionJSONData = electionData.getAsJSON();
 		
 		const ajaxSettings = {
 			type: 'POST',

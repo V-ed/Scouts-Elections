@@ -10,34 +10,11 @@ let auto_download_data = function() {
 	
 }
 
-function updateSharedElectionCode(newSharedElectionCode) {
-	
-	function handleHiddenAndFlex(element, doHide) {
-		
-		element.hidden = doHide;
-		
-		if (element.classList.contains("d-flex")) {
-			element.classList.remove("d-flex");
-			element.setAttribute("data-shared-did-flex", "true");
-		}
-		else if (element.getAttribute("data-shared-did-flex") == "true") {
-			element.classList.add("d-flex");
-			element.removeAttribute("data-shared-did-flex");
-		}
-		
-	}
-	
-	document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = newSharedElectionCode);
-	document.querySelectorAll(".shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !newSharedElectionCode));
-	document.querySelectorAll(".non-shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !!newSharedElectionCode));
-	
-}
-
 async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
-	updateSharedElectionCode(sharedElectionCode);
+	data.setSharedElectionCode(sharedElectionCode || data.sharedElectionCode);
 	
 	if (doForceShowPreVotingPage || data.numberOfVoted == 0) {
 		
@@ -45,18 +22,18 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 			beforeSwitchCallback();
 		}
 		
-		switch_view("pre-voting-page", () => setup_pre_voting_session(data, sharedElectionCode));
+		switch_view("pre-voting-page", () => setup_pre_voting_session(data));
 		
 	}
 	else {
 		
 		let didSkipVotingPage = false;
 		
-		if (sharedElectionCode) {
+		if (data.sharedElectionCode) {
 			
 			try {
 				
-				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, requestContainer, true, undefined, beforeSwitchCallback);
+				didSkipVotingPage = await voting_go_to_next_voter(data, true, requestContainer, true, undefined, beforeSwitchCallback);
 				
 			} catch (error) {
 				
@@ -72,7 +49,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 				beforeSwitchCallback();
 			}
 			
-			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			switch_view("voting-page", () => setup_voting_session(data));
 			
 		}
 		
@@ -82,7 +59,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 	
 }
 
-function setup_pre_voting_session(data, sharedElectionCode) {
+function setup_pre_voting_session(data) {
 	
 	if (Utils.isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
@@ -90,7 +67,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 	
 	const preVotingSubmitButton = document.getElementById("pre-voting-submit-button");
 	
-	if (sharedElectionCode) {
+	if (data.sharedElectionCode) {
 		
 		const preVotingSharedForceLocalButton = document.getElementById("pre-voting-shared-force-local-button");
 		
@@ -100,8 +77,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 			
 			preVotingSharedConfirmStartLocalButton.addEventListener("click", () => {
 				
-				sharedElectionCode = undefined;
-				updateSharedElectionCode(undefined);
+				data.setSharedElectionCode(undefined);
 				
 				data.numberOfSeatsTaken = data.numberOfVoted;
 				
@@ -119,7 +95,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		
 		let didSkipVotingPage = false;
 		
-		if (sharedElectionCode) {
+		if (data.sharedElectionCode) {
 			
 			const preVotingRequestErrorRow = document.getElementById("pre-voting-request-error-row");
 			
@@ -131,7 +107,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 					preVotingSubmitButton.scrollIntoView();
 				}, 30);
 				
-				didSkipVotingPage = await voting_go_to_next_voter(data, sharedElectionCode, true, 'pre-voting-requester-container', false);
+				didSkipVotingPage = await voting_go_to_next_voter(data, true, 'pre-voting-requester-container', false);
 				
 			} catch (error) {
 				
@@ -172,7 +148,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 		
 		if (!didSkipVotingPage) {
 			
-			switch_view("voting-page", () => setup_voting_session(data, sharedElectionCode));
+			switch_view("voting-page", () => setup_voting_session(data));
 			
 		}
 		
@@ -194,7 +170,7 @@ function setup_pre_voting_session(data, sharedElectionCode) {
 	
 }
 
-function setup_voting_session(data, sharedElectionCode) {
+function setup_voting_session(data) {
 	
 	Utils.initialize_images("voting-page", data.groupImage);
 	
@@ -202,21 +178,10 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	onKeyUpEventBefore = document.body.onkeyup;
 	
-	let candidatesIndexes = [];
-	
 	const isMultipleSameCandidateAllowed = data.allowMultipleSameCandidate || false;
 	
 	let minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
 	let maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
-	
-	if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
-		
-		const backwardCompatibleNumber = data.numberOfVotePerVoter;
-		
-		minNumberOfVotesLeft = backwardCompatibleNumber;
-		maxNumberOfVotesLeft = backwardCompatibleNumber;
-		
-	}
 	
 	let cardsHtml = "";
 	
@@ -357,15 +322,10 @@ function setup_voting_session(data, sharedElectionCode) {
 	function vote_for_candidate(index, step) {
 		
 		if (step > 0) {
-			for (let i = 0; i < step; i++) {
-				candidatesIndexes.push(index);
-			}
+			data.voteCandidate(index, step);
 		}
 		else if (step < 0) {
-			for (let i = 0; i > step; i--) {
-				let candidateIndex = candidatesIndexes.findIndex(currentIndex => currentIndex == index);
-				candidateIndex !== -1 && candidatesIndexes.splice(candidateIndex, 1);
-			}
+			data.unvoteCandidate(index, -step);
 		}
 		
 		minNumberOfVotesLeft = minNumberOfVotesLeft - step;
@@ -398,7 +358,7 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	function resetVotingState() {
 		
-		candidatesIndexes = [];
+		data.resetCandidateVotes();
 		
 		minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
 		maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
@@ -461,17 +421,16 @@ function setup_voting_session(data, sharedElectionCode) {
 	}
 	
 	const overlayRequestErrorSpan = document.getElementById("overlay-request-error-details");
-	let votesOnSubmitError = undefined;
 	
 	async function updateVotes(requestContainer) {
 		
-		if (sharedElectionCode) {
+		if (data.sharedElectionCode) {
 			
-			const candidatesIndexesJSON = JSON.stringify(candidatesIndexes);
+			const candidatesIndexesJSON = JSON.stringify(data.votesCurrentCandidateIndexes);
 			
 			const ajaxSettings = {
 				type: 'PUT',
-				url: `${Utils.sharedElectionHostRoot}/vote/${sharedElectionCode}`,
+				url: `${Utils.sharedElectionHostRoot}/vote/${data.sharedElectionCode}`,
 				data: candidatesIndexesJSON,
 				cache: false,
 			};
@@ -483,17 +442,13 @@ function setup_voting_session(data, sharedElectionCode) {
 				Utils.mergeObjectTo(data, response.data, false, false);
 				
 			} catch (error) {
-				
-				votesOnSubmitError = candidatesIndexes;
-				
-				return;
-				
+				return error;
 			}
 			
 		}
 		else {
 			
-			candidatesIndexes.forEach(voteIndex => {
+			data.votesCurrentCandidateIndexes.forEach(voteIndex => {
 				
 				data.candidates[voteIndex].voteCount++;
 				
@@ -504,8 +459,6 @@ function setup_voting_session(data, sharedElectionCode) {
 		}
 		
 		resetVotingState();
-		
-		votesOnSubmitError = undefined;
 		
 	}
 	
@@ -650,7 +603,7 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 		}
 		
-		if (votesOnSubmitError) {
+		if (data.votesCurrentCandidateIndexes) {
 			
 			showBadVoteSendRequestError();
 			
@@ -662,7 +615,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		try {
 			
-			didFinishElection = await voting_go_to_next_voter(data, sharedElectionCode, false, 'voting-requester-container', false, isVoteFinished);
+			didFinishElection = await voting_go_to_next_voter(data, false, 'voting-requester-container', false, isVoteFinished);
 			
 		} catch (error) {
 			
@@ -712,20 +665,15 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		$(overlayErrorModal).modal("hide");
 		
-		sharedElectionCode = undefined;
-		updateSharedElectionCode(undefined);
+		data.setSharedElectionCode(undefined);
 		
 		data.numberOfSeatsTaken = data.numberOfVoted;
 		
-		if (votesOnSubmitError) {
-			
+		if (data.votesCurrentCandidateIndexes) {
 			updateVotes();
-			
 		}
 		else {
-			
 			go_to_next_voter(data);
-			
 		}
 		
 	});
@@ -734,11 +682,11 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		$(overlayErrorModal).modal("hide");
 		
-		if (votesOnSubmitError) {
+		if (data.votesCurrentCandidateIndexes) {
 			
 			await updateVotes('voting-requester-container');
 			
-			if (votesOnSubmitError) {
+			if (data.votesCurrentCandidateIndexes) {
 				
 				showBadVoteSendRequestError();
 				
@@ -779,7 +727,7 @@ function setup_voting_session(data, sharedElectionCode) {
 		
 		const ajaxSettings = {
 			type: 'PUT',
-			url: `${Utils.sharedElectionHostRoot}/skip/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/skip/${data.sharedElectionCode}`,
 		};
 		
 		try {
@@ -788,7 +736,7 @@ function setup_voting_session(data, sharedElectionCode) {
 			
 			Utils.mergeObjectTo(data, response.data, false, false);
 			
-			end_voting_session(data, sharedElectionCode, true);
+			end_voting_session(data, true);
 			
 			doPrepareToastTimer = true;
 			prepare_toast_timer(0);
@@ -836,8 +784,7 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 	document.getElementById("shared-election-skip-request-error-local-button").addEventListener("click", () => {
 		
-		sharedElectionCode = undefined;
-		updateSharedElectionCode(undefined);
+		data.setSharedElectionCode(undefined);
 		
 		execute_local_skip_votes(data);
 		
@@ -845,9 +792,9 @@ function setup_voting_session(data, sharedElectionCode) {
 	
 }
 
-async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
+async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
 	
-	if (sharedElectionCode && !doSkipRetrievingElectionData) {
+	if (data.sharedElectionCode && !doSkipRetrievingElectionData) {
 		
 		const valuesToRetrieve = ["numberOfSeatsTaken", "numberOfVoted", "hasSkipped"];
 		
@@ -859,7 +806,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 		const queryFromValuesToRetrieve = valuesToRetrieve.length == 0 ? "" : `?${valuesToRetrieve.join('&')}`
 		
 		const ajaxSettings = {
-			url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}${queryFromValuesToRetrieve}`,
+			url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}${queryFromValuesToRetrieve}`,
 			cache: false,
 		};
 		
@@ -876,17 +823,17 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 	}
 	
 	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
-		end_voting_session(data, sharedElectionCode, false, beforeSwitchCallback);
+		end_voting_session(data, false, beforeSwitchCallback);
 		return true;
 	}
 	else {
 		
 		if (doForceNewVoter || isVoteFinished) {
 			
-			if (sharedElectionCode) {
+			if (data.sharedElectionCode) {
 				
 				const ajaxSettings = {
-					url: `${Utils.sharedElectionHostRoot}/seat/${sharedElectionCode}`,
+					url: `${Utils.sharedElectionHostRoot}/seat/${data.sharedElectionCode}`,
 					cache: false,
 				};
 				
@@ -913,7 +860,7 @@ async function voting_go_to_next_voter(data, sharedElectionCode, doForceNewVoter
 	
 }
 
-function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeSwitchCallback) {
+function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
 	
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
 	
@@ -921,8 +868,8 @@ function end_voting_session(data, sharedElectionCode, didSkipRemainings, beforeS
 		beforeSwitchCallback();
 	}
 	
-	if (sharedElectionCode && (data.hasSkipped && data.numberOfVoted != data.numberOfSeatsTaken || !data.hasSkipped && data.numberOfVoted != data.numberOfVoters)) {
-		switch_view("post-shared-voting-page", () => setup_post_voting(data, sharedElectionCode, didSkipRemainings));
+	if (data.sharedElectionCode && (data.hasSkipped && data.numberOfVoted != data.numberOfSeatsTaken || !data.hasSkipped && data.numberOfVoted != data.numberOfVoters)) {
+		switch_view("post-shared-voting-page", () => setup_post_voting(data, didSkipRemainings));
 	}
 	else {
 		setup_results(data);

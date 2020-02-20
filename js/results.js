@@ -1,4 +1,4 @@
-function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
+function setup_post_voting(data, didSkipRemainings) {
 	
 	Utils.initialize_images("post-shared-voting-page", data.groupImage);
 	
@@ -120,7 +120,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			sharedPostVotesVerifyErrorSpan.hidden = true;
 			
 			const ajaxSettings = {
-				url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
+				url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
 				cache: false,
 			};
 			
@@ -130,7 +130,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 		} catch (error) {
 			
-			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			const messageToShow = error.status == 400 ? `Le code ${data.sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
 			
 			sharedPostVotesVerifyErrorSpan.textContent = messageToShow;
 			sharedPostVotesVerifyErrorSpan.hidden = false;
@@ -144,7 +144,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 	sharedPostVoteButtonGo.addEventListener("click", async () => {
 		
 		const ajaxSettings = {
-			url: `${Utils.sharedElectionHostRoot}/retrieve/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}`,
 			cache: false,
 		};
 		
@@ -166,7 +166,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 		} catch (error) {
 			
-			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			const messageToShow = error.status == 400 ? `Le code ${data.sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
 			
 			sharedPostVotesGoErrorSpan.textContent = messageToShow;
 			sharedPostVotesGoErrorSpan.hidden = false;
@@ -181,7 +181,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 		
 		const ajaxSettings = {
 			type: 'DELETE',
-			url: `${Utils.sharedElectionHostRoot}/delete/${sharedElectionCode}`,
+			url: `${Utils.sharedElectionHostRoot}/delete/${data.sharedElectionCode}`,
 			cache: false,
 		};
 		
@@ -203,7 +203,7 @@ function setup_post_voting(data, sharedElectionCode, didSkipRemainings) {
 			
 		} catch (error) {
 			
-			const messageToShow = error.status == 400 ? `Le code ${sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
+			const messageToShow = error.status == 400 ? `Le code ${data.sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
 			
 			sharedPostVotesGoAndDeleteErrorSpan.textContent = messageToShow;
 			sharedPostVotesGoAndDeleteErrorSpan.hidden = false;
