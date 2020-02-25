@@ -49,7 +49,9 @@ function setup_index() {
 			
 			request.then(response => {
 				
-				const data = ElectionData.fromData(response.data);
+				const data = new ElectionData();
+				
+				data.mergeData(response.data);
 				
 				return setup_votes(data, code, () => {
 					
