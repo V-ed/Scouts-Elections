@@ -49,7 +49,9 @@ function setup_index() {
 			
 			request.then(response => {
 				
-				return setup_votes(response.data, code, () => {
+				const data = ElectionData.fromData(response.data);
+				
+				return setup_votes(data, code, () => {
 					
 					$("#home-join-election-modal").modal("hide");
 					
