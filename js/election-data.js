@@ -105,6 +105,14 @@ class ElectionData {
 		delete this.votesCurrentCandidateIndexes;
 	}
 	
+	mergeData(data) {
+		
+		for (const value in data) {
+			this[value] = data[value];
+		}
+		
+	}
+	
 	static fromData(dbName, dbPsw, numberOfVoters, numberOfVotePerVoterMin, numberOfVotePerVoterMax, allowMultipleSameCandidate, candidateNames, compressedImageData) {
 		const candidates = Array.from(candidateNames).map(name => (
 		{

@@ -247,20 +247,6 @@ Utils.create_file_loader = function(formId, loadFilesFn, handleItemsForErrorsFn,
 	
 }
 
-// Merge objects
-
-Utils.mergeObjectTo = function(original, newObject, originalIsJsonString, doCloneOriginal){
-	
-	const objectToMerge = doCloneOriginal === false ? original : (JSON.parse(originalIsJsonString ? original : JSON.stringify(original)));
-	
-	for (const value in newObject) {
-		objectToMerge[value] = newObject[value]
-	}
-	
-	return objectToMerge;
-	
-}
-
 // Load image on all elements matching under given view id
 
 Utils.initialize_images = function(viewId, imageData) {
@@ -425,7 +411,7 @@ Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterCont
 		
 		try {
 			
-			const response = await Util.sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
+			const response = await Utils.sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
 			
 			await delayer.wait();
 			

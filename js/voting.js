@@ -439,7 +439,7 @@ function setup_voting_session(data) {
 				
 				const response = await Utils.sendRequestFor(3, ajaxSettings, requestContainer);
 				
-				Utils.mergeObjectTo(data, response.data, false, false);
+				data.mergeData(response.data);
 				
 			} catch (error) {
 				return error;
@@ -734,7 +734,7 @@ function setup_voting_session(data) {
 			
 			const response = await Utils.sendRequest(ajaxSettings, 'voting-skipper-requester-container');
 			
-			Utils.mergeObjectTo(data, response.data, false, false);
+			data.mergeData(response.data);
 			
 			end_voting_session(data, true);
 			
@@ -814,7 +814,7 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 			
 			const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 			
-			Utils.mergeObjectTo(data, response.data, false, false);
+			data.mergeData(response.data);
 			
 		} catch (error) {
 			return Promise.reject({error: error, at: "retrieve"});
@@ -841,7 +841,7 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 					
 					const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
 					
-					Utils.mergeObjectTo(data, response.data, false, false);
+					data.mergeData(response.data);
 					
 				} catch (error) {
 					return Promise.reject({error: error, at: "seat"});

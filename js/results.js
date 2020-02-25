@@ -126,7 +126,7 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
 			
-			Utils.mergeObjectTo(data, response.data, false, false);
+			data.mergeData(response.data);
 			
 		} catch (error) {
 			
@@ -158,7 +158,7 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
 			
-			Utils.mergeObjectTo(data, response.data, false, false);
+			data.mergeData(response.data);
 			
 			setup_results(data);
 			
@@ -195,7 +195,7 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
 			
-			Utils.mergeObjectTo(data, response.data, false, false);
+			data.mergeData(response.data);
 			
 			setup_results(data);
 			

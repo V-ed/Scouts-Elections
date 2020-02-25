@@ -284,9 +284,9 @@ function setup_setup() {
 				throw "Missing election code!";
 			}
 			
-			let data = Utils.mergeObjectTo(electionJSONData, response.data, true);
+			electionData.mergeData(response.data);
 			
-			return setup_votes(data, response.code, () => {
+			return setup_votes(electionData, response.code, () => {
 				
 				$("#setup-create-election-modal").modal("hide");
 				
