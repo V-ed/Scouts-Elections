@@ -135,7 +135,7 @@ class ElectionData {
 			Utils.isDownloadDisabled,
 			candidates,
 			compressedImageData
-			);
+		);
 	}
 	
 	static fromFormData(formData, candidateNames, compressedImageData) {
@@ -148,17 +148,22 @@ class ElectionData {
 			formData.get("allowMultipleSameCandidate") == "on",
 			candidateNames,
 			compressedImageData
-			);
+		);
 	}
 	
 	static fromJSON(json) {
 		
+		let data = undefined;
+		
 		if (typeof json == "string") {
 			try {
-				json = JSON.parse(json);
+				data = JSON.parse(json);
 			} catch (error) {
 				throw "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.";
 			}
+		}
+		else {
+			data = json;
 		}
 		
 		const isValid = data.dbName !== undefined
@@ -178,19 +183,25 @@ class ElectionData {
 				delete data.numberOfVotePerVoter;
 			}
 			
-			return new ElectionData(dbName,
-				dbPsw,
-				numberOfVoters,
-				numberOfVotePerVoterMin,
-				numberOfVotePerVoterMax,
-				allowMultipleSameCandidate,
-				numberOfVoted,
-				numberOfSeatsTaken,
-				hasSkipped,
-				isDownloadDisabled,
-				candidates,
-				groupImage
-				);
+			const electionData = new ElectionData(data.dbName,
+				data.dbPsw,
+				data.numberOfVoters,
+				data.numberOfVotePerVoterMin,
+				data.numberOfVotePerVoterMax,
+				data.allowMultipleSameCandidate,
+				data.numberOfVoted,
+				data.numberOfSeatsTaken,
+				data.hasSkipped,
+				data.isDownloadDisabled,
+				data.candidates,
+				data.groupImage
+			);
+			
+			if (data.sharedElectionCode) {
+				electionData.setSharedElectionCode(data.sharedElectionCode);
+			}
+			
+			return electionData;
 			
 		}
 		else{
