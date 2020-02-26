@@ -113,9 +113,11 @@ Utils.download_data = function(data, dbNameSuffix) {
 		stringData = data.getAsJSON();
 	}
 	
+	const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
+	
 	dbNameSuffix = dbNameSuffix || "";
 	
-	const file = new File([stringData], `${data.dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
+	const file = new File([stringData], `${dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
 	saveAs(file);
 	
 	Utils.didDownloadDb = true;
