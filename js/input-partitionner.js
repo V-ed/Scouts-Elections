@@ -57,6 +57,7 @@ const InputPartition = {};
 				while (!patternRegex.test(currentChar)) {
 					
 					if (++i >= content.length) {
+						currentChar = "";
 						break;
 					}
 					
@@ -66,8 +67,10 @@ const InputPartition = {};
 				
 			}
 			
-			currentInput.value = currentChar;
-			didChangeValue = true;
+			if (currentChar) {
+				currentInput.value = currentChar;
+				didChangeValue = true;
+			}
 			
 			currentInput = currentInput.nextElementSibling;
 			
