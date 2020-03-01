@@ -4,21 +4,33 @@ const InputPartition = {};
 	
 	function getInputsFromRoot(inputRoot) {
 		
+		function getInputsWithoutHidden() {
+			return inputRoot.querySelectorAll("input[type]:not([type='hidden'])");
+		}
+		
+		let currentInputs = getInputsWithoutHidden();
+		
 		if (inputRoot.hasAttribute("data-length")) {
 			
 			const inputTemplate = inputRoot.querySelector("input");
 			
 			const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
 			
-			inputRoot.innerHTML = "";
-			
-			for (let i = 0; i < inputsLength; i++) {
-				inputRoot.appendChild(inputTemplate.cloneNode(true));
+			if (currentInputs.length != inputsLength) {
+				
+				inputRoot.innerHTML = "";
+				
+				for (let i = 0; i < inputsLength; i++) {
+					inputRoot.appendChild(inputTemplate.cloneNode(true));
+				}
+				
+				currentInputs = getInputsWithoutHidden();
+				
 			}
 			
 		}
 		
-		return inputRoot.querySelectorAll("input");
+		return currentInputs;
 		
 	}
 	
@@ -69,6 +81,35 @@ const InputPartition = {};
 		
 	}
 	
+	function clearInputsOfRoot(inputRoot) {
+		
+		const inputs = getInputsFromRoot(inputRoot);
+		
+		inputs.forEach(input => input.value = "");
+		
+		updateHiddenInputValueFromRoot(inputRoot);
+		
+	}
+	
+	function updateHiddenInputValueFromRoot(inputRoot) {
+		return updateHiddenInputValueFromInputs(inputRoot.querySelectorAll("input[type]:not([type='hidden'])"), inputRoot.querySelector("input[type='hidden']"));
+	}
+	
+	function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
+		
+		const prevVal = hiddenInput.value;
+		const newVal = Array.from(inputs).map(input => input.value).join("");
+		
+		if (prevVal != newVal) {
+			
+			hiddenInput.value = newVal;
+			
+			hiddenInput.dispatchEvent(new Event("input"));
+			
+		}
+		
+	}
+	
 	InputPartition.init = function (inputRoots) {
 	
 		Array.from(inputRoots).forEach(inputRoot => {
@@ -89,11 +130,7 @@ const InputPartition = {};
 			});
 			
 			function updateHiddenInputValue() {
-				
-				hiddenInputValue.value = Array.from(inputs).map(input => input.value).join("");
-				
-				hiddenInputValue.dispatchEvent(new Event("input"));
-				
+				updateHiddenInputValueFromInputs(inputs, hiddenInputValue);
 			}
 			
 			inputs.forEach(input => {
