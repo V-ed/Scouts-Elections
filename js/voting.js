@@ -529,7 +529,7 @@ function setup_voting_session(data) {
 	const votersRemainingCountToast = document.getElementById("voters-remaining-count-toast");
 	const seatsRemainingCountToast = document.getElementById("seats-remaining-count-toast");
 	
-	const toastElement = document.querySelector("#voting-toasts-container > .toast");
+	const toastElement = toastContainer.querySelector(".toast");
 	
 	let toastTimerId = undefined;
 	
