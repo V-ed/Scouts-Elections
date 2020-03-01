@@ -372,4 +372,16 @@ const InputPartition = {};
 		
 	}
 	
+	InputPartition.setContentFor = function (inputRoot, content) {
+		
+		const firstInput = inputRoot.querySelector("input");
+		
+		clearInputsOfRoot(inputRoot);
+		
+		setContentFromInput(firstInput, content);
+		
+		updateHiddenInputValueFromRoot(inputRoot);
+		
+	}
+	
 }());
