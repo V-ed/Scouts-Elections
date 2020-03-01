@@ -96,6 +96,33 @@ Utils.init = function(doPreventVarsReset) {
 		document.location.reload(true);
 	}
 	
+	const clipboardJS = new ClipboardJS('.copy-button');
+	
+	clipboardJS.on('success', function(e) {
+		e.clearSelection();
+		
+		e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-success-msg"));
+		
+		$(e.trigger).popover("show");
+		
+		setTimeout(() => {
+			$(e.trigger).popover("hide");
+		}, 1000);
+		
+	});
+	
+	clipboardJS.on('error', function(e) {
+		
+		e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-error-msg"));
+		
+		$(e.trigger).popover("show");
+		
+		setTimeout(() => {
+			$(e.trigger).popover("hide");
+		}, 2000);
+		
+	});
+	
 }
 
 Utils.should_download_data = function() {
