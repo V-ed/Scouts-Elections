@@ -2,9 +2,29 @@ const InputPartition = {};
 
 InputPartition.init = function (inputRoots) {
 	
+	function getInputsFromRoot(inputRoot) {
+		
+		if (inputRoot.hasAttribute("data-length")) {
+			
+			const inputTemplate = inputRoot.querySelector("input");
+			
+			const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
+			
+			inputRoot.innerHTML = "";
+			
+			for (let i = 0; i < inputsLength; i++) {
+				inputRoot.appendChild(inputTemplate.cloneNode(true));
+			}
+			
+		}
+		
+		return inputRoot.querySelectorAll("input");
+		
+	}
+	
 	Array.from(inputRoots).forEach(elem => {
 		
-		const inputs = elem.querySelectorAll("input");
+		const inputs = getInputsFromRoot(elem);
 		
 		const hiddenInputValue = document.createElement("input");
 		hiddenInputValue.setAttribute("type", "hidden");
@@ -14,7 +34,10 @@ InputPartition.init = function (inputRoots) {
 		
 		elem.appendChild(hiddenInputValue);
 		
-		inputs.forEach(input => input.setAttribute("data-partition-for-id", hiddenInputId));
+		inputs.forEach(input => {
+			input.setAttribute("data-partition-for-id", hiddenInputId);
+			input.setAttribute("maxlength", 1);
+		});
 		
 		function updateHiddenInputValue() {
 			
