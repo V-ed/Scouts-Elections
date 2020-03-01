@@ -2,39 +2,86 @@ const InputPartition = {};
 
 ;(function () {
 	
-	InputPartition.init = function (inputRoots) {
-	
-		function getInputsFromRoot(inputRoot) {
+	function getInputsFromRoot(inputRoot) {
+		
+		if (inputRoot.hasAttribute("data-length")) {
 			
-			if (inputRoot.hasAttribute("data-length")) {
+			const inputTemplate = inputRoot.querySelector("input");
+			
+			const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
+			
+			inputRoot.innerHTML = "";
+			
+			for (let i = 0; i < inputsLength; i++) {
+				inputRoot.appendChild(inputTemplate.cloneNode(true));
+			}
+			
+		}
+		
+		return inputRoot.querySelectorAll("input");
+		
+	}
+	
+	function getHiddenInputId(inputRoot) {
+		return inputRoot.hasAttribute("data-hidden-input-id")
+			? inputRoot.getAttribute("data-hidden-input-id")
+			: "partitionned-input".concat(inputRoot.id ? "-".concat(inputRoot.id) : "");
+	}
+	
+	function setContentFromInput(input, content) {
+		
+		let didChangeValue = false;
+		
+		for (let i = 0, currentInput = input; currentInput && i < content.length; i++) {
+			
+			let currentChar = content[i];
+			
+			const inputPattern = currentInput.getAttribute("pattern");
+			
+			if (inputPattern) {
 				
-				const inputTemplate = inputRoot.querySelector("input");
+				const patternRegex = new RegExp("^".concat(inputPattern, "$"));
 				
-				const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
-				
-				inputRoot.innerHTML = "";
-				
-				for (let i = 0; i < inputsLength; i++) {
-					inputRoot.appendChild(inputTemplate.cloneNode(true));
+				while (!patternRegex.test(currentChar)) {
+					
+					if (++i >= content.length) {
+						break;
+					}
+					
+					currentChar = content[i];
+					
 				}
 				
 			}
 			
-			return inputRoot.querySelectorAll("input");
+			currentInput.value = currentChar;
+			didChangeValue = true;
+			
+			currentInput = currentInput.nextElementSibling;
+			
+			if (currentInput) {
+				currentInput.focus();
+			}
 			
 		}
 		
-		Array.from(inputRoots).forEach(elem => {
+		return didChangeValue;
+		
+	}
+	
+	InputPartition.init = function (inputRoots) {
+	
+		Array.from(inputRoots).forEach(inputRoot => {
 			
-			const inputs = getInputsFromRoot(elem);
+			const inputs = getInputsFromRoot(inputRoot);
 			
 			const hiddenInputValue = document.createElement("input");
 			hiddenInputValue.setAttribute("type", "hidden");
 			
-			const hiddenInputId = elem.hasAttribute("data-hidden-input-id") ? elem.getAttribute("data-hidden-input-id") : "partitionned-input".concat(elem.id ? "-".concat(elem.id) : "");
+			const hiddenInputId = getHiddenInputId(inputRoot);
 			hiddenInputValue.setAttribute("id", hiddenInputId);
 			
-			elem.appendChild(hiddenInputValue);
+			inputRoot.appendChild(hiddenInputValue);
 			
 			inputs.forEach(input => {
 				input.setAttribute("data-partition-for-id", hiddenInputId);
@@ -274,42 +321,7 @@ const InputPartition = {};
 					const clipboardData = e.clipboardData || window.clipboardData;
 					const pastedData = clipboardData.getData('Text');
 					
-					let didChangeValue = false;
-					
-					for (let i = 0, currentInput = input; currentInput && i < pastedData.length; i++) {
-						
-						let currentChar = pastedData[i];
-						
-						const inputPattern = currentInput.getAttribute("pattern");
-						
-						if (inputPattern) {
-							
-							const patternRegex = new RegExp("^".concat(inputPattern, "$"));
-							
-							while (!patternRegex.test(currentChar)) {
-								
-								++i;
-								
-								if (i >= pastedData.length) {
-									return;
-								}
-								
-								currentChar = pastedData[i];
-								
-							}
-							
-						}
-						
-						currentInput.value = currentChar;
-						didChangeValue = true;
-						
-						currentInput = currentInput.nextElementSibling;
-						
-						if (currentInput) {
-							currentInput.focus();
-						}
-						
-					}
+					const didChangeValue = setContentFromInput(input, pastedData);
 					
 					if (didChangeValue) {
 						updateHiddenInputValue();
