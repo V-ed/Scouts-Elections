@@ -20,6 +20,7 @@
 	<script src="./js/libraries/FileSaver.min.js"></script>
 	<script src="./js/libraries/bootstrap-input-spinner.min.js"></script>
 	<script src="./js/libraries/lz-string.min.js"></script>
+	<script src="./js/libraries/clipboard.min.js"></script>
 	
 	<script src="./js/minimal-delayer.js" defer></script>
 	<script src="./js/input-partitionner.js" defer></script>
@@ -96,6 +97,31 @@
 			</div>
 		</div>
 		
+	</div>
+	
+	<div id="home-toasts-container" class="fixed-top w-100 d-flex flex-column p-4 i-am-away" style="z-index: 1058;">
+		<div class="toast processing ml-auto" role="alert" data-autohide="false">
+			<div class="toast-header">
+				<strong class="mr-auto text-primary">Code d'Élection partagée détecté</strong>
+				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="toast-body">
+				<span>Un code partagé fut détecté - vérification de l'accès au serveur pour continuer...</span>
+			</div>
+		</div>
+		<div class="toast error ml-auto" role="alert" data-autohide="false" hidden>
+			<div class="toast-header">
+				<strong class="mr-auto text-primary">Erreur Code Élection partagée</strong>
+				<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="toast-body">
+				<span>Une erreur est survenue lors de la vérification de l'accès au serveur pour rejoindre l'élection partagée. Veuillez réessayer (rafrachir la page) ou débuter une élection locale.</span>
+			</div>
+		</div>
 	</div>
 	
 	<div id="voting-toasts-container" class="fixed-top w-100 d-flex flex-column p-4 i-am-away" style="z-index: 1058;">
@@ -215,7 +241,7 @@
 									<div class="form-group">
 										<label for="recipient-name" class="col-form-label">Code de l'Élection Partagée :</label>
 										<div class="container mt-2">
-											<div class="row input-partition" data-hidden-input-id="fullCodeValue" data-length="6" style="font-family: monospace; font-size: 2rem;">
+											<div id="join-election-input-partition-root" class="row input-partition" data-hidden-input-id="fullCodeValue" data-length="6" style="font-family: monospace; font-size: 2rem;">
 												<input type="text" class="text-capitalize" pattern="[a-zA-Z1-9]" data-do-replace="true">
 											</div>
 										</div>

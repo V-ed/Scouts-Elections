@@ -5,13 +5,46 @@ function setup_index() {
 	
 	// Javascript enabled, enable inputs...
 	
-	newElectionsButton.disabled = false;
-	document.getElementById("loader-file-input").disabled = false;
-	document.getElementById("database-loader-zone").classList.remove("loader-disabled");
+	function enableHomePageInputs() {
+		newElectionsButton.disabled = false;
+		document.getElementById("loader-file-input").disabled = false;
+		document.getElementById("database-loader-zone").classList.remove("loader-disabled");
+	}
+	
+	const urlParams = new URLSearchParams(window.location.search);
+		
+	if (!urlParams.has("code")) {
+		enableHomePageInputs();
+	}
+	else {
+		
+		// Query has shared code, show toast that it is being processed...
+		
+		const toastContainer = document.getElementById("home-toasts-container");
+		const toastElement = toastContainer.querySelector(".toast.processing");
+		
+		toastContainer.classList.remove("i-am-away");
+		
+		$(toastElement).toast("show");
+		
+	}
 	
 	// Index script
 	
-	newElectionsButton.addEventListener("click", () => switch_view("setup-page", () => setup_setup()));
+	newElectionsButton.addEventListener("click", () => {
+		
+		if (urlParams.has("code")) {
+			
+			const toastErrorElement = document.getElementById("home-toasts-container").querySelector(".toast.error");
+			
+			$(toastErrorElement).toast("hide");
+			
+		}
+		
+		switch_view("setup-page", () => setup_setup());
+	});
+	
+	const minimumToastDelay = urlParams.has("code") ? new MinimalDelayer(1000) : undefined;
 	
 	Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, 'home-join-requester-container', false, 150).then(() => {
 		
@@ -81,8 +114,70 @@ function setup_index() {
 			
 		});
 		
+		// If URL contains the query to set the code, directly open the modal to join a shared election
+		
+		if (urlParams.has("code")) {
+			
+			enableHomePageInputs();
+			
+			joinElectionsButton.click();
+			
+			// And set the content to that code
+			InputPartition.setContentFor(document.getElementById("join-election-input-partition-root"), urlParams.get("code"));
+			
+		}
+		
 	}).catch(_error => {
-		// Nothing to do here in case of errors, the sendRequest method handles it all
+		
+		if (urlParams.has("code")) {
+			
+			enableHomePageInputs();
+			
+			// Hide processing toast
+			const toastContainer = document.getElementById("home-toasts-container");
+			
+			// Show error toast
+			const toastErrorElement = toastContainer.querySelector(".toast.error");
+			
+			toastErrorElement.hidden = false;
+			
+			$(toastErrorElement).toast("show");
+			
+			$(toastErrorElement).on("hidden.bs.toast", () => {
+				
+				toastContainer.classList.add("i-am-away");
+				
+				$(toastErrorElement).off("hidden.bs.toast");
+				
+			});
+			
+		}
+		
+	}).finally(() => {
+		
+		if (urlParams.has("code")) {
+			
+			minimumToastDelay.execute(() => {
+				
+				const toastContainer = document.getElementById("home-toasts-container");
+				const toastElement = toastContainer.querySelector(".toast.processing");
+				
+				$(toastElement).toast("hide");
+				
+				$(toastElement).on("hidden.bs.toast", () => {
+					
+					$(toastElement).off("hidden.bs.toast");
+					
+					if (!toastContainer.querySelector(".toast.error").classList.contains("show")) {
+						toastContainer.classList.add("i-am-away");
+					}
+					
+				});
+				
+			});
+			
+		}
+		
 	});
 	
 	Utils.create_file_loader("database-loader-zone", load_file, items => {
@@ -119,6 +214,14 @@ function setup_index() {
 	}
 	
 	function route_data(data) {
+		
+		if (urlParams.has("code")) {
+			
+			const toastErrorElement = document.getElementById("home-toasts-container").querySelector(".toast.error");
+			
+			$(toastErrorElement).toast("hide");
+			
+		}
 		
 		if (data.hasSkipped || data.numberOfVoted == data.numberOfVoters) {
 			

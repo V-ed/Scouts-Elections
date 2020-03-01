@@ -69,6 +69,10 @@ function setup_pre_voting_session(data) {
 	
 	if (data.sharedElectionCode) {
 		
+		const sharedElectionJoinLinkSpan = document.getElementById("pre-voting-join-shared-election-link");
+		
+		sharedElectionJoinLinkSpan.value = `${window.location.protocol}//${window.location.hostname}${window.location.pathname != "/" ? window.location.pathname : ""}${window.location.port ? ":" + window.location.port : ""}?code=${data.sharedElectionCode}`;
+		
 		const preVotingSharedForceLocalButton = document.getElementById("pre-voting-shared-force-local-button");
 		
 		$(preVotingSharedForceLocalButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
