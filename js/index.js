@@ -81,6 +81,19 @@ function setup_index() {
 			
 		});
 		
+		// If URL contains the query to set the code, directly open the modal to join a shared election
+		
+		const urlParams = new URLSearchParams(window.location.search);
+		
+		if (urlParams.has("code")) {
+			
+			joinElectionsButton.click();
+			
+			// And set the content to that code
+			InputPartition.setContentFor(document.getElementById("join-election-input-partition-root"), urlParams.get("code"));
+			
+		}
+		
 	}).catch(_error => {
 		// Nothing to do here in case of errors, the sendRequest method handles it all
 	});
