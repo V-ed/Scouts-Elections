@@ -107,11 +107,12 @@ function setup_pre_voting_session(data) {
 				
 				preVotingRequestErrorRow.hidden = true;
 				
-				setTimeout(() => {
-					preVotingSubmitButton.scrollIntoView();
-				}, 30);
+				const requesterOptions = {
+					container: 'pre-voting-requester-container',
+					onContainerShownFunc: () => preVotingSubmitButton.scrollIntoView()
+				};
 				
-				didSkipVotingPage = await voting_go_to_next_voter(data, true, 'pre-voting-requester-container', false);
+				didSkipVotingPage = await voting_go_to_next_voter(data, true, requesterOptions, false);
 				
 			} catch (error) {
 				
