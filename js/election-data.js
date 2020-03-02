@@ -184,7 +184,7 @@ class ElectionData {
 			}
 			
 			if (data.numberOfSeatsTaken == undefined) {
-				data.numberOfSeatsTaken = data.numberOfVoted - 1;
+				data.numberOfSeatsTaken = data.numberOfVoted + 1;
 			}
 			// END OF BACKWARD COMPATIBILITY
 			
