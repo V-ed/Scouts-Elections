@@ -175,13 +175,18 @@ class ElectionData {
 		
 		if (isValid) {
 			
-			// Backward compatibility with v0.1 databases
+			// START OF BACKWARD COMPATIBILITY with v0.1 databases
 			if (data.numberOfVotePerVoter !== undefined) {
 				data.numberOfVotePerVoterMin = data.numberOfVotePerVoter;
 				data.numberOfVotePerVoterMax = data.numberOfVotePerVoter;
 				
 				delete data.numberOfVotePerVoter;
 			}
+			
+			if (data.numberOfSeatsTaken == undefined) {
+				data.numberOfSeatsTaken = data.numberOfVoted;
+			}
+			// END OF BACKWARD COMPATIBILITY
 			
 			const electionData = new ElectionData(data.dbName,
 				data.dbPsw,
