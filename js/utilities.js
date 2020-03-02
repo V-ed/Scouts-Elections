@@ -338,7 +338,11 @@ Utils.set_label_non_clickable = function(labels) {
 
 // Send requests and handle UI spinners
 
-Utils.sendRequest = async function(ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+Utils.sendRequest = async function(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
+	
+	const isRequesterOptionsComplex = requesterContainerOptions.constructor == Object;
+	
+	let requesterContainer = isRequesterOptionsComplex ? requesterContainerOptions.container : requesterContainerOptions;
 	
 	const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
 	
@@ -376,6 +380,10 @@ Utils.sendRequest = async function(ajaxSettings, requesterContainer, doHideConta
 		requesterErrorIcons.forEach(elem => elem.hidden = true);
 		
 		requesterContainer.hidden = false;
+		
+		if (isRequesterOptionsComplex && requesterContainerOptions.onContainerShownFunc) {
+			requesterContainerOptions.onContainerShownFunc(requesterContainer);
+		}
 		
 	}
 	
@@ -426,7 +434,7 @@ Utils.sendRequest = async function(ajaxSettings, requesterContainer, doHideConta
 	
 }
 
-Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterContainer, doHideContainerOnEnd, minimumRequestDelay) {
+Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
 	
 	numberOfTries = parseInt(numberOfTries);
 	
@@ -440,7 +448,7 @@ Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterCont
 		
 		try {
 			
-			const response = await Utils.sendRequest(ajaxSettings, requesterContainer, doHideContainerOnEnd, 0);
+			const response = await Utils.sendRequest(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, 0);
 			
 			await delayer.wait();
 			
