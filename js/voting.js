@@ -368,15 +368,6 @@ function setup_voting_session(data) {
 		minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
 		maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
 		
-		if (minNumberOfVotesLeft == undefined && maxNumberOfVotesLeft == undefined) {
-			
-			const backwardCompatibleNumber = data.numberOfVotePerVoter;
-			
-			minNumberOfVotesLeft = backwardCompatibleNumber;
-			maxNumberOfVotesLeft = backwardCompatibleNumber;
-			
-		}
-		
 		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
 			
 			voteRemainingCounter.textContent = minNumberOfVotesLeft;
