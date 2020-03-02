@@ -82,9 +82,7 @@ function setup_index() {
 			
 			request.then(response => {
 				
-				const data = new ElectionData();
-				
-				data.mergeData(response.data);
+				const data = ElectionData.fromJSON(response.data);
 				
 				return setup_votes(data, code, () => {
 					
@@ -133,10 +131,8 @@ function setup_index() {
 			
 			enableHomePageInputs();
 			
-			// Hide processing toast
-			const toastContainer = document.getElementById("home-toasts-container");
-			
 			// Show error toast
+			const toastContainer = document.getElementById("home-toasts-container");
 			const toastErrorElement = toastContainer.querySelector(".toast.error");
 			
 			toastErrorElement.hidden = false;
