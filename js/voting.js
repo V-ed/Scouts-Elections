@@ -356,6 +356,7 @@ function setup_voting_session(data) {
 		
 	}
 	
+	let isVoteFinishing = false;
 	let isVoteFinished = false;
 	
 	const votingOverlay = document.getElementById("voting-voted-overlay");
@@ -420,6 +421,7 @@ function setup_voting_session(data) {
 		
 		submitVotesButton.disabled = true;
 		
+		isVoteFinishing = false;
 		isVoteFinished = true;
 		
 	}
@@ -471,6 +473,8 @@ function setup_voting_session(data) {
 		submitVotesButton.disabled = true;
 		
 		votingOverlay.classList.add("active");
+		
+		isVoteFinishing = true;
 		
 		setTimeout(async () => {
 			updateVotes()
@@ -607,7 +611,11 @@ function setup_voting_session(data) {
 			
 		}
 		
-		if (data.votesCurrentCandidateIndexes) {
+		if (isVoteFinishing) {
+			return false;
+		}
+		
+		if (isVoteFinished && data.votesCurrentCandidateIndexes) {
 			
 			showBadVoteSendRequestError();
 			
