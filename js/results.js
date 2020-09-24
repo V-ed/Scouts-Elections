@@ -1,13 +1,14 @@
 import switch_view from "./switcher.js";
 import Utils from "./utilities.js";
+import { auto_download_data } from "./voting.js";
 
 export function setup_post_voting(data, didSkipRemainings) {
 	
 	Utils.initialize_images("post-shared-voting-page", data.groupImage);
 	
-	const sharedPostVoteButtonVerify = /** @type {HTMLInputElement} */ (document.getElementById("shared-post-votes-verify"));
-	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
-	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
+	const sharedPostVoteButtonVerify = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-verify"));
+	const sharedPostVoteButtonGo = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-go"));
+	const sharedPostVoteButtonGoAndDelete = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-go-and-delete"));
 	
 	const sharedPostVoteFinishedIcon = document.getElementById("post-shared-voting-verify-finished-icon");
 	const sharedPostVoteNotFinishedIcon = document.getElementById("post-shared-voting-verify-not-finished-icon");
@@ -234,9 +235,9 @@ export function setup_pre_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("pre-results-page", data.groupImage);
 	
-	const preResultsSubmitButton = document.getElementById("pre-results-submit-button");
+	const preResultsSubmitButton = /** @type {HTMLButtonElement} */ (document.getElementById("pre-results-submit-button"));
 	
-	const passwordInput = document.getElementById("pre-results-password-input");
+	const passwordInput = /** @type {HTMLInputElement} */ (document.getElementById("pre-results-password-input"));
 	
 	preResultsSubmitButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -356,15 +357,15 @@ export function setup_results_page(data, didSkipRemainings) {
 		
 	});
 	
-	const legendToggler = document.querySelector("a[data-toggle='collapse'][data-target='#results-click-explications']");
+	const legendToggler = /** @type {HTMLLinkElement} */ (document.querySelector("a[data-toggle='collapse'][data-target='#results-click-explications']"));
 	$("#results-click-explications").on("hidden.bs.collapse", function () {
-		legendToggler.text = "Plus";
+		legendToggler.textContent = "Plus";
 	});
 	$("#results-click-explications").on("hide.bs.collapse show.bs.collapse", function () {
-		legendToggler.text = "";
+		legendToggler.textContent = "";
 	});
 	$("#results-click-explications").on("shown.bs.collapse", function () {
-		legendToggler.text = "Moins";
+		legendToggler.textContent = "Moins";
 	});
 	
 	const downloadDbButton = document.getElementById("results-download-button");

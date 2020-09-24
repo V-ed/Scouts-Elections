@@ -3,20 +3,32 @@ import Utils from "./utilities.js";
 import { setup_votes } from "./voting.js";
 
 let setupInputs = {};
+/**
+ * @type {EventTarget}
+ */
 let textFieldHadFocus = undefined;
 
 export function setup_setup() {
 	
-	const imagePreview = document.getElementById("setup-preview-image");
-	const imagePreviewCloser = document.getElementById("setup-preview-image-closer");
+	const imagePreview = /** @type {HTMLImageElement} */ (document.getElementById("setup-preview-image"));
+	const imagePreviewCloser = /** @type {HTMLButtonElement} */ (document.getElementById("setup-preview-image-closer"));
 	
+	/**
+	 * @type {string}
+	 */
 	let groupImageData = undefined;
 	
+	/**
+	 * 
+	 * @param {string | ArrayBuffer} imageData 
+	 */
 	function set_preview_image(imageData) {
-		imagePreview.src = imageData;
-		imagePreview.value = "";
+		const imageSrc = typeof imageData == 'string' ? imageData : (new TextDecoder("utf-8")).decode(imageData)
+		
+		imagePreview.src = imageSrc;
+		// imagePreview.value = "";
 		imagePreviewCloser.disabled = false;
-		groupImageData = imageData;
+		groupImageData = imageSrc;
 	}
 	
 	function remove_preview_image() {
@@ -65,23 +77,23 @@ export function setup_setup() {
 		remove_preview_image();
 	});
 	
-	const pswVisibilityToggler = document.getElementById("password-visible");
-	const pswField = document.getElementById("db-psw");
+	const pswVisibilityToggler = /** @type {HTMLInputElement} */ (document.getElementById("password-visible"));
+	const pswField = /** @type {HTMLInputElement} */ (document.getElementById("db-psw"));
 	
 	pswVisibilityToggler.addEventListener("click", () => pswField.type = pswField.type == "password" ? "text" : "password");
 	
-	const candidateAddButton = document.getElementById("candidate-add");
-	const candidateRemoveButton = document.getElementById("candidate-remove-all");
+	const candidateAddButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-add"));
+	const candidateRemoveAllButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-remove-all"));
 	const candidateContainer = document.getElementById("setup-candidates");
 	
-	const firstCandidateInput = document.getElementById("candidate-name-1");
-	const firstCandidateRemoveButton = document.getElementById("candidate-remove-1");
+	const firstCandidateInput = /** @type {HTMLInputElement} */ (document.getElementById("candidate-name-1"));
+	const firstCandidateRemoveButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-remove-1"));
 	
 	function removeCandidate(candidateInput) {
 		
 		const candidateNumber = parseInt(candidateInput.dataset.candidatenumber);
 		
-		const allCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']"));
+		const allCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']")));
 		
 		if (allCandidates.length == 1) {
 			firstCandidateInput.value = "";
@@ -89,13 +101,13 @@ export function setup_setup() {
 		}
 		else {
 			
-			const allCandidatesToUpdate = allCandidates.filter(input => input.dataset.candidatenumber > candidateNumber);
+			const allCandidatesToUpdate = allCandidates.filter(input => parseInt(input.dataset.candidatenumber) > candidateNumber);
 			
 			allCandidatesToUpdate.forEach(candidateInput => {
 				
-				const currentCandidateNumber = candidateInput.dataset.candidatenumber;
+				const currentCandidateNumber = parseInt(candidateInput.dataset.candidatenumber);
 				
-				const previousInput = document.getElementById(`candidate-name-${currentCandidateNumber - 1}`);
+				const previousInput = /** @type {HTMLInputElement} */ (document.getElementById(`candidate-name-${currentCandidateNumber - 1}`));
 				
 				previousInput.value = candidateInput.value;
 				
@@ -109,12 +121,14 @@ export function setup_setup() {
 			
 			delete setupInputs[`candidate-name-${candidateNumber}`];
 			
-			const newCandidateCount = --candidateAddButton.dataset.candidatecount;
+			const newCandidateCount = parseInt(candidateAddButton.dataset.candidatecount) - 1;
+			candidateAddButton.dataset.candidatecount = newCandidateCount.toString();
 			
-			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+			const numberOfVoteInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
+			triggerInputEvent(numberOfVoteInput, true);
 			
 			if (newCandidateCount == 1 && firstCandidateInput.value.length == 0) {
-				candidateRemoveButton.disabled = true;
+				candidateRemoveAllButton.disabled = true;
 			}
 			
 		}
@@ -128,28 +142,29 @@ export function setup_setup() {
 	candidateAddButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		const number = ++candidateAddButton.dataset.candidatecount;
+		const newCandidateCount = parseInt(candidateAddButton.dataset.candidatecount) + 1;
+		candidateAddButton.dataset.candidatecount = newCandidateCount.toString();
 		
 		$(candidateContainer).append(`
-			<div id="candidate-controls-${number}" class="form-group row mb-2 mb-md-3">
+			<div id="candidate-controls-${newCandidateCount}" class="form-group row mb-2 mb-md-3">
 				<div class="col-sm-3 col-md-2">
-					<label class="col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
+					<label class="col-form-label" for="candidate-name-${newCandidateCount}">Candidat ${newCandidateCount}</label>
 				</div>
 				<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
-					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
+					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${newCandidateCount}" aria-describedby="candidate-name-${newCandidateCount}" placeholder="Nom" name="candidate-name-${newCandidateCount}" data-placement="top" data-candidatenumber="${newCandidateCount}" autocomplete="off" required>
 					<div class="d-flex align-items-center justify-content-center ml-3">
-						<button id="candidate-remove-${number}" type="button" class="btn btn-outline-danger" tabindex="-1">
+						<button id="candidate-remove-${newCandidateCount}" type="button" class="btn btn-outline-danger" tabindex="-1">
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
 				</div>
 			</div>`);
 		
-		candidateRemoveButton.disabled = false;
+		candidateRemoveAllButton.disabled = false;
 		
-		add_input_for_verification(`candidate-name-${number}`, validateCandidate);
+		add_input_for_verification(`candidate-name-${newCandidateCount}`, validateCandidate);
 		
-		const newCandidateInput = document.getElementById(`candidate-name-${number}`);
+		const newCandidateInput = document.getElementById(`candidate-name-${newCandidateCount}`);
 		newCandidateInput.focus();
 		newCandidateInput.addEventListener("keyup", setup_candidate_selector);
 		newCandidateInput.addEventListener("keydown", e => {
@@ -157,12 +172,12 @@ export function setup_setup() {
 				e.preventDefault();
 			}
 		});
-		const newCandidateDeleteButton = document.getElementById(`candidate-remove-${number}`);
+		const newCandidateDeleteButton = document.getElementById(`candidate-remove-${newCandidateCount}`);
 		newCandidateDeleteButton.addEventListener("click", () => removeCandidate(newCandidateInput));
 		
 		newCandidateInput.scrollIntoView();
 		
-		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
+		const numberOfVoteInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
 		triggerInputEvent(numberOfVoteInput, true);
 		
 		firstCandidateRemoveButton.disabled = false;
@@ -176,26 +191,26 @@ export function setup_setup() {
 			
 			const isFirstCandidateNameEmpty = firstCandidateInput.value.length == 0;
 			
-			candidateRemoveButton.disabled = isFirstCandidateNameEmpty;
+			candidateRemoveAllButton.disabled = isFirstCandidateNameEmpty;
 			firstCandidateRemoveButton.disabled = isFirstCandidateNameEmpty;
 			
 		}
 		
 	});
 	
-	$(candidateRemoveButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
+	$(candidateRemoveAllButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
 		
-		const candidateRemoveConfirmButton = document.getElementById("candidate-remove-all-confirm");
+		const candidateRemoveAllConfirmButton = document.getElementById("candidate-remove-all-confirm");
 		
-		candidateRemoveConfirmButton.addEventListener("click", () => {
+		candidateRemoveAllConfirmButton.addEventListener("click", () => {
 			
-			const number = candidateAddButton.dataset.candidatecount = 1;
+			candidateAddButton.dataset.candidatecount = "1";
 			
 			const allCandidatesToRemove = Array.from(document.querySelectorAll("div[id^='candidate-controls-']")).filter(control => control.querySelector("input[id^='candidate-name-']") != firstCandidateInput);
 			
 			allCandidatesToRemove.forEach(control => {
 				
-				const candidateInput = control.querySelector("input[id^='candidate-name-']");
+				const candidateInput = /** @type {HTMLInputElement} */ (control.querySelector("input[id^='candidate-name-']"));
 				$(candidateInput).popover("dispose");
 				
 				delete setupInputs[`candidate-name-${candidateInput.dataset.candidatenumber}`];
@@ -208,13 +223,11 @@ export function setup_setup() {
 			triggerInputEvent(firstCandidateInput, true);
 			
 			firstCandidateRemoveButton.disabled = true;
-			candidateRemoveButton.disabled = true;
+			candidateRemoveAllButton.disabled = true;
 			
-			if (number == 2) {
-				candidateRemoveButton.disabled = true;
-			}
+			candidateRemoveAllButton.disabled = true;
 			
-			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+			triggerInputEvent(/** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum")), true);
 			
 			if (textFieldHadFocus) {
 				firstCandidateInput.focus();
@@ -230,9 +243,9 @@ export function setup_setup() {
 	
 	function createData() {
 		
-		const formData = new FormData(document.getElementById("setup-form"));
+		const formData = new FormData(/** @type {HTMLFormElement} */ (document.getElementById("setup-form")));
 		
-		const tempCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).map(candidateInput => formData.get(candidateInput.name));
+		const tempCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).map(candidateInput => formData.get(candidateInput.name));
 		
 		Utils.isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
@@ -251,7 +264,7 @@ export function setup_setup() {
 		
 		const data = createData();
 		
-		setup_votes(data, undefined, () => {
+		setup_votes(data, () => {
 			
 			window.removeEventListener("beforeunload", prevent_data_loss);
 			
@@ -262,7 +275,7 @@ export function setup_setup() {
 	});
 	
 	const errorDiv = document.getElementById("setup-create-election-modal-error");
-	const submitSharedSetupButton = document.getElementById("setup-create-election-modal-button");
+	const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-create-election-modal-button"));
 	
 	submitSharedSetupButton.addEventListener("click", async e => {
 		e.preventDefault();
@@ -290,7 +303,11 @@ export function setup_setup() {
 			
 			electionData.mergeData(response.data);
 			
-			return setup_votes(electionData, response.code, () => {
+			const data = ElectionData.fromJSON(response.data);
+			
+			data.setSharedElectionCode(response.code);
+			
+			return setup_votes(data, () => {
 				
 				$("#setup-create-election-modal").modal("hide");
 				
@@ -324,7 +341,7 @@ export function setup_setup() {
 		
 		const dataTrimmed = data.trim();
 		
-		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+		const otherCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).filter(selectedInput => selectedInput != input);
 		const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == dataTrimmed.toLowerCase());
 		
 		const prevDupeValue = input.dataset.dupevalue;
@@ -412,7 +429,7 @@ export function setup_setup() {
 			badData = "Le nombre doit être positif (supérieur ou égal à 0).";
 		}
 		
-		const numberOfVotesMaxInput = document.getElementById("number-of-votes-maximum");
+		const numberOfVotesMaxInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
 		
 		if (badData) {
 			return badData;
@@ -442,7 +459,7 @@ export function setup_setup() {
 			badData = "Le nombre doit être supérieur à 0.";
 		}
 		
-		const numberOfVotesMinInput = document.getElementById("number-of-votes-minimum");
+		const numberOfVotesMinInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-minimum"));
 		
 		if (badData) {
 			return badData;
@@ -473,7 +490,7 @@ export function setup_setup() {
 	
 	// Handle Enter on input fields
 	
-	const setupPageTextFields = document.querySelectorAll("#setup-form input");
+	const setupPageTextFields = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("#setup-form input"));
 	
 	setupPageTextFields.forEach(input => {
 		
@@ -495,23 +512,32 @@ export function setup_setup() {
 	
 }
 
+/**
+ * 
+ * @param {string} inputId 
+ * @param {*} [customValidator] 
+ */
 export function add_input_for_verification(inputId, customValidator) {
 	
 	setupInputs[inputId] = false;
 	
-	const inputElement = document.getElementById(inputId);
+	const inputElement = /** @type {HTMLInputElement} */ (document.getElementById(inputId));
 	
-	const checkElement = inputElement.classList.contains("spinner") ? document.querySelector(`#${inputId} + div.input-group input.spinner`) : inputElement;
+	const checkElement = /** @type {HTMLInputElement} */ (inputElement.classList.contains("spinner") ? document.querySelector(`#${inputId} + div.input-group input.spinner`) : inputElement);
 	
 	if (checkElement.type == "number" || checkElement.inputMode == "numeric") {
 		
+		/**
+		 * 
+		 * @param {KeyboardEvent | ClipboardEvent} e 
+		 */
 		function numberTypeOnlyPositive(e) {
 			
 			let hasBadChars = false;
 			
-			if (e.type == "paste") {
-				clipboardData = e.clipboardData || window.clipboardData;
-				pastedData = clipboardData.getData("Text");
+			if (e instanceof ClipboardEvent) {
+				const clipboardData = e.clipboardData;
+				const pastedData = clipboardData.getData("Text");
 				hasBadChars = !pastedData.match(/[0-9]/);
 			}
 			else {
@@ -539,6 +565,7 @@ export function add_input_for_verification(inputId, customValidator) {
 	
 	inputElement.addEventListener("input", e => {
 		
+		// @ts-ignore
 		const isManual = e.detail ? e.detail.isManual : false;
 		
 		setupInputs[inputId] = verify_input(inputElement, customValidator, isManual, checkElement);
@@ -563,6 +590,7 @@ export function add_input_for_verification(inputId, customValidator) {
 		if (checkElement.classList.contains("spinner")) {
 			let previousSpinnerTimer = undefined;
 			inputElement.addEventListener("change", e => {
+				// @ts-ignore
 				if (e.detail.step != undefined) {
 					clearTimeout(previousSpinnerTimer);
 					previousSpinnerTimer = setTimeout(() => {
@@ -598,8 +626,8 @@ export function verify_all_valid() {
 		}
 	}
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
-	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
+	const submitSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-submit-button"));
+	const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-shared-submit-button"));
 	
 	submitSetupButton.disabled = !isValid;
 	
@@ -645,6 +673,13 @@ export function verify_all_valid() {
 	
 }
 
+/**
+ * 
+ * @param {HTMLInputElement} inputElement 
+ * @param {*} customValidator 
+ * @param {boolean} isManualVerification 
+ * @param {HTMLElement} [elementToValidate] 
+ */
 export function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
 	
 	// Check if required. If not, don't verify
@@ -715,6 +750,11 @@ export function verify_input(inputElement, customValidator, isManualVerification
 	
 }
 
+/**
+ * 
+ * @param {HTMLInputElement} input 
+ * @param {boolean} [isSilent] 
+ */
 export function triggerInputEvent(input, isSilent) {
 	
 	const popableInput = input.classList.contains("spinner") ? document.querySelector(`#${input.id} + div.input-group input.spinner`) : input;
@@ -738,26 +778,31 @@ export function triggerInputEvent(input, isSilent) {
  */
 export function prevent_data_loss() {
 	
-	const isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
+	const isOneCandidateIsEntered = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).some(input => input.value != "");
 	
 	if (isOneCandidateIsEntered) {
 		
+		// @ts-ignore
 		event.returnValue = "Il y au moins un candidat d'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?";
 		
 	}
 	
 }
 
+/**
+ * 
+ * @param {KeyboardEvent} e 
+ */
 export function setup_candidate_selector(e) {
 	
 	if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
 		e.preventDefault();
 		
-		const inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
+		const inputCandidateNumber = parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidatenumber);
 		
 		const candidateAddButton = document.getElementById("candidate-add");
 		
-		const inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
+		const inputNextCandidate = /** @type {HTMLInputElement} */ (document.getElementById(`candidate-name-${inputCandidateNumber + 1}`));
 		
 		if (inputNextCandidate == undefined) {
 			

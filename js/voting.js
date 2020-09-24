@@ -1,10 +1,11 @@
+import ElectionData from "./election-data.js";
 import { setup_post_voting, setup_results } from "./results.js";
 import switch_view from "./switcher.js";
 import Utils from "./utilities.js";
 
 let onKeyUpEventBefore;
 
-let auto_download_data = function() {
+export let auto_download_data = function() {
 	
 	if (Utils.should_download_data()) {
 		
@@ -14,11 +15,9 @@ let auto_download_data = function() {
 	
 }
 
-export async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
+export async function setup_votes(data, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
-	
-	data.setSharedElectionCode(sharedElectionCode || data.sharedElectionCode);
 	
 	if (doForceShowPreVotingPage || data.numberOfVoted == 0) {
 		
@@ -69,11 +68,11 @@ export function setup_pre_voting_session(data) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
-	const preVotingSubmitButton = document.getElementById("pre-voting-submit-button");
+	const preVotingSubmitButton = /** @type {HTMLButtonElement} */ (document.getElementById("pre-voting-submit-button"));
 	
 	if (data.sharedElectionCode) {
 		
-		const sharedElectionJoinLinkSpan = document.getElementById("pre-voting-join-shared-election-link");
+		const sharedElectionJoinLinkSpan = /** @type {HTMLInputElement} */ (document.getElementById("pre-voting-join-shared-election-link"));
 		
 		sharedElectionJoinLinkSpan.value = `${window.location.protocol}//${window.location.hostname}${window.location.pathname != "/" ? window.location.pathname : ""}${window.location.port ? ":" + window.location.port : ""}?code=${data.sharedElectionCode}`;
 		
@@ -179,6 +178,10 @@ export function setup_pre_voting_session(data) {
 	
 }
 
+/**
+ * 
+ * @param {ElectionData} data 
+ */
 export function setup_voting_session(data) {
 	
 	Utils.initialize_images("voting-page", data.groupImage);
@@ -248,7 +251,7 @@ export function setup_voting_session(data) {
 		
 	}
 	
-	const submitVotesButton = document.getElementById("voting-submit-button");
+	const submitVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-submit-button"));
 	
 	if(minNumberOfVotesLeft == 0){
 		submitVotesButton.disabled = false;
@@ -258,19 +261,21 @@ export function setup_voting_session(data) {
 	
 	if (isMultipleSameCandidateAllowed) {
 		
-		const inputs = document.querySelectorAll("div#voting-page input.spinner[type='number']");
+		const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("div#voting-page input.spinner[type='number']"));
 		
 		$(inputs).inputSpinner({disabledInput: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 		
 		$(inputs).on("change", e => {
 			
+			// @ts-ignore
 			if (!e.detail || !e.detail.step) {
 				return;
 			}
 			
-			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.step);
+			// @ts-ignore
+			vote_for_candidate(parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidateindex), e.detail.step);
 			
-			inputs.forEach(input => input.max = maxNumberOfVotesLeft + parseInt($(input).val()));
+			inputs.forEach(input => input.max = maxNumberOfVotesLeft + parseInt(/** @type {string} */ ($(input).val())));
 			
 			if (maxNumberOfVotesLeft == 0) {
 				const nonSelectedInput = Array.from(inputs).filter(input => $(input).val() == 0);
@@ -286,7 +291,7 @@ export function setup_voting_session(data) {
 	}
 	else {
 		
-		const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+		const votingButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]"));
 		
 		votingButtons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -299,16 +304,16 @@ export function setup_voting_session(data) {
 				
 				if (maxNumberOfVotesLeft == 0) {
 					
-					const nonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])");
+					const nonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])"));
 					
-					nonVotedCandidatesButtons.forEach(button => button.disabled = true);
+					nonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = true);
 					
 				}
 				
 			});
 		});
 		
-		const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+		const unvoteButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=unvote-candidate-]"));
 		
 		unvoteButtons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -319,15 +324,20 @@ export function setup_voting_session(data) {
 				button.hidden = true;
 				document.getElementById(`vote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
 				
-				const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
+				const disabledNonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-][disabled]"));
 				
-				disabledNonVotedCandidatesButtons.forEach(button => button.disabled = false);
+				disabledNonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = false);
 				
 			});
 		});
 		
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} step 
+	 */
 	function vote_for_candidate(index, step) {
 		
 		if (step > 0) {
@@ -391,7 +401,7 @@ export function setup_voting_session(data) {
 		
 		if (isMultipleSameCandidateAllowed) {
 			
-			const inputs = document.querySelectorAll("input.spinner[type='number']");
+			const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input.spinner[type='number']"));
 			
 			inputs.forEach(input => {
 				
@@ -404,8 +414,8 @@ export function setup_voting_session(data) {
 		}
 		else {
 			
-			const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
-			const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+			const votingButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]"));
+			const unvoteButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=unvote-candidate-]"));
 			
 			votingButtons.forEach(button => {
 				button.hidden = false;
@@ -589,7 +599,7 @@ export function setup_voting_session(data) {
 		
 	}
 	
-	const skipSharedVotesButton = document.getElementById("voting-shared-skip-button");
+	const skipSharedVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-shared-skip-button"));
 	
 	async function go_to_next_voter(data) {
 		
@@ -720,11 +730,11 @@ export function setup_voting_session(data) {
 		
 	}
 	
-	const skipVotesButton = document.getElementById("voting-skip-button");
+	const skipVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-skip-button"));
 	
 	skipVotesButton.addEventListener("click", () => execute_local_skip_votes(data));
 	
-	const sharedElectionSkipRequestErrorDiv = document.getElementById("shared-election-skip-request-error-toast");
+	const sharedElectionSkipRequestErrorDiv = /** @type {HTMLElement} */ (document.getElementById("shared-election-skip-request-error-toast"));
 	
 	async function executeConfirmedSharedSkipVotes() {
 		
@@ -776,7 +786,7 @@ export function setup_voting_session(data) {
 		
 	}).on("shown.bs.popover", function() {
 		
-		const skipSharedVotesConfirmButton = document.getElementById("voting-shared-skip-confirm-button");
+		const skipSharedVotesConfirmButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-shared-skip-confirm-button"));
 		
 		skipSharedVotesConfirmButton.disabled = false;
 		

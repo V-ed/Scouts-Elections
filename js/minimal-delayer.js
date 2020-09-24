@@ -1,16 +1,29 @@
 export class MinimalDelayer {
 	
+	/**
+	 * 
+	 * @param {number} [minimalDelay] 
+	 */
 	constructor(minimalDelay) {
 		
-		const parsedDelay = parseInt(minimalDelay);
-		
-		this.minimalDelay = (parsedDelay > 0 && parsedDelay) || 0;
+		this.minimalDelay = (minimalDelay > 0 && minimalDelay) || 0;
 		this.targetDate = Date.now() + this.minimalDelay;
 		
 	}
 	
+	/**
+	 * 
+	 * @param {() => *} functionToExecute 
+	 */
 	async execute(functionToExecute) {
 		
+		/**
+		 * 
+		 * @param {() => *} functionToExecute 
+		 * @param {number} delayRemaining 
+		 * @param {(delayRemaining: number) => *} resolve 
+		 * @param {(reason: *) => *} reject 
+		 */
 		function doExecute(functionToExecute, delayRemaining, resolve, reject) {
 			try {
 				if (functionToExecute) {

@@ -1,9 +1,11 @@
-// const InputPartition = {};
-
+/**
+ * 
+ * @param {HTMLElement} inputRoot 
+ */
 function getInputsFromRoot(inputRoot) {
-		
+	
 	function getInputsWithoutHidden() {
-		return inputRoot.querySelectorAll("input[type]:not([type='hidden'])");
+		return /** @type {NodeListOf<HTMLInputElement>} */ (inputRoot.querySelectorAll("input[type]:not([type='hidden'])"));
 	}
 	
 	let currentInputs = getInputsWithoutHidden();
@@ -82,6 +84,10 @@ function setContentFromInput(input, content) {
 	
 }
 
+/**
+ * 
+ * @param {HTMLInputElement} inputRoot 
+ */
 function clearInputsOfRoot(inputRoot) {
 	
 	const inputs = getInputsFromRoot(inputRoot);
@@ -113,6 +119,10 @@ function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
 
 export class InputPartitionLoader {
 	
+	/**
+	 * 
+	 * @param {NodeListOf<HTMLElement>} inputRoots 
+	 */
 	init(inputRoots) {
 		
 		Array.from(inputRoots).forEach(inputRoot => {
@@ -129,7 +139,7 @@ export class InputPartitionLoader {
 			
 			inputs.forEach(input => {
 				input.setAttribute("data-partition-for-id", hiddenInputId);
-				input.setAttribute("maxlength", 1);
+				input.setAttribute("maxlength", "1");
 			});
 			
 			function updateHiddenInputValue() {
@@ -139,13 +149,13 @@ export class InputPartitionLoader {
 			inputs.forEach(input => {
 				
 				// Mobile fix
-				input.addEventListener("input", e => {
+				input.addEventListener("input", /** @param {InputEvent} e */ e => {
 					
 					if (e.inputType == "deleteContentBackward" || (e.inputType == "insertCompositionText" && !e.data)) {
 						
 						input.value = "";
 						
-						const prevSibling = input.previousElementSibling;
+						const prevSibling = /** @type {HTMLElement} */ (input.previousElementSibling);
 						
 						if (prevSibling) {
 							prevSibling.focus();
@@ -180,7 +190,7 @@ export class InputPartitionLoader {
 						
 						if (canGoToNext) {
 							
-							const sibling = input.nextElementSibling;
+							const sibling = /** @type {HTMLElement} */ (input.nextElementSibling);
 							
 							if (sibling && !sibling.hasAttribute("hidden")) {
 								sibling.focus();
@@ -227,7 +237,7 @@ export class InputPartitionLoader {
 						
 					}
 					
-					const sibling = input.nextElementSibling;
+					const sibling = /** @type {HTMLElement} */ (input.nextElementSibling);
 					
 					if (sibling) {
 						sibling.focus();
@@ -249,7 +259,7 @@ export class InputPartitionLoader {
 							
 							currentInput.value = "";
 							
-							const prevSibling = currentInput.previousElementSibling;
+							const prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling) {
 								prevSibling.focus();
@@ -270,7 +280,7 @@ export class InputPartitionLoader {
 						
 						do {
 							
-							const sibling = currentInput.nextElementSibling;
+							const sibling = /** @type {HTMLInputElement} */ (currentInput.nextElementSibling);
 							
 							if (sibling && sibling.value) {
 								sibling.focus();
@@ -293,7 +303,7 @@ export class InputPartitionLoader {
 						
 						do {
 							
-							const prevSibling = currentInput.previousElementSibling;
+							const prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling) {
 								prevSibling.focus();
@@ -314,9 +324,9 @@ export class InputPartitionLoader {
 						
 						do {
 							
-							const sibling = currentInput.nextElementSibling;
+							const sibling = /** @type {HTMLInputElement} */ (currentInput.nextElementSibling);
 							
-							if (sibling && sibling.nextElementSibling && sibling.nextElementSibling.value) {
+							if (sibling && sibling.nextElementSibling && (/** @type {HTMLInputElement} */ (sibling.nextElementSibling)).value) {
 								sibling.focus();
 							}
 							
@@ -337,7 +347,7 @@ export class InputPartitionLoader {
 						
 						if (!currentInput.value) {
 							
-							prevSibling = currentInput.previousElementSibling;
+							prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling && !prevSibling.value) {
 								currentInput = prevSibling;
@@ -358,7 +368,7 @@ export class InputPartitionLoader {
 					e.stopPropagation();
 					e.preventDefault();
 					
-					const clipboardData = e.clipboardData || window.clipboardData;
+					const clipboardData = e.clipboardData;
 					const pastedData = clipboardData.getData('Text');
 					
 					const didChangeValue = setContentFromInput(input, pastedData);

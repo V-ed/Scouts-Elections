@@ -50,6 +50,7 @@ class DataUtils {
 		// --------------------------------
 		
 		// Accept buttons in tooltips and Popovers
+		// @ts-ignore
 		$.fn.tooltip.Constructor.Default.whiteList.button = [];
 		
 		$(".is-popable").popover({trigger: "manual"});
@@ -63,7 +64,9 @@ class DataUtils {
 			
 			button.addEventListener("click", () => {
 				
+				// @ts-ignore
 				Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
+				// @ts-ignore
 				Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
 				
 			});
@@ -89,6 +92,7 @@ class DataUtils {
 		
 		// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
 		
+		// @ts-ignore
 		if (!!window.chrome) {
 			
 			window.addEventListener("orientationchange", function() {
@@ -155,7 +159,7 @@ class DataUtils {
 	/**
 	 * 
 	 * @param {string | ElectionData} data 
-	 * @param {*} dbNameSuffix 
+	 * @param {string} [dbNameSuffix] 
 	 */
 	download_data(data, dbNameSuffix) {
 		
@@ -236,18 +240,21 @@ class DataUtils {
 					return;
 				}
 				
+				// @ts-ignore
 				if ($(e.relatedTarget).parents("#database-loader-zone").length) {
 					return;
 				}
 				
 				let error = undefined;
 				
+				// @ts-ignore
 				const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
 				
 				if (isNotFile) {
 					error = "Seuls des fichiers sont acceptés dans cette zone.";
 				}
 				else {
+					// @ts-ignore
 					error = handleItemsForErrorsFn(e.originalEvent.dataTransfer.items);
 				}
 				
@@ -263,11 +270,13 @@ class DataUtils {
 			})
 			.on("dragleave dragend drop", e => {
 				
+				// @ts-ignore
 				if ($(e.relatedTarget).parents(`#${formId}`).length) {
 					return;
 				}
 				
 				$jqueryElem.removeClass("loader-is-dragover");
+				// @ts-ignore
 				if (e.handleObj.type != "drop"){
 					clearErrorsFn($jqueryElem);
 				}
@@ -290,13 +299,16 @@ class DataUtils {
 		const databaseLoaderInput = $jqueryElem.find("input.loader-file")[0];
 		databaseLoaderInput.addEventListener("change", e => {
 			
+			// @ts-ignore
 			const error = handleItemsForErrorsFn(databaseLoaderInput.files);
 			
 			if (error) {
 				showLoaderErrorFn($jqueryElem, error);
+				// @ts-ignore
 				databaseLoaderInput.value = "";
 			}
 			else {
+				// @ts-ignore
 				loadFilesFn(e.target.files, $jqueryElem);
 			}
 			

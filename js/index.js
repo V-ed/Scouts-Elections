@@ -9,14 +9,15 @@ import { setup_votes } from "./voting.js";
 
 function setup_index() {
 	
-	const newElectionsButton = document.getElementById("home-new-button");
-	const joinElectionsButton = document.getElementById("home-join-button");
+	const newElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById("home-new-button"));
+	const joinElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById("home-join-button"));
 	
 	// Javascript enabled, enable inputs...
 	
 	function enableHomePageInputs() {
 		newElectionsButton.disabled = false;
-		document.getElementById("loader-file-input").disabled = false;
+		const loaderFileInput = /** @type {HTMLInputElement} */ (document.getElementById("loader-file-input"));
+		loaderFileInput.disabled = false;
 		document.getElementById("database-loader-zone").classList.remove("loader-disabled");
 	}
 	
@@ -61,13 +62,13 @@ function setup_index() {
 		
 		joinElectionsButton.disabled = false;
 		
-		const codeElem = document.getElementById("fullCodeValue");
+		const codeElem = /** @type {HTMLButtonElement} */ (document.getElementById("fullCodeValue"));
 		
-		const modalButton = document.getElementById("home-join-election-modal-button");
+		const modalButton = /** @type {HTMLButtonElement} */ (document.getElementById("home-join-election-modal-button"));
 		
 		const errorSpan = document.getElementById("home-join-modal-error-span");
 		
-		const partitionnedInputs = Array.from(document.querySelectorAll("input[data-partition-for-id='fullCodeValue']"));
+		const partitionnedInputs = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[data-partition-for-id='fullCodeValue']")));
 		
 		codeElem.addEventListener("input", () => {
 			modalButton.disabled = codeElem.value.length !== 6;
@@ -93,7 +94,9 @@ function setup_index() {
 				
 				const data = ElectionData.fromJSON(response.data);
 				
-				return setup_votes(data, code, () => {
+				data.setSharedElectionCode(code);
+				
+				return setup_votes(data, () => {
 					
 					$("#home-join-election-modal").modal("hide");
 					
@@ -142,7 +145,7 @@ function setup_index() {
 			
 			// Show error toast
 			const toastContainer = document.getElementById("home-toasts-container");
-			const toastErrorElement = toastContainer.querySelector(".toast.error");
+			const toastErrorElement = /** @type {HTMLElement} */ (toastContainer.querySelector(".toast.error"));
 			
 			toastErrorElement.hidden = false;
 			

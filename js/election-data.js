@@ -70,35 +70,36 @@ export class ElectionData {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} count 
+	 */
 	voteCandidate(index, count) {
-		const numberIndex = parseInt(index);
-		
-		if (isNaN(numberIndex)) {
-			throw "index given is not a number!"
-		}
-		
 		if (typeof this.votesCurrentCandidateIndexes == "undefined") {
+			/**
+			 * @type {number[]}
+			 */
 			this.votesCurrentCandidateIndexes = [];
 		}
 		
 		for (let i = 0; i < count; i++) {
-			this.votesCurrentCandidateIndexes.push(numberIndex);
+			this.votesCurrentCandidateIndexes.push(index);
 		}
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} count 
+	 */
 	unvoteCandidate(index, count) {
-		const numberIndex = parseInt(index);
-		
-		if (isNaN(numberIndex)) {
-			throw "index given is not a number!"
-		}
-		
 		if (typeof this.votesCurrentCandidateIndexes == "undefined") {
 			return;
 		}
 		
 		for (let i = 0; i < count && i < this.votesCurrentCandidateIndexes.length; i++) {
-			let candidateIndex = this.votesCurrentCandidateIndexes.findIndex(currentIndex => currentIndex == numberIndex);
+			let candidateIndex = this.votesCurrentCandidateIndexes.findIndex(currentIndex => currentIndex == index);
 			candidateIndex !== -1 && this.votesCurrentCandidateIndexes.splice(candidateIndex, 1);
 		}
 	}
@@ -107,6 +108,10 @@ export class ElectionData {
 		delete this.votesCurrentCandidateIndexes;
 	}
 	
+	/**
+	 * 
+	 * @param {ElectionData} data 
+	 */
 	mergeData(data) {
 		
 		for (const value in data) {
@@ -115,6 +120,17 @@ export class ElectionData {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {string} dbName 
+	 * @param {string} dbPsw 
+	 * @param {number} numberOfVoters 
+	 * @param {number} numberOfVotePerVoterMin 
+	 * @param {number} numberOfVotePerVoterMax 
+	 * @param {boolean} allowMultipleSameCandidate 
+	 * @param {string[]} candidateNames 
+	 * @param {string} [compressedImageData] 
+	 */
 	static fromData(dbName, dbPsw, numberOfVoters, numberOfVotePerVoterMin, numberOfVotePerVoterMax, allowMultipleSameCandidate, candidateNames, compressedImageData) {
 		const candidates = Array.from(candidateNames).map(name => (
 		{
@@ -140,15 +156,21 @@ export class ElectionData {
 		);
 	}
 	
+	/**
+	 * 
+	 * @param {FormData} formData 
+	 * @param {FormDataEntryValue[]} candidateNames 
+	 * @param {string} [compressedImageData] 
+	 */
 	static fromFormData(formData, candidateNames, compressedImageData) {
 		return ElectionData.fromData(
-			formData.get("dbName"),
-			formData.get("dbPsw"),
-			parseInt(formData.get("numberOfVoters")),
-			parseInt(formData.get("numberOfVotesMin")),
-			parseInt(formData.get("numberOfVotesMax")),
+			formData.get("dbName").toString(),
+			formData.get("dbPsw").toString(),
+			parseInt(formData.get("numberOfVoters").toString()),
+			parseInt(formData.get("numberOfVotesMin").toString()),
+			parseInt(formData.get("numberOfVotesMax").toString()),
 			formData.get("allowMultipleSameCandidate") == "on",
-			candidateNames,
+			candidateNames.map(candidateName => candidateName.toString()),
 			compressedImageData
 		);
 	}
