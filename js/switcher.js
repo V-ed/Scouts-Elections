@@ -1,4 +1,4 @@
-function switch_view(viewId, onSwitchedHandler) {
+export function switch_view(viewId, onSwitchedHandler) {
 	
 	const views = document.querySelectorAll("#views > *");
 	
@@ -11,3 +11,5 @@ function switch_view(viewId, onSwitchedHandler) {
 	}
 	
 }
+
+export default switch_view;

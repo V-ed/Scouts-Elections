@@ -1,7 +1,11 @@
+import ElectionData from "./election-data.js";
+import Utils from "./utilities.js";
+import { setup_votes } from "./voting.js";
+
 let setupInputs = {};
 let textFieldHadFocus = undefined;
 
-function setup_setup() {
+export function setup_setup() {
 	
 	const imagePreview = document.getElementById("setup-preview-image");
 	const imagePreviewCloser = document.getElementById("setup-preview-image-closer");
@@ -491,7 +495,7 @@ function setup_setup() {
 	
 }
 
-function add_input_for_verification(inputId, customValidator) {
+export function add_input_for_verification(inputId, customValidator) {
 	
 	setupInputs[inputId] = false;
 	
@@ -582,7 +586,7 @@ function add_input_for_verification(inputId, customValidator) {
 
 let sharedValidityTimeout = undefined;
 
-function verify_all_valid() {
+export function verify_all_valid() {
 	
 	let isValid = true;
 	
@@ -641,7 +645,7 @@ function verify_all_valid() {
 	
 }
 
-function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
+export function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
 	
 	// Check if required. If not, don't verify
 	if (!inputElement.required) {
@@ -711,7 +715,7 @@ function verify_input(inputElement, customValidator, isManualVerification, eleme
 	
 }
 
-function triggerInputEvent(input, isSilent) {
+export function triggerInputEvent(input, isSilent) {
 	
 	const popableInput = input.classList.contains("spinner") ? document.querySelector(`#${input.id} + div.input-group input.spinner`) : input;
 	
@@ -729,9 +733,10 @@ function triggerInputEvent(input, isSilent) {
 	
 }
 
-// Handle reload if at least one candidate is entered
-
-function prevent_data_loss() {
+/**
+ * Handle reload if at least one candidate is entered
+ */
+export function prevent_data_loss() {
 	
 	const isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
 	
@@ -743,7 +748,7 @@ function prevent_data_loss() {
 	
 }
 
-function setup_candidate_selector(e) {
+export function setup_candidate_selector(e) {
 	
 	if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
 		e.preventDefault();

@@ -1,3 +1,7 @@
+import { setup_post_voting, setup_results } from "./results.js";
+import switch_view from "./switcher.js";
+import Utils from "./utilities.js";
+
 let onKeyUpEventBefore;
 
 let auto_download_data = function() {
@@ -10,7 +14,7 @@ let auto_download_data = function() {
 	
 }
 
-async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
+export async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
 	
@@ -59,7 +63,7 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 	
 }
 
-function setup_pre_voting_session(data) {
+export function setup_pre_voting_session(data) {
 	
 	if (Utils.isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
@@ -175,7 +179,7 @@ function setup_pre_voting_session(data) {
 	
 }
 
-function setup_voting_session(data) {
+export function setup_voting_session(data) {
 	
 	Utils.initialize_images("voting-page", data.groupImage);
 	
@@ -796,7 +800,7 @@ function setup_voting_session(data) {
 	
 }
 
-async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
+export async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
 	
 	if (data.sharedElectionCode && !doSkipRetrievingElectionData) {
 		
@@ -864,7 +868,7 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 	
 }
 
-function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
+export function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
 	
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
 	

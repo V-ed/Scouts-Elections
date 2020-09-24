@@ -1,4 +1,4 @@
-class MinimalDelayer {
+export class MinimalDelayer {
 	
 	constructor(minimalDelay) {
 		
@@ -67,3 +67,5 @@ class MinimalDelayer {
 	}
 	
 }
+
+export default MinimalDelayer;

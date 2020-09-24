@@ -1,8 +1,11 @@
-function setup_post_voting(data, didSkipRemainings) {
+import switch_view from "./switcher.js";
+import Utils from "./utilities.js";
+
+export function setup_post_voting(data, didSkipRemainings) {
 	
 	Utils.initialize_images("post-shared-voting-page", data.groupImage);
 	
-	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
+	const sharedPostVoteButtonVerify = /** @type {HTMLInputElement} */ (document.getElementById("shared-post-votes-verify"));
 	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
 	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
 	
@@ -216,7 +219,7 @@ function setup_post_voting(data, didSkipRemainings) {
 	
 }
 
-function setup_results(data, didSkipRemainings) {
+export function setup_results(data, didSkipRemainings) {
 	
 	if (data.dbPsw || data.dbPsw == undefined) {
 		switch_view("pre-results-page", () => setup_pre_results_page(data, didSkipRemainings));
@@ -227,7 +230,7 @@ function setup_results(data, didSkipRemainings) {
 	
 }
 
-function setup_pre_results_page(data, didSkipRemainings) {
+export function setup_pre_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("pre-results-page", data.groupImage);
 	
@@ -265,7 +268,7 @@ function setup_pre_results_page(data, didSkipRemainings) {
 	
 }
 
-function setup_results_page(data, didSkipRemainings) {
+export function setup_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("results-page", data.groupImage);
 	

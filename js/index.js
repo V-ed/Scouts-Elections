@@ -1,3 +1,12 @@
+import ElectionData from "./election-data.js";
+import InputPartition from "./input-partitionner.js";
+import MinimalDelayer from "./minimal-delayer.js";
+import { setup_results } from "./results.js";
+import { setup_setup } from "./setup.js";
+import switch_view from "./switcher.js";
+import Utils from "./utilities.js";
+import { setup_votes } from "./voting.js";
+
 function setup_index() {
 	
 	const newElectionsButton = document.getElementById("home-new-button");
@@ -245,3 +254,11 @@ function setup_index() {
 	window.addEventListener("drop", preventDrag);
 	
 }
+
+const loader = document.querySelector('include-fragment');
+
+loader.addEventListener('load', () => {
+	Utils.init();
+	
+	setup_index();
+});

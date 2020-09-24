@@ -1,120 +1,120 @@
-const InputPartition = {};
+// const InputPartition = {};
 
-;(function () {
-	
-	function getInputsFromRoot(inputRoot) {
+function getInputsFromRoot(inputRoot) {
 		
-		function getInputsWithoutHidden() {
-			return inputRoot.querySelectorAll("input[type]:not([type='hidden'])");
+	function getInputsWithoutHidden() {
+		return inputRoot.querySelectorAll("input[type]:not([type='hidden'])");
+	}
+	
+	let currentInputs = getInputsWithoutHidden();
+	
+	if (inputRoot.hasAttribute("data-length")) {
+		
+		const inputTemplate = inputRoot.querySelector("input");
+		
+		const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
+		
+		if (currentInputs.length != inputsLength) {
+			
+			inputRoot.innerHTML = "";
+			
+			for (let i = 0; i < inputsLength; i++) {
+				inputRoot.appendChild(inputTemplate.cloneNode(true));
+			}
+			
+			currentInputs = getInputsWithoutHidden();
+			
 		}
 		
-		let currentInputs = getInputsWithoutHidden();
+	}
+	
+	return currentInputs;
+	
+}
+
+function getHiddenInputId(inputRoot) {
+	return inputRoot.hasAttribute("data-hidden-input-id")
+		? inputRoot.getAttribute("data-hidden-input-id")
+		: "partitionned-input".concat(inputRoot.id ? "-".concat(inputRoot.id) : "");
+}
+
+function setContentFromInput(input, content) {
+	
+	let didChangeValue = false;
+	
+	for (let i = 0, currentInput = input; currentInput && i < content.length; i++) {
 		
-		if (inputRoot.hasAttribute("data-length")) {
+		let currentChar = content[i];
+		
+		const inputPattern = currentInput.getAttribute("pattern");
+		
+		if (inputPattern) {
 			
-			const inputTemplate = inputRoot.querySelector("input");
+			const patternRegex = new RegExp("^".concat(inputPattern, "$"));
 			
-			const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
-			
-			if (currentInputs.length != inputsLength) {
+			while (!patternRegex.test(currentChar)) {
 				
-				inputRoot.innerHTML = "";
-				
-				for (let i = 0; i < inputsLength; i++) {
-					inputRoot.appendChild(inputTemplate.cloneNode(true));
+				if (++i >= content.length) {
+					currentChar = "";
+					break;
 				}
 				
-				currentInputs = getInputsWithoutHidden();
+				currentChar = content[i];
 				
 			}
 			
 		}
 		
-		return currentInputs;
-		
-	}
-	
-	function getHiddenInputId(inputRoot) {
-		return inputRoot.hasAttribute("data-hidden-input-id")
-			? inputRoot.getAttribute("data-hidden-input-id")
-			: "partitionned-input".concat(inputRoot.id ? "-".concat(inputRoot.id) : "");
-	}
-	
-	function setContentFromInput(input, content) {
-		
-		let didChangeValue = false;
-		
-		for (let i = 0, currentInput = input; currentInput && i < content.length; i++) {
-			
-			let currentChar = content[i];
-			
-			const inputPattern = currentInput.getAttribute("pattern");
-			
-			if (inputPattern) {
-				
-				const patternRegex = new RegExp("^".concat(inputPattern, "$"));
-				
-				while (!patternRegex.test(currentChar)) {
-					
-					if (++i >= content.length) {
-						currentChar = "";
-						break;
-					}
-					
-					currentChar = content[i];
-					
-				}
-				
-			}
-			
-			if (currentChar) {
-				currentInput.value = currentChar;
-				didChangeValue = true;
-			}
-			
-			currentInput = currentInput.nextElementSibling;
-			
-			if (currentInput) {
-				currentInput.focus();
-			}
-			
+		if (currentChar) {
+			currentInput.value = currentChar;
+			didChangeValue = true;
 		}
 		
-		return didChangeValue;
+		currentInput = currentInput.nextElementSibling;
 		
-	}
-	
-	function clearInputsOfRoot(inputRoot) {
-		
-		const inputs = getInputsFromRoot(inputRoot);
-		
-		inputs.forEach(input => input.value = "");
-		
-		updateHiddenInputValueFromRoot(inputRoot);
-		
-	}
-	
-	function updateHiddenInputValueFromRoot(inputRoot) {
-		return updateHiddenInputValueFromInputs(inputRoot.querySelectorAll("input[type]:not([type='hidden'])"), inputRoot.querySelector("input[type='hidden']"));
-	}
-	
-	function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
-		
-		const prevVal = hiddenInput.value;
-		const newVal = Array.from(inputs).map(input => input.value).join("");
-		
-		if (prevVal != newVal) {
-			
-			hiddenInput.value = newVal;
-			
-			hiddenInput.dispatchEvent(new Event("input"));
-			
+		if (currentInput) {
+			currentInput.focus();
 		}
 		
 	}
 	
-	InputPartition.init = function (inputRoots) {
+	return didChangeValue;
 	
+}
+
+function clearInputsOfRoot(inputRoot) {
+	
+	const inputs = getInputsFromRoot(inputRoot);
+	
+	inputs.forEach(input => input.value = "");
+	
+	updateHiddenInputValueFromRoot(inputRoot);
+	
+}
+
+function updateHiddenInputValueFromRoot(inputRoot) {
+	return updateHiddenInputValueFromInputs(inputRoot.querySelectorAll("input[type]:not([type='hidden'])"), inputRoot.querySelector("input[type='hidden']"));
+}
+
+function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
+	
+	const prevVal = hiddenInput.value;
+	const newVal = Array.from(inputs).map(input => input.value).join("");
+	
+	if (prevVal != newVal) {
+		
+		hiddenInput.value = newVal;
+		
+		hiddenInput.dispatchEvent(new Event("input"));
+		
+	}
+	
+}
+
+export class InputPartitionLoader {
+	
+	init(inputRoots) {
+		
 		Array.from(inputRoots).forEach(inputRoot => {
 			
 			const inputs = getInputsFromRoot(inputRoot);
@@ -375,7 +375,7 @@ const InputPartition = {};
 		
 	}
 	
-	InputPartition.setContentFor = function (inputRoot, content) {
+	setContentFor(inputRoot, content) {
 		
 		const firstInput = inputRoot.querySelector("input");
 		
@@ -387,4 +387,8 @@ const InputPartition = {};
 		
 	}
 	
-}());
+}
+
+export const InputPartition = new InputPartitionLoader();
+
+export default InputPartition;

@@ -1,4 +1,6 @@
-class ElectionData {
+import Utils from "./utilities.js";
+
+export class ElectionData {
 	
 	constructor(dbName, dbPsw, numberOfVoters, numberOfVotePerVoterMin, numberOfVotePerVoterMax, allowMultipleSameCandidate, numberOfVoted, numberOfSeatsTaken, hasSkipped, isDownloadDisabled, candidates, groupImage) {
 		this.dbName = dbName;
@@ -216,3 +218,5 @@ class ElectionData {
 	}
 
 }
+
+export default ElectionData;
