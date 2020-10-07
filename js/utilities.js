@@ -1,307 +1,227 @@
-const Utils = {};
+import ElectionData from "./election-data.js";
+import InputPartition from "./input-partitionner.js";
 
-Utils.resetVars = function() {
+class DataUtils {
 	
-	// Set default variables
-	
-	Utils.isTouchDevice = "ontouchstart" in document.documentElement;
-	
-	Utils.isDev = false && window.location.hostname.includes("localhost");
-	
-	Utils.sharedElectionHostRoot = Utils.isDev ? "http://localhost:5678" : "https://ved.ddnsfree.com/scouts-elections/api";
-	
-	Utils.isServerAccessible = false;
-	
-	// Setup downloadable database function
-	
-	Utils.didDownloadDb = false;
-	Utils.isDownloadDisabled = false;
-	Utils.dbIsDirty = false;
-	
-}
-
-Utils.resetVars();
-
-Utils.init = function(doPreventVarsReset) {
-	
-	if (!doPreventVarsReset) {
-		Utils.resetVars();
+	constructor() {
+		this.isAdvancedUpload = (() => {
+			const divElement = document.createElement("div");
+			return !this.isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
+		})();
+		this.resetVars();
 	}
 	
-	// --------------------------------
-	// Setup popovers
-	// --------------------------------
-	
-	// Accept buttons in tooltips and Popovers
-	$.fn.tooltip.Constructor.Default.whiteList.button = [];
-	
-	$(".is-popable").popover({trigger: "manual"});
-	$(".is-popable-hover").popover({trigger: "hover"});
-	
-	// --------------------------------
-	// Initialize acceptance forms
-	// --------------------------------
-	
-	Array.from(document.getElementsByClassName("acceptance-form-div-accept-button")).forEach(button => {
+	/**
+	 * 
+	 */
+	resetVars() {
 		
-		button.addEventListener("click", () => {
+		// Set default variables
+		
+		this.isTouchDevice = "ontouchstart" in document.documentElement;
+		
+		this.isDev = false && window.location.hostname.includes("localhost");
+		
+		this.sharedElectionHostRoot = this.isDev ? "http://localhost:5678" : "https://ved.ddnsfree.com/scouts-elections/api";
+		
+		this.isServerAccessible = false;
+		
+		// Setup downloadable database function
+		
+		this.didDownloadDb = false;
+		this.isDownloadDisabled = false;
+		this.dbIsDirty = false;
+		
+	}
+	
+	/**
+	 * 
+	 * @param {boolean} [doPreventVarsReset] 
+	 */
+	init(doPreventVarsReset) {
+		
+		if (!doPreventVarsReset) {
+			this.resetVars();
+		}
+		
+		// --------------------------------
+		// Setup popovers
+		// --------------------------------
+		
+		// Accept buttons in tooltips and Popovers
+		// @ts-ignore
+		$.fn.tooltip.Constructor.Default.whiteList.button = [];
+		
+		$(".is-popable").popover({trigger: "manual"});
+		$(".is-popable-hover").popover({trigger: "hover"});
+		
+		// --------------------------------
+		// Initialize acceptance forms
+		// --------------------------------
+		
+		Array.from(document.getElementsByClassName("acceptance-form-div-accept-button")).forEach(button => {
 			
-			Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
-			Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
+			button.addEventListener("click", () => {
+				
+				// @ts-ignore
+				Array.from(document.getElementsByClassName("acceptance-form-div")).forEach(div => div.hidden = true);
+				// @ts-ignore
+				Array.from(document.getElementsByClassName("accepted-server-div")).forEach(div => div.hidden = false);
+				
+			});
 			
 		});
 		
-	});
-	
-	// --------------------------------
-	// Miscellaneous
-	// --------------------------------
-	
-	Utils.set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
-	
-	InputPartition.init(document.querySelectorAll("div.row.input-partition"));
-	
-	// Restore current focus when changing screen orientation
-	// Especially useful for mobile
-	
-	window.addEventListener("orientationchange", function() {
-		setTimeout(() => {
-			document.activeElement.scrollIntoView();
-		}, 500);
-	});
-	
-	// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
-	
-	if (!!window.chrome) {
+		// --------------------------------
+		// Miscellaneous
+		// --------------------------------
+		
+		this.set_label_non_clickable(document.querySelectorAll("label.col-form-label"));
+		
+		InputPartition.init(document.querySelectorAll("div.row.input-partition"));
+		
+		// Restore current focus when changing screen orientation
+		// Especially useful for mobile
 		
 		window.addEventListener("orientationchange", function() {
-			
-			if (screen.orientation.angle % 180 == 0) {
-				
-				const bodyElem = document.querySelector("body");
-				bodyElem.classList.toggle("d-flex");
-				setTimeout(() => {
-					bodyElem.classList.toggle("d-flex");
-				}, 150);
-				
-			}
-			
+			setTimeout(() => {
+				document.activeElement.scrollIntoView();
+			}, 500);
 		});
 		
-	}
-	
-	// Reload if using back / forward button, therefore correctly cleaning the cache of variables
-
-	if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
-		document.location.reload(true);
-	}
-	
-	const clipboardJS = new ClipboardJS('.copy-button');
-	
-	clipboardJS.on('success', function(e) {
-		e.clearSelection();
+		// Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
 		
-		e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-success-msg"));
-		
-		$(e.trigger).popover("show");
-		
-		setTimeout(() => {
-			$(e.trigger).popover("hide");
-		}, 1000);
-		
-	});
-	
-	clipboardJS.on('error', function(e) {
-		
-		e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-error-msg"));
-		
-		$(e.trigger).popover("show");
-		
-		setTimeout(() => {
-			$(e.trigger).popover("hide");
-		}, 2000);
-		
-	});
-	
-}
-
-Utils.should_download_data = function() {
-	if (Utils.isDownloadDisabled) {
-		return false;
-	}
-	return Utils.dbIsDirty || !Utils.didDownloadDb;
-}
-
-Utils.download_data = function(data, dbNameSuffix) {
-	
-	let stringData = data;
-	
-	if (data instanceof ElectionData) {
-		stringData = data.getAsJSON();
-	}
-	
-	const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
-	
-	dbNameSuffix = dbNameSuffix || "";
-	
-	const file = new File([stringData], `${dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
-	saveAs(file);
-	
-	Utils.didDownloadDb = true;
-	Utils.dbIsDirty = false;
-	
-}
-
-// File loader initiator and utility functions
-
-Utils.show_loader_error = function($file_zone, error) {
-	
-	$file_zone.addClass("bg-danger");
-	
-	$file_zone[0].dataset.content = error;
-	$file_zone[0].dataset.haderror = "";
-	$file_zone.popover("show");
-	
-}
-
-Utils.clear_loader_errors = function($file_zone) {
-	
-	$file_zone.removeClass("bg-danger");
-	$file_zone.popover("hide");
-	if ($file_zone.attr("data-content")) {
-		$file_zone.attr("data-content", "");
-	}
-	delete $file_zone[0].dataset.haderror;
-	
-}
-
-Utils.isAdvancedUpload = function() {
-	const divElement = document.createElement("div");
-	return !Utils.isTouchDevice && (("draggable" in divElement) || ("ondragstart" in divElement && "ondrop" in divElement)) && "FormData" in window && "FileReader" in window;
-}();
-
-Utils.create_file_loader = function(formId, loadFilesFn, handleItemsForErrorsFn, showLoaderErrorFn, clearErrorsFn) {
-	
-	if (!showLoaderErrorFn) {
-		showLoaderErrorFn = Utils.show_loader_error;
-	}
-	if (!clearErrorsFn) {
-		clearErrorsFn = Utils.clear_loader_errors;
-	}
-	
-	const $jqueryElem = $(`#${formId}`);
-	
-	if (Utils.isAdvancedUpload) {
-		
-		$jqueryElem.addClass("has-advanced-upload");
-		
-		$jqueryElem.on("drag dragstart dragend dragover dragenter dragleave drop", e => {
-			e.preventDefault();
-			e.stopPropagation();
-		})
-		.on("dragover dragenter", e => {
+		// @ts-ignore
+		if (!!window.chrome) {
 			
-			if ($jqueryElem.hasClass("loader-is-dragover") || ($jqueryElem.hasClass("bg-danger") && $jqueryElem.hasClass("loader-is-dragover"))) {
-				return;
-			}
-			
-			if ($(e.relatedTarget).parents("#database-loader-zone").length) {
-				return;
-			}
-			
-			let error = undefined;
-			
-			const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
-			
-			if (isNotFile) {
-				error = "Seuls des fichiers sont acceptés dans cette zone.";
-			}
-			else {
-				error = handleItemsForErrorsFn(e.originalEvent.dataTransfer.items);
-			}
-			
-			if (error) {
-				showLoaderErrorFn($jqueryElem, error);
-			}
-			else {
-				clearErrorsFn($jqueryElem);
-			}
-			
-			$jqueryElem.addClass("loader-is-dragover");
-			
-		})
-		.on("dragleave dragend drop", e => {
-			
-			if ($(e.relatedTarget).parents(`#${formId}`).length) {
-				return;
-			}
-			
-			$jqueryElem.removeClass("loader-is-dragover");
-			if (e.handleObj.type != "drop"){
-				clearErrorsFn($jqueryElem);
-			}
-			
-		})
-		.on("drop", async e => {
-			if (!("haderror" in $jqueryElem[0].dataset)) {
+			window.addEventListener("orientationchange", function() {
 				
-				const result = await loadFilesFn(e.originalEvent.dataTransfer.files, $jqueryElem);
-				
-				if (result) {
-					showLoaderErrorFn($jqueryElem, result);
+				if (screen.orientation.angle % 180 == 0) {
+					
+					const bodyElem = document.querySelector("body");
+					bodyElem.classList.toggle("d-flex");
+					setTimeout(() => {
+						bodyElem.classList.toggle("d-flex");
+					}, 150);
+					
 				}
 				
-			}
+			});
+			
+		}
+		
+		// Reload if using back / forward button, therefore correctly cleaning the cache of variables
+		
+		if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
+			document.location.reload(true);
+		}
+		
+		const clipboardJS = new ClipboardJS('.copy-button');
+		
+		clipboardJS.on('success', function(e) {
+			e.clearSelection();
+			
+			e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-success-msg"));
+			
+			$(e.trigger).popover("show");
+			
+			setTimeout(() => {
+				$(e.trigger).popover("hide");
+			}, 1000);
+			
 		});
+		
+		clipboardJS.on('error', function(e) {
+			
+			e.trigger.setAttribute("data-content", e.trigger.getAttribute("data-popup-clip-error-msg"));
+			
+			$(e.trigger).popover("show");
+			
+			setTimeout(() => {
+				$(e.trigger).popover("hide");
+			}, 2000);
+			
+		});
+		
+		this.hideSharedCodes();
 		
 	}
 	
-	const databaseLoaderInput = $jqueryElem.find("input.loader-file")[0];
-	databaseLoaderInput.addEventListener("change", e => {
+	// ---------------------------------------------
+	// 				DATA DOWNLOAD
+	// ---------------------------------------------
+	
+	/**
+	 * 
+	 */
+	should_download_data() {
+		if (this.isDownloadDisabled) {
+			return false;
+		}
+		return this.dbIsDirty || !this.didDownloadDb;
+	}
+	
+	/**
+	 * 
+	 * @param {string | ElectionData} data 
+	 * @param {string} [dbNameSuffix] 
+	 */
+	download_data(data, dbNameSuffix) {
 		
-		const error = handleItemsForErrorsFn(databaseLoaderInput.files);
+		const stringData = data instanceof ElectionData ? data.getAsJSON() : data;
 		
-		if (error) {
-			showLoaderErrorFn($jqueryElem, error);
-			databaseLoaderInput.value = "";
+		const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
+		
+		const parsedDbNameSuffix = dbNameSuffix || "";
+		
+		const file = new File([stringData], `${dbName}${parsedDbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
+		saveAs(file);
+		
+		this.didDownloadDb = true;
+		this.dbIsDirty = false;
+		
+	}
+	
+	// ---------------------------------------------
+	// 				IMAGE HANDLING
+	// ---------------------------------------------
+	
+	/**
+	 * Load image on all elements matching under given view id
+	 * @param {string} viewId 
+	 * @param {string} imageData 
+	 */
+	initialize_images(viewId, imageData) {
+		
+		if (imageData) {
+			const uncompressedImage = LZString.decompressFromUTF16(imageData);
+			this.viewImageIterator(viewId, imageElem => imageElem.src = uncompressedImage);
 		}
 		else {
-			loadFilesFn(e.target.files, $jqueryElem);
+			this.viewImageContainerIterator(viewId, container => {
+				container.classList.add("d-none");
+				container.classList.remove("d-flex");
+			});
 		}
 		
-	});
-	databaseLoaderInput.addEventListener("click", () => {
-		clearErrorsFn($jqueryElem);
-	});
-	
-}
-
-// Load image on all elements matching under given view id
-
-Utils.initialize_images = function(viewId, imageData) {
-	
-	if (imageData) {
-		const uncompressedImage = LZString.decompressFromUTF16(imageData);
-		Utils.viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
-	}
-	else {
-		Utils.viewImageIterator(viewId, false, container => {
-			container.classList.add("d-none");
-			container.classList.remove("d-flex");
-		});
 	}
 	
-}
-
-Utils.uninitialize_images = function(viewId) {
-	Utils.viewImageIterator(viewId, true, imageElem => imageElem.src = "");
-}
-
-Utils.viewImageIterator = function(viewId, iterateOnImages, iteratorFn) {
+	/**
+	 * 
+	 * @param {string} viewId 
+	 */
+	uninitialize_images(viewId) {
+		this.viewImageIterator(viewId, imageElem => imageElem.src = "");
+	}
 	
-	const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
-	
-	if (iterateOnImages) {
+	/**
+	 * 
+	 * @param {string} viewId 
+	 * @param {(imageElem: HTMLImageElement) => *} iteratorFn 
+	 */
+	viewImageIterator(viewId, iteratorFn) {
+		
+		const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
 		
 		imageContainers.forEach(container => {
 			
@@ -312,160 +232,109 @@ Utils.viewImageIterator = function(viewId, iterateOnImages, iteratorFn) {
 		});
 		
 	}
-	else {
+	
+	/**
+	 * 
+	 * @param {string} viewId 
+	 * @param {(container: Element) => *} iteratorFn 
+	 */
+	viewImageContainerIterator(viewId, iteratorFn) {
+		
+		const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
 		
 		imageContainers.forEach(container => iteratorFn(container));
 		
-		// container.classList.add("d-none");
-		// container.classList.remove("d-flex");
 	}
 	
-}
-
-// Set bootstrap labels to not focus input on click
-
-Utils.set_label_non_clickable = function(labels) {
+	// ---------------------------------------------
+	// 				SHARED ELECTIONS
+	// ---------------------------------------------
 	
-	Array.from(labels).forEach(label => {
+	/**
+	 * 
+	 */
+	hideSharedCodes() {
+		document.querySelectorAll(".shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, true));
+		document.querySelectorAll(".non-shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, false));
+	}
+	
+	/**
+	 * 
+	 * @param {string} sharedElectionCode 
+	 */
+	showSharedCode(sharedElectionCode) {
+		document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = sharedElectionCode);
+		document.querySelectorAll(".shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, false));
+		document.querySelectorAll(".non-shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, true));
+	}
+	
+	/**
+	 * 
+	 * @param {HTMLElement} element
+	 * @param {boolean} doHide
+	 */
+	handleSharedCodeHiddenStatus(element, doHide) {
 		
-		label.addEventListener("click", e => {
-			e.preventDefault();
-		});
+		element.hidden = doHide;
 		
-	});
-	
-}
-
-// Send requests and handle UI spinners
-
-Utils.sendRequest = async function(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
-	
-	const isRequesterOptionsComplex = requesterContainerOptions.constructor == Object;
-	
-	let requesterContainer = isRequesterOptionsComplex ? requesterContainerOptions.container : requesterContainerOptions;
-	
-	const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
-	
-	doHideContainerOnEnd = doHideContainerOnEnd !== false;
-	
-	if (typeof ajaxSettings == 'string') {
-		ajaxSettings = {
-			url: ajaxSettings
-		};
-	}
-	
-	if (!('type' in ajaxSettings)) {
-		ajaxSettings.type = 'GET';
-	}
-	if (!('contentType' in ajaxSettings)) {
-		ajaxSettings.contentType = 'application/json';
-	}
-	
-	let requesterSpinners = undefined;
-	let requesterSuccessIcons = undefined;
-	let requesterErrorIcons = undefined;
-	
-	if (requesterContainer) {
-		
-		if (typeof requesterContainer == 'string') {
-			requesterContainer = document.getElementById(requesterContainer);
+		if (element.classList.contains("d-flex")) {
+			element.classList.remove("d-flex");
+			element.setAttribute("data-shared-did-flex", "true");
 		}
-		
-		requesterSpinners = Array.from(requesterContainer.getElementsByClassName("requester-spinner"));
-		requesterSuccessIcons = Array.from(requesterContainer.getElementsByClassName("requester-success-icon"));
-		requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
-		
-		requesterSpinners.forEach(elem => elem.hidden = false);
-		requesterSuccessIcons.forEach(elem => elem.hidden = true);
-		requesterErrorIcons.forEach(elem => elem.hidden = true);
-		
-		requesterContainer.hidden = false;
-		
-		if (isRequesterOptionsComplex && requesterContainerOptions.onContainerShownFunc) {
-			requesterContainerOptions.onContainerShownFunc(requesterContainer);
+		else if (element.getAttribute("data-shared-did-flex") == "true") {
+			element.classList.add("d-flex");
+			element.removeAttribute("data-shared-did-flex");
 		}
 		
 	}
 	
-	let request = new Promise(function (resolve, reject) {
-		
-		$.ajax(ajaxSettings).done(function() {
-			
-			delayer.execute(() => resolve.apply(null, arguments));
-			
-		}).fail(function() {
-			
-			delayer.execute(() => reject.apply(null, arguments));
-			
-		});
-		
-	});
+	// ---------------------------------------------
+	// 				COMMON UTILITIES
+	// ---------------------------------------------
 	
-	if (!requesterContainer) {
-		// Return plain request since no UI container was specified
-		return request;
-	}
-	else {
+	/**
+	 * Set bootstrap labels to not focus input on click
+	 * @param {HTMLLabelElement | HTMLLabelElement[] | NodeListOf<HTMLLabelElement>} labels 
+	 */
+	set_label_non_clickable(labels) {
 		
-		// Return request with added default behaviors for handling spinners / response icons
-		return request.then(response => {
-			if (!doHideContainerOnEnd) {
-				requesterSuccessIcons.forEach(elem => elem.hidden = false);
-			}
+		const labelsArray = labels instanceof NodeList ? Array.from(labels) : Array.isArray(labels) ? labels : [labels];
+		
+		labelsArray.forEach(label => {
 			
-			return Promise.resolve(response);
-		})
-		.catch(error => {
-			if (!doHideContainerOnEnd) {
-				requesterErrorIcons.forEach(elem => elem.hidden = false);
-			}
+			label.addEventListener("click", e => {
+				e.preventDefault();
+			});
 			
-			return Promise.reject(error);
-		})
-		.finally(() => {
-			requesterSpinners.forEach(elem => elem.hidden = true);
-			
-			if (doHideContainerOnEnd) {
-				requesterContainer.hidden = true;
-			}
 		});
 		
 	}
 	
+	/**
+	 * 
+	 * @param {HTMLElementGetter | T} element
+	 * @param {(element: T) => HTMLElement | void} [getElementOtherwise]
+	 * @return {HTMLElement | void}
+	 * @template T
+	 */
+	getHTMLElement(element, getElementOtherwise) {
+		if (element instanceof HTMLElement) {
+			return element;
+		}
+		else if (typeof element == 'string') {
+			return document.getElementById(element);
+		}
+		else if (getElementOtherwise) {
+			return getElementOtherwise(element);
+		}
+	}
+	
 }
 
-Utils.sendRequestFor = async function(numberOfTries, ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
-	
-	numberOfTries = parseInt(numberOfTries);
-	
-	if (numberOfTries <= 0) {
-		throw "The number of tries should be bigger than 0!";
-	}
-	
-	const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
-	
-	for (let attemptCount = 1; attemptCount <= numberOfTries; attemptCount++) {
-		
-		try {
-			
-			const response = await Utils.sendRequest(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, 0);
-			
-			await delayer.wait();
-			
-			return response;
-			
-		}
-		catch (error) {
-			
-			// If the attempt count is full or the request was successfull but the server returned an error, stop trying
-			if (attemptCount == numberOfTries || error.readyState == 4) {
-				throw error;
-			}
-			
-		}
-		
-	}
-	
-	throw "Wait a second... how did you even get here? My method is flawed...";
-	
-}
+/**
+ * @typedef {string | HTMLElement} HTMLElementGetter
+ */
+
+export const Utils = new DataUtils();
+
+export default Utils;

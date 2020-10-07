@@ -1,22 +1,48 @@
-class MinimalDelayer {
+export class MinimalDelayer {
 	
+	/**
+	 * 
+	 * @param {number} [minimalDelay] 
+	 */
 	constructor(minimalDelay) {
 		
-		const parsedDelay = parseInt(minimalDelay);
-		
-		this.minimalDelay = (parsedDelay > 0 && parsedDelay) || 0;
+		this.minimalDelay = (minimalDelay > 0 && minimalDelay) || 0;
 		this.targetDate = Date.now() + this.minimalDelay;
 		
 	}
 	
+	/**
+	 * @typedef {{functionResult: T | null, delayPassed: number}} ExecutedResults
+	 * @template T
+	 */
+	
+	/**
+	 * 
+	 * @param {() => T | null} [functionToExecute] 
+	 * @returns {Promise<ExecutedResults<T>>}
+	 * @template T
+	 */
 	async execute(functionToExecute) {
 		
-		function doExecute(functionToExecute, delayRemaining, resolve, reject) {
+		/**
+		 * 
+		 * @param {(results: ExecutedResults<T>) => void} resolve 
+		 * @param {(reason: *) => void} reject 
+		 * @param {(() => T | null)} [functionToExecute] 
+		 * @template T
+		 */
+		const doExecute = (resolve, reject, functionToExecute) => {
 			try {
+				let functionResult = null;
+				
 				if (functionToExecute) {
-					functionToExecute();
+					functionResult = functionToExecute();
 				}
-				resolve(delayRemaining);
+				
+				resolve({
+					functionResult: functionResult,
+					delayPassed: Date.now() - this.targetDate,
+				});
 			} catch (error) {
 				reject(error);
 			}
@@ -24,15 +50,13 @@ class MinimalDelayer {
 		
 		return new Promise((resolve, reject) => {
 			
-			const now = Date.now();
-			
-			const delayRemaining = this.targetDate - now;
+			const delayRemaining = this.targetDate - Date.now();
 			
 			if (delayRemaining > 0) {
-				setTimeout(() => doExecute(functionToExecute, delayRemaining, resolve, reject), delayRemaining);
+				setTimeout(() => doExecute(resolve, reject, functionToExecute), delayRemaining);
 			}
 			else {
-				doExecute(functionToExecute, delayRemaining, resolve, reject);
+				doExecute(resolve, reject, functionToExecute);
 			}
 			
 		});
@@ -67,3 +91,5 @@ class MinimalDelayer {
 	}
 	
 }
+
+export default MinimalDelayer;

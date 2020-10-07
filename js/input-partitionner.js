@@ -1,120 +1,130 @@
-const InputPartition = {};
+/**
+ * 
+ * @param {HTMLElement} inputRoot 
+ */
+function getInputsFromRoot(inputRoot) {
+	
+	function getInputsWithoutHidden() {
+		return /** @type {NodeListOf<HTMLInputElement>} */ (inputRoot.querySelectorAll("input[type]:not([type='hidden'])"));
+	}
+	
+	let currentInputs = getInputsWithoutHidden();
+	
+	if (inputRoot.hasAttribute("data-length")) {
+		
+		const inputTemplate = inputRoot.querySelector("input");
+		
+		const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
+		
+		if (currentInputs.length != inputsLength) {
+			
+			inputRoot.innerHTML = "";
+			
+			for (let i = 0; i < inputsLength; i++) {
+				inputRoot.appendChild(inputTemplate.cloneNode(true));
+			}
+			
+			currentInputs = getInputsWithoutHidden();
+			
+		}
+		
+	}
+	
+	return currentInputs;
+	
+}
 
-;(function () {
+function getHiddenInputId(inputRoot) {
+	return inputRoot.hasAttribute("data-hidden-input-id")
+		? inputRoot.getAttribute("data-hidden-input-id")
+		: "partitionned-input".concat(inputRoot.id ? "-".concat(inputRoot.id) : "");
+}
+
+function setContentFromInput(input, content) {
 	
-	function getInputsFromRoot(inputRoot) {
+	let didChangeValue = false;
+	
+	for (let i = 0, currentInput = input; currentInput && i < content.length; i++) {
 		
-		function getInputsWithoutHidden() {
-			return inputRoot.querySelectorAll("input[type]:not([type='hidden'])");
-		}
+		let currentChar = content[i];
 		
-		let currentInputs = getInputsWithoutHidden();
+		const inputPattern = currentInput.getAttribute("pattern");
 		
-		if (inputRoot.hasAttribute("data-length")) {
+		if (inputPattern) {
 			
-			const inputTemplate = inputRoot.querySelector("input");
+			const patternRegex = new RegExp("^".concat(inputPattern, "$"));
 			
-			const inputsLength = parseInt(inputRoot.getAttribute("data-length"));
-			
-			if (currentInputs.length != inputsLength) {
+			while (!patternRegex.test(currentChar)) {
 				
-				inputRoot.innerHTML = "";
-				
-				for (let i = 0; i < inputsLength; i++) {
-					inputRoot.appendChild(inputTemplate.cloneNode(true));
+				if (++i >= content.length) {
+					currentChar = "";
+					break;
 				}
 				
-				currentInputs = getInputsWithoutHidden();
+				currentChar = content[i];
 				
 			}
 			
 		}
 		
-		return currentInputs;
-		
-	}
-	
-	function getHiddenInputId(inputRoot) {
-		return inputRoot.hasAttribute("data-hidden-input-id")
-			? inputRoot.getAttribute("data-hidden-input-id")
-			: "partitionned-input".concat(inputRoot.id ? "-".concat(inputRoot.id) : "");
-	}
-	
-	function setContentFromInput(input, content) {
-		
-		let didChangeValue = false;
-		
-		for (let i = 0, currentInput = input; currentInput && i < content.length; i++) {
-			
-			let currentChar = content[i];
-			
-			const inputPattern = currentInput.getAttribute("pattern");
-			
-			if (inputPattern) {
-				
-				const patternRegex = new RegExp("^".concat(inputPattern, "$"));
-				
-				while (!patternRegex.test(currentChar)) {
-					
-					if (++i >= content.length) {
-						currentChar = "";
-						break;
-					}
-					
-					currentChar = content[i];
-					
-				}
-				
-			}
-			
-			if (currentChar) {
-				currentInput.value = currentChar;
-				didChangeValue = true;
-			}
-			
-			currentInput = currentInput.nextElementSibling;
-			
-			if (currentInput) {
-				currentInput.focus();
-			}
-			
+		if (currentChar) {
+			currentInput.value = currentChar;
+			didChangeValue = true;
 		}
 		
-		return didChangeValue;
+		currentInput = currentInput.nextElementSibling;
 		
-	}
-	
-	function clearInputsOfRoot(inputRoot) {
-		
-		const inputs = getInputsFromRoot(inputRoot);
-		
-		inputs.forEach(input => input.value = "");
-		
-		updateHiddenInputValueFromRoot(inputRoot);
-		
-	}
-	
-	function updateHiddenInputValueFromRoot(inputRoot) {
-		return updateHiddenInputValueFromInputs(inputRoot.querySelectorAll("input[type]:not([type='hidden'])"), inputRoot.querySelector("input[type='hidden']"));
-	}
-	
-	function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
-		
-		const prevVal = hiddenInput.value;
-		const newVal = Array.from(inputs).map(input => input.value).join("");
-		
-		if (prevVal != newVal) {
-			
-			hiddenInput.value = newVal;
-			
-			hiddenInput.dispatchEvent(new Event("input"));
-			
+		if (currentInput) {
+			currentInput.focus();
 		}
 		
 	}
 	
-	InputPartition.init = function (inputRoots) {
+	return didChangeValue;
 	
+}
+
+/**
+ * 
+ * @param {HTMLInputElement} inputRoot 
+ */
+function clearInputsOfRoot(inputRoot) {
+	
+	const inputs = getInputsFromRoot(inputRoot);
+	
+	inputs.forEach(input => input.value = "");
+	
+	updateHiddenInputValueFromRoot(inputRoot);
+	
+}
+
+function updateHiddenInputValueFromRoot(inputRoot) {
+	return updateHiddenInputValueFromInputs(inputRoot.querySelectorAll("input[type]:not([type='hidden'])"), inputRoot.querySelector("input[type='hidden']"));
+}
+
+function updateHiddenInputValueFromInputs(inputs, hiddenInput) {
+	
+	const prevVal = hiddenInput.value;
+	const newVal = Array.from(inputs).map(input => input.value).join("");
+	
+	if (prevVal != newVal) {
+		
+		hiddenInput.value = newVal;
+		
+		hiddenInput.dispatchEvent(new Event("input"));
+		
+	}
+	
+}
+
+export class InputPartitionLoader {
+	
+	/**
+	 * 
+	 * @param {NodeListOf<HTMLElement>} inputRoots 
+	 */
+	init(inputRoots) {
+		
 		Array.from(inputRoots).forEach(inputRoot => {
 			
 			const inputs = getInputsFromRoot(inputRoot);
@@ -129,7 +139,7 @@ const InputPartition = {};
 			
 			inputs.forEach(input => {
 				input.setAttribute("data-partition-for-id", hiddenInputId);
-				input.setAttribute("maxlength", 1);
+				input.setAttribute("maxlength", "1");
 			});
 			
 			function updateHiddenInputValue() {
@@ -139,13 +149,13 @@ const InputPartition = {};
 			inputs.forEach(input => {
 				
 				// Mobile fix
-				input.addEventListener("input", e => {
+				input.addEventListener("input", /** @param {InputEvent} e */ e => {
 					
 					if (e.inputType == "deleteContentBackward" || (e.inputType == "insertCompositionText" && !e.data)) {
 						
 						input.value = "";
 						
-						const prevSibling = input.previousElementSibling;
+						const prevSibling = /** @type {HTMLElement} */ (input.previousElementSibling);
 						
 						if (prevSibling) {
 							prevSibling.focus();
@@ -180,7 +190,7 @@ const InputPartition = {};
 						
 						if (canGoToNext) {
 							
-							const sibling = input.nextElementSibling;
+							const sibling = /** @type {HTMLElement} */ (input.nextElementSibling);
 							
 							if (sibling && !sibling.hasAttribute("hidden")) {
 								sibling.focus();
@@ -227,7 +237,7 @@ const InputPartition = {};
 						
 					}
 					
-					const sibling = input.nextElementSibling;
+					const sibling = /** @type {HTMLElement} */ (input.nextElementSibling);
 					
 					if (sibling) {
 						sibling.focus();
@@ -249,7 +259,7 @@ const InputPartition = {};
 							
 							currentInput.value = "";
 							
-							const prevSibling = currentInput.previousElementSibling;
+							const prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling) {
 								prevSibling.focus();
@@ -270,7 +280,7 @@ const InputPartition = {};
 						
 						do {
 							
-							const sibling = currentInput.nextElementSibling;
+							const sibling = /** @type {HTMLInputElement} */ (currentInput.nextElementSibling);
 							
 							if (sibling && sibling.value) {
 								sibling.focus();
@@ -293,7 +303,7 @@ const InputPartition = {};
 						
 						do {
 							
-							const prevSibling = currentInput.previousElementSibling;
+							const prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling) {
 								prevSibling.focus();
@@ -314,9 +324,9 @@ const InputPartition = {};
 						
 						do {
 							
-							const sibling = currentInput.nextElementSibling;
+							const sibling = /** @type {HTMLInputElement} */ (currentInput.nextElementSibling);
 							
-							if (sibling && sibling.nextElementSibling && sibling.nextElementSibling.value) {
+							if (sibling && sibling.nextElementSibling && (/** @type {HTMLInputElement} */ (sibling.nextElementSibling)).value) {
 								sibling.focus();
 							}
 							
@@ -337,7 +347,7 @@ const InputPartition = {};
 						
 						if (!currentInput.value) {
 							
-							prevSibling = currentInput.previousElementSibling;
+							prevSibling = /** @type {HTMLInputElement} */ (currentInput.previousElementSibling);
 							
 							if (prevSibling && !prevSibling.value) {
 								currentInput = prevSibling;
@@ -358,7 +368,7 @@ const InputPartition = {};
 					e.stopPropagation();
 					e.preventDefault();
 					
-					const clipboardData = e.clipboardData || window.clipboardData;
+					const clipboardData = e.clipboardData;
 					const pastedData = clipboardData.getData('Text');
 					
 					const didChangeValue = setContentFromInput(input, pastedData);
@@ -375,7 +385,7 @@ const InputPartition = {};
 		
 	}
 	
-	InputPartition.setContentFor = function (inputRoot, content) {
+	setContentFor(inputRoot, content) {
 		
 		const firstInput = inputRoot.querySelector("input");
 		
@@ -387,4 +397,8 @@ const InputPartition = {};
 		
 	}
 	
-}());
+}
+
+export const InputPartition = new InputPartitionLoader();
+
+export default InputPartition;

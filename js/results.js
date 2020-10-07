@@ -1,10 +1,21 @@
-function setup_post_voting(data, didSkipRemainings) {
+import ElectionData from "./election-data.js";
+import Requester from "./requester.js";
+import switch_view from "./switcher.js";
+import Utils from "./utilities.js";
+import { auto_download_data } from "./voting.js";
+
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} [didSkipRemainings] 
+ */
+export function setup_post_voting(data, didSkipRemainings) {
 	
 	Utils.initialize_images("post-shared-voting-page", data.groupImage);
 	
-	const sharedPostVoteButtonVerify = document.getElementById("shared-post-votes-verify");
-	const sharedPostVoteButtonGo = document.getElementById("shared-post-votes-go");
-	const sharedPostVoteButtonGoAndDelete = document.getElementById("shared-post-votes-go-and-delete");
+	const sharedPostVoteButtonVerify = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-verify"));
+	const sharedPostVoteButtonGo = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-go"));
+	const sharedPostVoteButtonGoAndDelete = /** @type {HTMLButtonElement} */ (document.getElementById("shared-post-votes-go-and-delete"));
 	
 	const sharedPostVoteFinishedIcon = document.getElementById("post-shared-voting-verify-finished-icon");
 	const sharedPostVoteNotFinishedIcon = document.getElementById("post-shared-voting-verify-not-finished-icon");
@@ -12,6 +23,10 @@ function setup_post_voting(data, didSkipRemainings) {
 	let autoClickVerifyTimerSeconds = 30;
 	const sharedPostVerifyAutoClickTimer = document.getElementById("shared-post-verify-auto-click-timer");
 	
+	/**
+	 * 
+	 * @param {number} count 
+	 */
 	function resetAutoClickVerifyTimer(count) {
 		
 		autoClickVerifyTimerSeconds = count;
@@ -43,6 +58,9 @@ function setup_post_voting(data, didSkipRemainings) {
 	
 	const errorInternetErrorMessage = "Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!";
 	
+	/**
+	 * @param {ElectionData} data
+	 */
 	function handleVerificationDisabling(data) {
 		
 		const didAllVoted = data.numberOfVoted == data.numberOfVoters;
@@ -73,6 +91,7 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			sharedPostVotesSkippedErrorDiv.hidden = false;
 			
+			/** @type {string} */
 			let message = undefined;
 			
 			if (isAllVotesDone) {
@@ -119,12 +138,13 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			sharedPostVotesVerifyErrorSpan.hidden = true;
 			
-			const ajaxSettings = {
+			const response = await Requester.sendRequest({
 				url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}?numberOfVoted&numberOfSeatsTaken&hasSkipped&candidates`,
 				cache: false,
-			};
-			
-			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-voting-verify-requester-container');
+			}, {
+				requesterContainer: 'post-shared-voting-verify-requester-container',
+				// doHideContainerOnEnd: false,
+			});
 			
 			data.mergeData(response.data);
 			
@@ -143,11 +163,6 @@ function setup_post_voting(data, didSkipRemainings) {
 	
 	sharedPostVoteButtonGo.addEventListener("click", async () => {
 		
-		const ajaxSettings = {
-			url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}`,
-			cache: false,
-		};
-		
 		sharedPostVoteButtonGo.disabled = true;
 		
 		const sharedPostVotesGoErrorSpan = document.getElementById("shared-post-votes-go-error-span");
@@ -156,7 +171,10 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			sharedPostVotesGoErrorSpan.hidden = true;
 			
-			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-requester-container');
+			const response = await Requester.sendRequest({
+				url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}`,
+				cache: false,
+			}, 'post-shared-votes-go-requester-container');
 			
 			data.mergeData(response.data);
 			
@@ -179,12 +197,6 @@ function setup_post_voting(data, didSkipRemainings) {
 	
 	sharedPostVoteButtonGoAndDelete.addEventListener("click", async () => {
 		
-		const ajaxSettings = {
-			type: 'DELETE',
-			url: `${Utils.sharedElectionHostRoot}/delete/${data.sharedElectionCode}`,
-			cache: false,
-		};
-		
 		sharedPostVoteButtonGoAndDelete.disabled = true;
 		
 		const sharedPostVotesGoAndDeleteErrorSpan = document.getElementById("shared-post-votes-go-and-delete-error-span");
@@ -193,7 +205,11 @@ function setup_post_voting(data, didSkipRemainings) {
 			
 			sharedPostVotesGoAndDeleteErrorSpan.hidden = true;
 			
-			const response = await Utils.sendRequest(ajaxSettings, 'post-shared-votes-go-and-delete-requester-container');
+			const response = await Requester.sendRequest({
+				type: 'DELETE',
+				url: `${Utils.sharedElectionHostRoot}/delete/${data.sharedElectionCode}`,
+				cache: false,
+			}, 'post-shared-votes-go-and-delete-requester-container');
 			
 			data.mergeData(response.data);
 			
@@ -216,7 +232,12 @@ function setup_post_voting(data, didSkipRemainings) {
 	
 }
 
-function setup_results(data, didSkipRemainings) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} [didSkipRemainings] 
+ */
+export function setup_results(data, didSkipRemainings) {
 	
 	if (data.dbPsw || data.dbPsw == undefined) {
 		switch_view("pre-results-page", () => setup_pre_results_page(data, didSkipRemainings));
@@ -227,13 +248,18 @@ function setup_results(data, didSkipRemainings) {
 	
 }
 
-function setup_pre_results_page(data, didSkipRemainings) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} [didSkipRemainings] 
+ */
+export function setup_pre_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("pre-results-page", data.groupImage);
 	
-	const preResultsSubmitButton = document.getElementById("pre-results-submit-button");
+	const preResultsSubmitButton = /** @type {HTMLButtonElement} */ (document.getElementById("pre-results-submit-button"));
 	
-	const passwordInput = document.getElementById("pre-results-password-input");
+	const passwordInput = /** @type {HTMLInputElement} */ (document.getElementById("pre-results-password-input"));
 	
 	preResultsSubmitButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -265,7 +291,12 @@ function setup_pre_results_page(data, didSkipRemainings) {
 	
 }
 
-function setup_results_page(data, didSkipRemainings) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} [didSkipRemainings] 
+ */
+export function setup_results_page(data, didSkipRemainings) {
 	
 	Utils.initialize_images("results-page", data.groupImage);
 	
@@ -319,11 +350,12 @@ function setup_results_page(data, didSkipRemainings) {
 	
 	$(resultsTableBody).on("click", ".clickable-row", e => {
 		
-		const row = e.currentTarget;
+		const row = /** @type {HTMLTableRowElement} */ (e.currentTarget);
 		
 		$(row).removeClass("bg-warning bg-success");
 		
-		let candidateState = "problem (not changed)";
+		/** @type {'unselected' | 'pre-selected' | 'selected'} */
+		let candidateState = "unselected";
 		
 		if (row.dataset.stateselected == "unselected") {
 			
@@ -353,15 +385,15 @@ function setup_results_page(data, didSkipRemainings) {
 		
 	});
 	
-	const legendToggler = document.querySelector("a[data-toggle='collapse'][data-target='#results-click-explications']");
+	const legendToggler = /** @type {HTMLLinkElement} */ (document.querySelector("a[data-toggle='collapse'][data-target='#results-click-explications']"));
 	$("#results-click-explications").on("hidden.bs.collapse", function () {
-		legendToggler.text = "Plus";
+		legendToggler.textContent = "Plus";
 	});
 	$("#results-click-explications").on("hide.bs.collapse show.bs.collapse", function () {
-		legendToggler.text = "";
+		legendToggler.textContent = "";
 	});
 	$("#results-click-explications").on("shown.bs.collapse", function () {
-		legendToggler.text = "Moins";
+		legendToggler.textContent = "Moins";
 	});
 	
 	const downloadDbButton = document.getElementById("results-download-button");

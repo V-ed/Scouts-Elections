@@ -22,32 +22,8 @@
 	<script src="./js/libraries/lz-string.min.js"></script>
 	<script src="./js/libraries/clipboard.min.js"></script>
 	
-	<script src="./js/minimal-delayer.js" defer></script>
-	<script src="./js/input-partitionner.js" defer></script>
-	<script src="./js/election-data.js" defer></script>
-	<script src="./js/utilities.js" defer></script>
-	<script src="./js/switcher.js" defer></script>
-	<script src="./js/results.js" defer></script>
-	<script src="./js/voting.js" defer></script>
-	<script src="./js/setup.js" defer></script>
-	<script src="./js/index.js" defer></script>
-	
-	<script>
-		
-		fragment = {
-			
-			ready: function(num_fragments) {
-				
-				Utils.init();
-				
-				setup_index();
-				
-			}
-			
-		};
-		
-	</script>
-	<script src="./js/libraries/fragment.js"></script>
+	<script src="./js/index.js" type="module" defer></script>
+	<script src="./js/libraries/include-fragment-element.js" type="module"></script>
 </head>
 
 <body class="d-flex">
@@ -279,17 +255,29 @@
 				
 		</div>
 		
-		<div id="setup-page" data-fragment="pages/setup.html" hidden></div>
+		<div id="setup-page" hidden>
+			<include-fragment src="pages/setup.html"></include-fragment>
+		</div>
 		
-		<div id="pre-voting-page" data-fragment="pages/pre-voting.html" hidden></div>
+		<div id="pre-voting-page" hidden>
+			<include-fragment src="pages/pre-voting.html"></include-fragment>
+		</div>
 		
-		<div id="voting-page" data-fragment="pages/voting.html" hidden></div>
+		<div id="voting-page" hidden>
+			<include-fragment src="pages/voting.html"></include-fragment>
+		</div>
 		
-		<div id="post-shared-voting-page" data-fragment="pages/post-shared-voting.html" hidden></div>
+		<div id="post-shared-voting-page" hidden>
+			<include-fragment src="pages/post-shared-voting.html"></include-fragment>
+		</div>
 		
-		<div id="pre-results-page" data-fragment="pages/pre-results.html" hidden></div>
+		<div id="pre-results-page" hidden>
+			<include-fragment src="pages/pre-results.html"></include-fragment>
+		</div>
 		
-		<div id="results-page" data-fragment="pages/results.html" hidden></div>
+		<div id="results-page" hidden>
+			<include-fragment src="pages/results.html"></include-fragment>
+		</div>
 		
 	</div>
 	

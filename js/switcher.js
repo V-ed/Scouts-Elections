@@ -1,6 +1,11 @@
-function switch_view(viewId, onSwitchedHandler) {
+/**
+ * 
+ * @param {string} viewId 
+ * @param {() => *} onSwitchedHandler 
+ */
+export function switch_view(viewId, onSwitchedHandler) {
 	
-	const views = document.querySelectorAll("#views > *");
+	const views = /** @type {NodeListOf<HTMLElement>} */ (document.querySelectorAll("#views > *"));
 	
 	views.forEach(view => view.hidden = view.id != viewId);
 	
@@ -11,3 +16,5 @@ function switch_view(viewId, onSwitchedHandler) {
 	}
 	
 }
+
+export default switch_view;

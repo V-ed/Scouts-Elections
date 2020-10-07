@@ -1,5 +1,29 @@
-class ElectionData {
+import Utils from "./utilities.js";
+
+/**
+ * @typedef Candidate
+ * @property {string} name
+ * @property {number} voteCount
+ * @property {'unselected' | 'pre-selected' | 'selected'} selectedState
+ */
+
+export class ElectionData {
 	
+	/**
+	 * 
+	 * @param {string} dbName 
+	 * @param {string} dbPsw 
+	 * @param {number} numberOfVoters 
+	 * @param {number} numberOfVotePerVoterMin 
+	 * @param {number} numberOfVotePerVoterMax 
+	 * @param {boolean} allowMultipleSameCandidate 
+	 * @param {number} numberOfVoted 
+	 * @param {number} numberOfSeatsTaken 
+	 * @param {boolean} hasSkipped 
+	 * @param {boolean} isDownloadDisabled 
+	 * @param {Candidate[]} candidates 
+	 * @param {string} [groupImage] 
+	 */
 	constructor(dbName, dbPsw, numberOfVoters, numberOfVotePerVoterMin, numberOfVotePerVoterMax, allowMultipleSameCandidate, numberOfVoted, numberOfSeatsTaken, hasSkipped, isDownloadDisabled, candidates, groupImage) {
 		this.dbName = dbName;
 		this.dbPsw = dbPsw;
@@ -13,8 +37,15 @@ class ElectionData {
 		this.isDownloadDisabled = isDownloadDisabled;
 		this.candidates = candidates;
 		this.groupImage = groupImage;
+		
+		/** @type {string | undefined} */
+		this.sharedElectionCode = undefined;
 	}
 	
+	/**
+	 * 
+	 * @param {boolean} [excludeSharedElectionCode] 
+	 */
 	getAsJSON(excludeSharedElectionCode) {
 		
 		const sharedCode = this.sharedElectionCode;
@@ -33,70 +64,62 @@ class ElectionData {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {string} passwordToCheck 
+	 */
 	validatePassword(passwordToCheck) {
 		// Default password if not set is "VL" for "Vieux-Loups"
 		return (this.dbPsw || "VL") == passwordToCheck;
 	}
 	
+	/**
+	 * 
+	 * @param {string | void} [sharedElectionCode] 
+	 */
 	setSharedElectionCode(sharedElectionCode) {
-		
-		function handleHiddenAndFlex(element, doHide) {
-		
-			element.hidden = doHide;
-			
-			if (element.classList.contains("d-flex")) {
-				element.classList.remove("d-flex");
-				element.setAttribute("data-shared-did-flex", "true");
-			}
-			else if (element.getAttribute("data-shared-did-flex") == "true") {
-				element.classList.add("d-flex");
-				element.removeAttribute("data-shared-did-flex");
-			}
-			
-		}
-		
-		document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = sharedElectionCode);
-		document.querySelectorAll(".shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !sharedElectionCode));
-		document.querySelectorAll(".non-shared-election-container").forEach(elem => handleHiddenAndFlex(elem, !!sharedElectionCode));
 		
 		if (sharedElectionCode) {
 			this.sharedElectionCode = sharedElectionCode;
+			Utils.showSharedCode(this.sharedElectionCode);
 		}
 		else {
+			Utils.hideSharedCodes();
 			delete this.sharedElectionCode;
 		}
 		
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} count 
+	 */
 	voteCandidate(index, count) {
-		const numberIndex = parseInt(index);
-		
-		if (isNaN(numberIndex)) {
-			throw "index given is not a number!"
-		}
-		
 		if (typeof this.votesCurrentCandidateIndexes == "undefined") {
+			/**
+			 * @type {number[]}
+			 */
 			this.votesCurrentCandidateIndexes = [];
 		}
 		
 		for (let i = 0; i < count; i++) {
-			this.votesCurrentCandidateIndexes.push(numberIndex);
+			this.votesCurrentCandidateIndexes.push(index);
 		}
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} count 
+	 */
 	unvoteCandidate(index, count) {
-		const numberIndex = parseInt(index);
-		
-		if (isNaN(numberIndex)) {
-			throw "index given is not a number!"
-		}
-		
 		if (typeof this.votesCurrentCandidateIndexes == "undefined") {
 			return;
 		}
 		
 		for (let i = 0; i < count && i < this.votesCurrentCandidateIndexes.length; i++) {
-			let candidateIndex = this.votesCurrentCandidateIndexes.findIndex(currentIndex => currentIndex == numberIndex);
+			let candidateIndex = this.votesCurrentCandidateIndexes.findIndex(currentIndex => currentIndex == index);
 			candidateIndex !== -1 && this.votesCurrentCandidateIndexes.splice(candidateIndex, 1);
 		}
 	}
@@ -105,6 +128,10 @@ class ElectionData {
 		delete this.votesCurrentCandidateIndexes;
 	}
 	
+	/**
+	 * 
+	 * @param {ElectionData} data 
+	 */
 	mergeData(data) {
 		
 		for (const value in data) {
@@ -113,13 +140,25 @@ class ElectionData {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {string} dbName 
+	 * @param {string} dbPsw 
+	 * @param {number} numberOfVoters 
+	 * @param {number} numberOfVotePerVoterMin 
+	 * @param {number} numberOfVotePerVoterMax 
+	 * @param {boolean} allowMultipleSameCandidate 
+	 * @param {string[]} candidateNames 
+	 * @param {string} [compressedImageData] 
+	 */
 	static fromData(dbName, dbPsw, numberOfVoters, numberOfVotePerVoterMin, numberOfVotePerVoterMax, allowMultipleSameCandidate, candidateNames, compressedImageData) {
-		const candidates = Array.from(candidateNames).map(name => (
-		{
-			name: name,
-			voteCount: 0,
-			selectedState: "unselected"
-		}
+		
+		const candidates = Array.from(candidateNames).map(name => /** @type {Candidate} */ (
+			{
+				name: name,
+				voteCount: 0,
+				selectedState: "unselected"
+			}
 		));
 		
 		return new ElectionData(
@@ -138,42 +177,64 @@ class ElectionData {
 		);
 	}
 	
+	/**
+	 * 
+	 * @param {FormData} formData 
+	 * @param {FormDataEntryValue[]} candidateNames 
+	 * @param {string} [compressedImageData] 
+	 */
 	static fromFormData(formData, candidateNames, compressedImageData) {
 		return ElectionData.fromData(
-			formData.get("dbName"),
-			formData.get("dbPsw"),
-			parseInt(formData.get("numberOfVoters")),
-			parseInt(formData.get("numberOfVotesMin")),
-			parseInt(formData.get("numberOfVotesMax")),
+			formData.get("dbName").toString(),
+			formData.get("dbPsw").toString(),
+			parseInt(formData.get("numberOfVoters").toString()),
+			parseInt(formData.get("numberOfVotesMin").toString()),
+			parseInt(formData.get("numberOfVotesMax").toString()),
 			formData.get("allowMultipleSameCandidate") == "on",
-			candidateNames,
+			candidateNames.map(candidateName => candidateName.toString()),
 			compressedImageData
 		);
 	}
 	
+	/**
+	 * 
+	 * @param {string | Record<string, *>} json Could be a string or any object
+	 */
 	static fromJSON(json) {
 		
-		let data = undefined;
-		
-		if (typeof json == "string") {
-			try {
-				data = JSON.parse(json);
-			} catch (error) {
-				throw "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.";
+		/**
+		 * 
+		 * @param {string | Record<string, *>} json
+		 * @returns {Record<string, *>} 
+		 */
+		function getJsonAsRecord(json) {
+			if (typeof json == "string") {
+				let data = undefined;
+				try {
+					data = JSON.parse(json);
+				} catch (error) {
+					throw "Une erreur est survenue lors du chargement du fichier : veuillez vous assurer que le fichier JSON est conforme.";
+				}
+				if (typeof data != 'object') {
+					throw "Les données du fichier ne sont pas sous forme d'objet.";
+				}
+				return data;
+			}
+			else {
+				return json;
 			}
 		}
-		else {
-			data = json;
-		}
 		
-		const isValid = data.dbName !== undefined
-			&& data.numberOfVoters !== undefined
-			&& (data.numberOfVotePerVoter !== undefined || (data.numberOfVotePerVoterMin !== undefined && data.numberOfVotePerVoterMax !== undefined))
-			&& data.numberOfVoted !== undefined
-			&& data.hasSkipped !== undefined
-			&& data.candidates !== undefined;
+		const data = getJsonAsRecord(json);
 		
-		if (isValid) {
+		if (typeof data.dbName == 'string'
+			&& (data.dbPsw == undefined || typeof data.dbPsw == 'string')
+			&& typeof data.numberOfVoters == 'number'
+			&& (typeof data.numberOfVotePerVoter == 'number' || (typeof data.numberOfVotePerVoterMin == 'number' && typeof data.numberOfVotePerVoterMax == 'number'))
+			&& typeof data.numberOfVoted == 'number'
+			&& (data.numberOfSeatsTaken == undefined || typeof data.numberOfSeatsTaken == 'number')
+			&& typeof data.hasSkipped == 'boolean'
+			&& typeof data.candidates == 'object') {
 			
 			// START OF BACKWARD COMPATIBILITY with v0.1 databases
 			if (data.numberOfVotePerVoter !== undefined) {
@@ -216,3 +277,5 @@ class ElectionData {
 	}
 
 }
+
+export default ElectionData;

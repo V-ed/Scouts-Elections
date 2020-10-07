@@ -1,18 +1,36 @@
+import ElectionData from "./election-data.js";
+import FileLoader from "./file-loader.js";
+import Requester from "./requester.js";
+import Utils from "./utilities.js";
+import { setup_votes } from "./voting.js";
+
 let setupInputs = {};
+/**
+ * @type {EventTarget}
+ */
 let textFieldHadFocus = undefined;
 
-function setup_setup() {
+export function setup_setup() {
 	
-	const imagePreview = document.getElementById("setup-preview-image");
-	const imagePreviewCloser = document.getElementById("setup-preview-image-closer");
+	const imagePreview = /** @type {HTMLImageElement} */ (document.getElementById("setup-preview-image"));
+	const imagePreviewCloser = /** @type {HTMLButtonElement} */ (document.getElementById("setup-preview-image-closer"));
 	
+	/**
+	 * @type {string}
+	 */
 	let groupImageData = undefined;
 	
+	/**
+	 * 
+	 * @param {string | ArrayBuffer} imageData 
+	 */
 	function set_preview_image(imageData) {
-		imagePreview.src = imageData;
-		imagePreview.value = "";
+		const imageSrc = typeof imageData == 'string' ? imageData : (new TextDecoder("utf-8")).decode(imageData)
+		
+		imagePreview.src = imageSrc;
+		// imagePreview.value = "";
 		imagePreviewCloser.disabled = false;
-		groupImageData = imageData;
+		groupImageData = imageSrc;
 	}
 	
 	function remove_preview_image() {
@@ -24,35 +42,34 @@ function setup_setup() {
 	
 	const MAXIMUM_IMAGE_SIZE_MB = 2;
 	
-	Utils.create_file_loader("image-loader-zone", files => {
-		
-		const file = files[0];
-		
-		if (file.size > MAXIMUM_IMAGE_SIZE_MB * 1024 * 1024) {
-			return "L'image ne peut pas dépasser 2 MB! Veuillez utiliser une image plus petite ou optimiser l'image.";
-		}
-		
-		const reader  = new FileReader();
-		
-		reader.onloadend = function () {
-			set_preview_image(reader.result);
-		}
-		
-		if (file) {
-			reader.readAsDataURL(file);
-		} else {
-			remove_preview_image();
-		}
-		
-	}, items => {
-		const count = items.length;
-		
-		if (count > 1) {
-			return "Veuillez ne glisser qu'un seul fichier.";
-		}
-		else if (!items[0].type.match(/^image\/.+$/)) {
-			return "Le fichier n'est pas valide : seules les images sont acceptées.";
-		}
+	const databaseLoader = new FileLoader("image-loader-zone", {
+		doLoadFiles: files => {
+			
+			const file = files[0];
+			
+			if (file.size > MAXIMUM_IMAGE_SIZE_MB * 1024 * 1024) {
+				return "L'image ne peut pas dépasser 2 MB! Veuillez utiliser une image plus petite ou optimiser l'image.";
+			}
+			
+			const reader  = new FileReader();
+			
+			reader.addEventListener('loadend', () => set_preview_image(reader.result))
+			
+			if (file) {
+				return reader.readAsDataURL(file);
+			} else {
+				return remove_preview_image();
+			}
+			
+		},
+		doHandleItemsForErrors: items => {
+			if (items.length > 1) {
+				return "Veuillez ne glisser qu'un seul fichier.";
+			}
+			else if (!items[0].type.match(/^image\/.+$/)) {
+				return "Le fichier n'est pas valide : seules les images sont acceptées.";
+			}
+		},
 	});
 	
 	imagePreviewCloser.addEventListener("click", e => {
@@ -61,23 +78,23 @@ function setup_setup() {
 		remove_preview_image();
 	});
 	
-	const pswVisibilityToggler = document.getElementById("password-visible");
-	const pswField = document.getElementById("db-psw");
+	const pswVisibilityToggler = /** @type {HTMLInputElement} */ (document.getElementById("password-visible"));
+	const pswField = /** @type {HTMLInputElement} */ (document.getElementById("db-psw"));
 	
 	pswVisibilityToggler.addEventListener("click", () => pswField.type = pswField.type == "password" ? "text" : "password");
 	
-	const candidateAddButton = document.getElementById("candidate-add");
-	const candidateRemoveButton = document.getElementById("candidate-remove-all");
+	const candidateAddButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-add"));
+	const candidateRemoveAllButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-remove-all"));
 	const candidateContainer = document.getElementById("setup-candidates");
 	
-	const firstCandidateInput = document.getElementById("candidate-name-1");
-	const firstCandidateRemoveButton = document.getElementById("candidate-remove-1");
+	const firstCandidateInput = /** @type {HTMLInputElement} */ (document.getElementById("candidate-name-1"));
+	const firstCandidateRemoveButton = /** @type {HTMLButtonElement} */ (document.getElementById("candidate-remove-1"));
 	
 	function removeCandidate(candidateInput) {
 		
 		const candidateNumber = parseInt(candidateInput.dataset.candidatenumber);
 		
-		const allCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']"));
+		const allCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']")));
 		
 		if (allCandidates.length == 1) {
 			firstCandidateInput.value = "";
@@ -85,13 +102,13 @@ function setup_setup() {
 		}
 		else {
 			
-			const allCandidatesToUpdate = allCandidates.filter(input => input.dataset.candidatenumber > candidateNumber);
+			const allCandidatesToUpdate = allCandidates.filter(input => parseInt(input.dataset.candidatenumber) > candidateNumber);
 			
 			allCandidatesToUpdate.forEach(candidateInput => {
 				
-				const currentCandidateNumber = candidateInput.dataset.candidatenumber;
+				const currentCandidateNumber = parseInt(candidateInput.dataset.candidatenumber);
 				
-				const previousInput = document.getElementById(`candidate-name-${currentCandidateNumber - 1}`);
+				const previousInput = /** @type {HTMLInputElement} */ (document.getElementById(`candidate-name-${currentCandidateNumber - 1}`));
 				
 				previousInput.value = candidateInput.value;
 				
@@ -105,12 +122,14 @@ function setup_setup() {
 			
 			delete setupInputs[`candidate-name-${candidateNumber}`];
 			
-			const newCandidateCount = --candidateAddButton.dataset.candidatecount;
+			const newCandidateCount = parseInt(candidateAddButton.dataset.candidatecount) - 1;
+			candidateAddButton.dataset.candidatecount = newCandidateCount.toString();
 			
-			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+			const numberOfVoteInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
+			triggerInputEvent(numberOfVoteInput, true);
 			
 			if (newCandidateCount == 1 && firstCandidateInput.value.length == 0) {
-				candidateRemoveButton.disabled = true;
+				candidateRemoveAllButton.disabled = true;
 			}
 			
 		}
@@ -124,28 +143,29 @@ function setup_setup() {
 	candidateAddButton.addEventListener("click", e => {
 		e.preventDefault();
 		
-		const number = ++candidateAddButton.dataset.candidatecount;
+		const newCandidateCount = parseInt(candidateAddButton.dataset.candidatecount) + 1;
+		candidateAddButton.dataset.candidatecount = newCandidateCount.toString();
 		
 		$(candidateContainer).append(`
-			<div id="candidate-controls-${number}" class="form-group row mb-2 mb-md-3">
+			<div id="candidate-controls-${newCandidateCount}" class="form-group row mb-2 mb-md-3">
 				<div class="col-sm-3 col-md-2">
-					<label class="col-form-label" for="candidate-name-${number}">Candidat ${number}</label>
+					<label class="col-form-label" for="candidate-name-${newCandidateCount}">Candidat ${newCandidateCount}</label>
 				</div>
 				<div class="col-sm-9 col-md-10 d-flex flex-row align-self-center justify-content-center">
-					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${number}" aria-describedby="candidate-name-${number}" placeholder="Nom" name="candidate-name-${number}" data-placement="top" data-candidatenumber="${number}" autocomplete="off" required>
+					<input type="text" class="form-control is-invalid is-popable" id="candidate-name-${newCandidateCount}" aria-describedby="candidate-name-${newCandidateCount}" placeholder="Nom" name="candidate-name-${newCandidateCount}" data-placement="top" data-candidatenumber="${newCandidateCount}" autocomplete="off" required>
 					<div class="d-flex align-items-center justify-content-center ml-3">
-						<button id="candidate-remove-${number}" type="button" class="btn btn-outline-danger" tabindex="-1">
+						<button id="candidate-remove-${newCandidateCount}" type="button" class="btn btn-outline-danger" tabindex="-1">
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
 				</div>
 			</div>`);
 		
-		candidateRemoveButton.disabled = false;
+		candidateRemoveAllButton.disabled = false;
 		
-		add_input_for_verification(`candidate-name-${number}`, validateCandidate);
+		add_input_for_verification(`candidate-name-${newCandidateCount}`, validateCandidate);
 		
-		const newCandidateInput = document.getElementById(`candidate-name-${number}`);
+		const newCandidateInput = document.getElementById(`candidate-name-${newCandidateCount}`);
 		newCandidateInput.focus();
 		newCandidateInput.addEventListener("keyup", setup_candidate_selector);
 		newCandidateInput.addEventListener("keydown", e => {
@@ -153,12 +173,12 @@ function setup_setup() {
 				e.preventDefault();
 			}
 		});
-		const newCandidateDeleteButton = document.getElementById(`candidate-remove-${number}`);
+		const newCandidateDeleteButton = document.getElementById(`candidate-remove-${newCandidateCount}`);
 		newCandidateDeleteButton.addEventListener("click", () => removeCandidate(newCandidateInput));
 		
 		newCandidateInput.scrollIntoView();
 		
-		const numberOfVoteInput = document.getElementById("number-of-votes-maximum");
+		const numberOfVoteInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
 		triggerInputEvent(numberOfVoteInput, true);
 		
 		firstCandidateRemoveButton.disabled = false;
@@ -172,26 +192,26 @@ function setup_setup() {
 			
 			const isFirstCandidateNameEmpty = firstCandidateInput.value.length == 0;
 			
-			candidateRemoveButton.disabled = isFirstCandidateNameEmpty;
+			candidateRemoveAllButton.disabled = isFirstCandidateNameEmpty;
 			firstCandidateRemoveButton.disabled = isFirstCandidateNameEmpty;
 			
 		}
 		
 	});
 	
-	$(candidateRemoveButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
+	$(candidateRemoveAllButton).popover({trigger: "focus"}).on("shown.bs.popover", function() {
 		
-		const candidateRemoveConfirmButton = document.getElementById("candidate-remove-all-confirm");
+		const candidateRemoveAllConfirmButton = document.getElementById("candidate-remove-all-confirm");
 		
-		candidateRemoveConfirmButton.addEventListener("click", () => {
+		candidateRemoveAllConfirmButton.addEventListener("click", () => {
 			
-			const number = candidateAddButton.dataset.candidatecount = 1;
+			candidateAddButton.dataset.candidatecount = "1";
 			
 			const allCandidatesToRemove = Array.from(document.querySelectorAll("div[id^='candidate-controls-']")).filter(control => control.querySelector("input[id^='candidate-name-']") != firstCandidateInput);
 			
 			allCandidatesToRemove.forEach(control => {
 				
-				const candidateInput = control.querySelector("input[id^='candidate-name-']");
+				const candidateInput = /** @type {HTMLInputElement} */ (control.querySelector("input[id^='candidate-name-']"));
 				$(candidateInput).popover("dispose");
 				
 				delete setupInputs[`candidate-name-${candidateInput.dataset.candidatenumber}`];
@@ -204,13 +224,11 @@ function setup_setup() {
 			triggerInputEvent(firstCandidateInput, true);
 			
 			firstCandidateRemoveButton.disabled = true;
-			candidateRemoveButton.disabled = true;
+			candidateRemoveAllButton.disabled = true;
 			
-			if (number == 2) {
-				candidateRemoveButton.disabled = true;
-			}
+			candidateRemoveAllButton.disabled = true;
 			
-			triggerInputEvent(document.getElementById("number-of-votes-maximum"), true);
+			triggerInputEvent(/** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum")), true);
 			
 			if (textFieldHadFocus) {
 				firstCandidateInput.focus();
@@ -226,9 +244,9 @@ function setup_setup() {
 	
 	function createData() {
 		
-		const formData = new FormData(document.getElementById("setup-form"));
+		const formData = new FormData(/** @type {HTMLFormElement} */ (document.getElementById("setup-form")));
 		
-		const tempCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).map(candidateInput => formData.get(candidateInput.name));
+		const tempCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).map(candidateInput => formData.get(candidateInput.name));
 		
 		Utils.isDownloadDisabled = formData.get("autoDownloadDb") != "on";
 		
@@ -240,14 +258,14 @@ function setup_setup() {
 		
 	}
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
+	const submitSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-submit-button"));
 	
 	submitSetupButton.addEventListener("click", e => {
 		e.preventDefault();
 		
 		const data = createData();
 		
-		setup_votes(data, undefined, () => {
+		setup_votes(data, () => {
 			
 			window.removeEventListener("beforeunload", prevent_data_loss);
 			
@@ -258,7 +276,7 @@ function setup_setup() {
 	});
 	
 	const errorDiv = document.getElementById("setup-create-election-modal-error");
-	const submitSharedSetupButton = document.getElementById("setup-create-election-modal-button");
+	const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-create-election-modal-button"));
 	
 	submitSharedSetupButton.addEventListener("click", async e => {
 		e.preventDefault();
@@ -271,14 +289,12 @@ function setup_setup() {
 		
 		const electionJSONData = electionData.getAsJSON();
 		
-		const ajaxSettings = {
+		Requester.sendRequest({
 			type: 'POST',
 			url: `${Utils.sharedElectionHostRoot}/create`,
 			data: electionJSONData,
 			cache: false,
-		};
-		
-		Utils.sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
+		}, 'setup-create-election-modal-requester-container').then(response => {
 			
 			if (!response.code) {
 				throw "Missing election code!";
@@ -286,7 +302,11 @@ function setup_setup() {
 			
 			electionData.mergeData(response.data);
 			
-			return setup_votes(electionData, response.code, () => {
+			const data = ElectionData.fromJSON(response.data);
+			
+			data.setSharedElectionCode(response.code);
+			
+			return setup_votes(data, () => {
 				
 				$("#setup-create-election-modal").modal("hide");
 				
@@ -316,11 +336,19 @@ function setup_setup() {
 	
 	// Handle data validation
 	
-	const validateCandidate = function (data, input, isManual) {
+	
+	/**
+	 * 
+	 * @param {string} data 
+	 * @param {HTMLInputElement} input 
+	 * @param {boolean} isManual 
+	 * @returns {string | void}
+	 */
+	function validateCandidate(data, input, isManual) {
 		
 		const dataTrimmed = data.trim();
 		
-		const otherCandidates = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).filter(selectedInput => selectedInput != input);
+		const otherCandidates = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).filter(selectedInput => selectedInput != input);
 		const dupCandidates = otherCandidates.filter(candidateInput => candidateInput.value != "" && candidateInput.value.toLowerCase() == dataTrimmed.toLowerCase());
 		
 		const prevDupeValue = input.dataset.dupevalue;
@@ -361,7 +389,7 @@ function setup_setup() {
 		
 	}
 	
-	add_input_for_verification("db-name", data => {
+	add_input_for_verification("db-name", /** @param {string} data */ (data) => {
 		
 		if (data == "") {
 			return "Le nom de la base de données ne peut être vide.";
@@ -386,7 +414,7 @@ function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-voters", data => {
+	add_input_for_verification("number-of-voters", /** @param {"" | number} data */ (data) => {
 		
 		if (data === "") {
 			return "Le nombre d'électeurs ne peut être vide.";
@@ -397,7 +425,7 @@ function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-votes-minimum", (data, input, isManualVerification) => {
+	add_input_for_verification("number-of-votes-minimum", /** @param {"" | number} data */ (data, input, isManualVerification) => {
 		
 		let badData = undefined;
 		
@@ -408,7 +436,7 @@ function setup_setup() {
 			badData = "Le nombre doit être positif (supérieur ou égal à 0).";
 		}
 		
-		const numberOfVotesMaxInput = document.getElementById("number-of-votes-maximum");
+		const numberOfVotesMaxInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-maximum"));
 		
 		if (badData) {
 			return badData;
@@ -427,7 +455,7 @@ function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-votes-maximum", (data, input, isManualVerification) => {
+	add_input_for_verification("number-of-votes-maximum", /** @param {"" | number} data */ (data, input, isManualVerification) => {
 		
 		let badData = undefined;
 		
@@ -438,7 +466,7 @@ function setup_setup() {
 			badData = "Le nombre doit être supérieur à 0.";
 		}
 		
-		const numberOfVotesMinInput = document.getElementById("number-of-votes-minimum");
+		const numberOfVotesMinInput = /** @type {HTMLInputElement} */ (document.getElementById("number-of-votes-minimum"));
 		
 		if (badData) {
 			return badData;
@@ -469,7 +497,7 @@ function setup_setup() {
 	
 	// Handle Enter on input fields
 	
-	const setupPageTextFields = document.querySelectorAll("#setup-form input");
+	const setupPageTextFields = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("#setup-form input"));
 	
 	setupPageTextFields.forEach(input => {
 		
@@ -491,23 +519,32 @@ function setup_setup() {
 	
 }
 
-function add_input_for_verification(inputId, customValidator) {
+/**
+ * 
+ * @param {string} inputId 
+ * @param {CustomValidator} [customValidator] 
+ */
+export function add_input_for_verification(inputId, customValidator) {
 	
 	setupInputs[inputId] = false;
 	
-	const inputElement = document.getElementById(inputId);
+	const inputElement = /** @type {HTMLInputElement} */ (document.getElementById(inputId));
 	
-	const checkElement = inputElement.classList.contains("spinner") ? document.querySelector(`#${inputId} + div.input-group input.spinner`) : inputElement;
+	const checkElement = /** @type {HTMLInputElement} */ (inputElement.classList.contains("spinner") ? document.querySelector(`#${inputId} + div.input-group input.spinner`) : inputElement);
 	
 	if (checkElement.type == "number" || checkElement.inputMode == "numeric") {
 		
+		/**
+		 * 
+		 * @param {KeyboardEvent | ClipboardEvent} e 
+		 */
 		function numberTypeOnlyPositive(e) {
 			
 			let hasBadChars = false;
 			
-			if (e.type == "paste") {
-				clipboardData = e.clipboardData || window.clipboardData;
-				pastedData = clipboardData.getData("Text");
+			if (e instanceof ClipboardEvent) {
+				const clipboardData = e.clipboardData;
+				const pastedData = clipboardData.getData("Text");
 				hasBadChars = !pastedData.match(/[0-9]/);
 			}
 			else {
@@ -535,6 +572,7 @@ function add_input_for_verification(inputId, customValidator) {
 	
 	inputElement.addEventListener("input", e => {
 		
+		// @ts-ignore
 		const isManual = e.detail ? e.detail.isManual : false;
 		
 		setupInputs[inputId] = verify_input(inputElement, customValidator, isManual, checkElement);
@@ -559,6 +597,7 @@ function add_input_for_verification(inputId, customValidator) {
 		if (checkElement.classList.contains("spinner")) {
 			let previousSpinnerTimer = undefined;
 			inputElement.addEventListener("change", e => {
+				// @ts-ignore
 				if (e.detail.step != undefined) {
 					clearTimeout(previousSpinnerTimer);
 					previousSpinnerTimer = setTimeout(() => {
@@ -582,7 +621,7 @@ function add_input_for_verification(inputId, customValidator) {
 
 let sharedValidityTimeout = undefined;
 
-function verify_all_valid() {
+export function verify_all_valid() {
 	
 	let isValid = true;
 	
@@ -594,8 +633,8 @@ function verify_all_valid() {
 		}
 	}
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
-	const submitSharedSetupButton = document.getElementById("setup-shared-submit-button");
+	const submitSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-submit-button"));
+	const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-shared-submit-button"));
 	
 	submitSetupButton.disabled = !isValid;
 	
@@ -620,7 +659,11 @@ function verify_all_valid() {
 		
 		sharedValidityTimeout = setTimeout(() => {
 			
-			Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, setupSharedRequesterContainer, false, 150).then(() => {
+			Requester.sendRequest(`${Utils.sharedElectionHostRoot}`, {
+				requesterContainer: setupSharedRequesterContainer,
+				doHideContainerOnEnd: false,
+				minimumRequestDelay: 150,
+			}).then(() => {
 				
 				if (submitSetupButton.disabled) {
 					clearSharedVisuals();
@@ -641,7 +684,21 @@ function verify_all_valid() {
 	
 }
 
-function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
+/**
+ * @typedef {string | boolean | {isValid: boolean, reason: string}} ValidatorResult
+ */
+/**
+ * @typedef {(inputValue: string | number | "", inputElement: HTMLInputElement, isManualVerification?: boolean) => ValidatorResult | void} CustomValidator
+ */
+
+/**
+ * 
+ * @param {HTMLInputElement} inputElement 
+ * @param {CustomValidator} customValidator 
+ * @param {boolean} isManualVerification 
+ * @param {HTMLElement} [elementToValidate] 
+ */
+export function verify_input(inputElement, customValidator, isManualVerification, elementToValidate) {
 	
 	// Check if required. If not, don't verify
 	if (!inputElement.required) {
@@ -654,7 +711,8 @@ function verify_input(inputElement, customValidator, isManualVerification, eleme
 	const inputValue = inputElement.value;
 	
 	if (customValidator) {
-		const customResults = (inputElement.type == "number" || inputElement.inputMode == "numeric") && inputValue ? customValidator(parseInt(inputValue), inputElement, isManualVerification) : customValidator(inputValue, inputElement, isManualVerification);
+		const inputValueForCustom = (inputElement.type == "number" || inputElement.inputMode == "numeric") && inputValue ? parseInt(inputValue) : inputValue;
+		const customResults = customValidator(inputValueForCustom, inputElement, isManualVerification);
 		
 		if (typeof customResults == "string") {
 			isValid = false;
@@ -711,7 +769,12 @@ function verify_input(inputElement, customValidator, isManualVerification, eleme
 	
 }
 
-function triggerInputEvent(input, isSilent) {
+/**
+ * 
+ * @param {HTMLInputElement} input 
+ * @param {boolean} [isSilent] 
+ */
+export function triggerInputEvent(input, isSilent) {
 	
 	const popableInput = input.classList.contains("spinner") ? document.querySelector(`#${input.id} + div.input-group input.spinner`) : input;
 	
@@ -729,30 +792,36 @@ function triggerInputEvent(input, isSilent) {
 	
 }
 
-// Handle reload if at least one candidate is entered
-
-function prevent_data_loss() {
+/**
+ * Handle reload if at least one candidate is entered
+ */
+export function prevent_data_loss() {
 	
-	const isOneCandidateIsEntered = Array.from(document.querySelectorAll("input[id^='candidate-name-']")).some(input => input.value != "");
+	const isOneCandidateIsEntered = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input[id^='candidate-name-']"))).some(input => input.value != "");
 	
 	if (isOneCandidateIsEntered) {
 		
+		// @ts-ignore
 		event.returnValue = "Il y au moins un candidat d'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?";
 		
 	}
 	
 }
 
-function setup_candidate_selector(e) {
+/**
+ * 
+ * @param {KeyboardEvent} e 
+ */
+export function setup_candidate_selector(e) {
 	
 	if (e.which === 13 || e.keyCode === 13 || e.key === "Enter") {
 		e.preventDefault();
 		
-		const inputCandidateNumber = parseInt(e.currentTarget.dataset.candidatenumber);
+		const inputCandidateNumber = parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidatenumber);
 		
 		const candidateAddButton = document.getElementById("candidate-add");
 		
-		const inputNextCandidate = document.getElementById(`candidate-name-${inputCandidateNumber + 1}`);
+		const inputNextCandidate = /** @type {HTMLInputElement} */ (document.getElementById(`candidate-name-${inputCandidateNumber + 1}`));
 		
 		if (inputNextCandidate == undefined) {
 			

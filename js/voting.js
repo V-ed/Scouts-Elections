@@ -1,6 +1,12 @@
+import ElectionData from "./election-data.js";
+import Requester from "./requester.js";
+import { setup_post_voting, setup_results } from "./results.js";
+import switch_view from "./switcher.js";
+import Utils from "./utilities.js";
+
 let onKeyUpEventBefore;
 
-let auto_download_data = function() {
+export const auto_download_data = function() {
 	
 	if (Utils.should_download_data()) {
 		
@@ -10,11 +16,16 @@ let auto_download_data = function() {
 	
 }
 
-async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {() => *} [beforeSwitchCallback] 
+ * @param {string | HTMLElement | import("./requester.js").RequestContainerOption} [requestContainer] 
+ * @param {boolean} [doForceShowPreVotingPage] 
+ */
+export async function setup_votes(data, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
 	
 	window.addEventListener("beforeunload", auto_download_data.bind({data: data}));
-	
-	data.setSharedElectionCode(sharedElectionCode || data.sharedElectionCode);
 	
 	if (doForceShowPreVotingPage || data.numberOfVoted == 0) {
 		
@@ -59,17 +70,17 @@ async function setup_votes(data, sharedElectionCode, beforeSwitchCallback, reque
 	
 }
 
-function setup_pre_voting_session(data) {
+export function setup_pre_voting_session(data) {
 	
 	if (Utils.isTouchDevice) {
 		document.getElementById("pre-voting-touchscreen-reminder").hidden = false;
 	}
 	
-	const preVotingSubmitButton = document.getElementById("pre-voting-submit-button");
+	const preVotingSubmitButton = /** @type {HTMLButtonElement} */ (document.getElementById("pre-voting-submit-button"));
 	
 	if (data.sharedElectionCode) {
 		
-		const sharedElectionJoinLinkSpan = document.getElementById("pre-voting-join-shared-election-link");
+		const sharedElectionJoinLinkSpan = /** @type {HTMLInputElement} */ (document.getElementById("pre-voting-join-shared-election-link"));
 		
 		sharedElectionJoinLinkSpan.value = `${window.location.protocol}//${window.location.hostname}${window.location.pathname != "/" ? window.location.pathname : ""}${window.location.port ? ":" + window.location.port : ""}?code=${data.sharedElectionCode}`;
 		
@@ -107,12 +118,10 @@ function setup_pre_voting_session(data) {
 				
 				preVotingRequestErrorRow.hidden = true;
 				
-				const requesterOptions = {
+				didSkipVotingPage = await voting_go_to_next_voter(data, true, {
 					container: 'pre-voting-requester-container',
-					onContainerShownFunc: () => preVotingSubmitButton.scrollIntoView()
-				};
-				
-				didSkipVotingPage = await voting_go_to_next_voter(data, true, requesterOptions, false);
+					onContainerShownFunc: () => preVotingSubmitButton.scrollIntoView(),
+				}, false);
 				
 			} catch (error) {
 				
@@ -175,7 +184,11 @@ function setup_pre_voting_session(data) {
 	
 }
 
-function setup_voting_session(data) {
+/**
+ * 
+ * @param {ElectionData} data 
+ */
+export function setup_voting_session(data) {
 	
 	Utils.initialize_images("voting-page", data.groupImage);
 	
@@ -230,21 +243,21 @@ function setup_voting_session(data) {
 	
 	if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
 		
-		voteRemainingCounter.textContent = minNumberOfVotesLeft;
+		voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
 		
 		document.getElementById("voting-remaining-text-absolute").hidden = false;
 		
 	}
 	else {
 		
-		voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
-		voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+		voteRemainingCounterMin.textContent = minNumberOfVotesLeft.toString();
+		voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
 		
 		document.getElementById("voting-remaining-text-multiple").hidden = false;
 		
 	}
 	
-	const submitVotesButton = document.getElementById("voting-submit-button");
+	const submitVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-submit-button"));
 	
 	if(minNumberOfVotesLeft == 0){
 		submitVotesButton.disabled = false;
@@ -254,19 +267,21 @@ function setup_voting_session(data) {
 	
 	if (isMultipleSameCandidateAllowed) {
 		
-		const inputs = document.querySelectorAll("div#voting-page input.spinner[type='number']");
+		const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("div#voting-page input.spinner[type='number']"));
 		
 		$(inputs).inputSpinner({disabledInput: true, inputClass: "font-weight-bold", buttonsClass: "btn-secondary"});
 		
 		$(inputs).on("change", e => {
 			
+			// @ts-ignore
 			if (!e.detail || !e.detail.step) {
 				return;
 			}
 			
-			vote_for_candidate(parseInt(e.currentTarget.dataset.candidateindex), e.detail.step);
+			// @ts-ignore
+			vote_for_candidate(parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidateindex), e.detail.step);
 			
-			inputs.forEach(input => input.max = maxNumberOfVotesLeft + parseInt($(input).val()));
+			inputs.forEach(input => input.max = (maxNumberOfVotesLeft + parseInt(/** @type {string} */ ($(input).val()))).toString());
 			
 			if (maxNumberOfVotesLeft == 0) {
 				const nonSelectedInput = Array.from(inputs).filter(input => $(input).val() == 0);
@@ -282,7 +297,7 @@ function setup_voting_session(data) {
 	}
 	else {
 		
-		const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
+		const votingButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]"));
 		
 		votingButtons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -295,16 +310,16 @@ function setup_voting_session(data) {
 				
 				if (maxNumberOfVotesLeft == 0) {
 					
-					const nonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])");
+					const nonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]:not([hidden])"));
 					
-					nonVotedCandidatesButtons.forEach(button => button.disabled = true);
+					nonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = true);
 					
 				}
 				
 			});
 		});
 		
-		const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+		const unvoteButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=unvote-candidate-]"));
 		
 		unvoteButtons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -315,15 +330,20 @@ function setup_voting_session(data) {
 				button.hidden = true;
 				document.getElementById(`vote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
 				
-				const disabledNonVotedCandidatesButtons = document.querySelectorAll("button[id^=vote-candidate-][disabled]");
+				const disabledNonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-][disabled]"));
 				
-				disabledNonVotedCandidatesButtons.forEach(button => button.disabled = false);
+				disabledNonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = false);
 				
 			});
 		});
 		
 	}
 	
+	/**
+	 * 
+	 * @param {number} index 
+	 * @param {number} step 
+	 */
 	function vote_for_candidate(index, step) {
 		
 		if (step > 0) {
@@ -337,11 +357,11 @@ function setup_voting_session(data) {
 		maxNumberOfVotesLeft = maxNumberOfVotesLeft - step;
 		
 		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-			voteRemainingCounter.textContent = minNumberOfVotesLeft;
+			voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
 		}
 		else {
-			voteRemainingCounterMin.textContent = minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0;
-			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+			voteRemainingCounterMin.textContent = (minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0).toString();
+			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
 		}
 		
 		submitVotesButton.disabled = minNumberOfVotesLeft > 0;
@@ -371,15 +391,15 @@ function setup_voting_session(data) {
 		
 		if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
 			
-			voteRemainingCounter.textContent = minNumberOfVotesLeft;
+			voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
 			
 			document.getElementById("voting-remaining-text-absolute").hidden = false;
 			
 		}
 		else {
 			
-			voteRemainingCounterMin.textContent = minNumberOfVotesLeft;
-			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft;
+			voteRemainingCounterMin.textContent = minNumberOfVotesLeft.toString();
+			voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
 			
 			document.getElementById("voting-remaining-text-multiple").hidden = false;
 			
@@ -387,11 +407,11 @@ function setup_voting_session(data) {
 		
 		if (isMultipleSameCandidateAllowed) {
 			
-			const inputs = document.querySelectorAll("input.spinner[type='number']");
+			const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll("input.spinner[type='number']"));
 			
 			inputs.forEach(input => {
 				
-				input.max = maxNumberOfVotesLeft;
+				input.max = maxNumberOfVotesLeft.toString();
 				input.readOnly = false;
 				$(input).val(0);
 				
@@ -400,8 +420,8 @@ function setup_voting_session(data) {
 		}
 		else {
 			
-			const votingButtons = document.querySelectorAll("button[id^=vote-candidate-]");
-			const unvoteButtons = document.querySelectorAll("button[id^=unvote-candidate-]");
+			const votingButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=vote-candidate-]"));
+			const unvoteButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll("button[id^=unvote-candidate-]"));
 			
 			votingButtons.forEach(button => {
 				button.hidden = false;
@@ -420,28 +440,26 @@ function setup_voting_session(data) {
 	
 	const overlayRequestErrorSpan = document.getElementById("overlay-request-error-details");
 	
+	/**
+	 * 
+	 * @param {import("./requester.js").RequestContainer} [requestContainer] 
+	 */
 	async function updateVotes(requestContainer) {
 		
 		if (data.sharedElectionCode) {
 			
 			const candidatesIndexesJSON = JSON.stringify(data.votesCurrentCandidateIndexes);
 			
-			const ajaxSettings = {
+			const response = await Requester.sendRequestFor(3, {
 				type: 'PUT',
 				url: `${Utils.sharedElectionHostRoot}/vote/${data.sharedElectionCode}`,
 				data: candidatesIndexesJSON,
 				cache: false,
-			};
+			}, {
+				requesterContainer: requestContainer,
+			});
 			
-			try {
-				
-				const response = await Utils.sendRequestFor(3, ajaxSettings, requestContainer);
-				
-				data.mergeData(response.data);
-				
-			} catch (error) {
-				return error;
-			}
+			data.mergeData(response.data);
 			
 		}
 		else {
@@ -469,7 +487,7 @@ function setup_voting_session(data) {
 		isVoteFinishing = true;
 		
 		setTimeout(async () => {
-			updateVotes()
+			updateVotes();
 			
 			submitVotesButton.classList.remove("btn-success");
 			submitVotesButton.classList.add("btn-secondary");
@@ -550,6 +568,10 @@ function setup_voting_session(data) {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {ElectionData} data 
+	 */
 	function show_remaining_count_toast(data) {
 		
 		votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant(s) sur ${data.numberOfVoters}`;
@@ -585,8 +607,12 @@ function setup_voting_session(data) {
 		
 	}
 	
-	const skipSharedVotesButton = document.getElementById("voting-shared-skip-button");
+	const skipSharedVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-shared-skip-button"));
 	
+	/**
+	 * 
+	 * @param {ElectionData} data 
+	 */
 	async function go_to_next_voter(data) {
 		
 		if (($(overlayErrorModal).data("bs.modal") || {})._isShown) {
@@ -716,11 +742,11 @@ function setup_voting_session(data) {
 		
 	}
 	
-	const skipVotesButton = document.getElementById("voting-skip-button");
+	const skipVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-skip-button"));
 	
 	skipVotesButton.addEventListener("click", () => execute_local_skip_votes(data));
 	
-	const sharedElectionSkipRequestErrorDiv = document.getElementById("shared-election-skip-request-error-toast");
+	const sharedElectionSkipRequestErrorDiv = /** @type {HTMLElement} */ (document.getElementById("shared-election-skip-request-error-toast"));
 	
 	async function executeConfirmedSharedSkipVotes() {
 		
@@ -729,14 +755,12 @@ function setup_voting_session(data) {
 		skipSharedVotesButton.disabled = true;
 		sharedElectionSkipRequestErrorDiv.hidden = true;
 		
-		const ajaxSettings = {
-			type: 'PUT',
-			url: `${Utils.sharedElectionHostRoot}/skip/${data.sharedElectionCode}`,
-		};
-		
 		try {
 			
-			const response = await Utils.sendRequest(ajaxSettings, 'voting-skipper-requester-container');
+			const response = await Requester.sendRequest({
+				type: 'PUT',
+				url: `${Utils.sharedElectionHostRoot}/skip/${data.sharedElectionCode}`,
+			}, 'voting-skipper-requester-container');
 			
 			data.mergeData(response.data);
 			
@@ -772,7 +796,7 @@ function setup_voting_session(data) {
 		
 	}).on("shown.bs.popover", function() {
 		
-		const skipSharedVotesConfirmButton = document.getElementById("voting-shared-skip-confirm-button");
+		const skipSharedVotesConfirmButton = /** @type {HTMLButtonElement} */ (document.getElementById("voting-shared-skip-confirm-button"));
 		
 		skipSharedVotesConfirmButton.disabled = false;
 		
@@ -796,7 +820,16 @@ function setup_voting_session(data) {
 	
 }
 
-async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} doForceNewVoter 
+ * @param {import("./requester.js").RequestContainer} requestsContainer 
+ * @param {boolean} [doSkipRetrievingElectionData] 
+ * @param {boolean} [isVoteFinished] 
+ * @param {() => *} [beforeSwitchCallback] 
+ */
+export async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
 	
 	if (data.sharedElectionCode && !doSkipRetrievingElectionData) {
 		
@@ -809,24 +842,29 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 		
 		const queryFromValuesToRetrieve = valuesToRetrieve.length == 0 ? "" : `?${valuesToRetrieve.join('&')}`
 		
-		const ajaxSettings = {
-			url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}${queryFromValuesToRetrieve}`,
-			cache: false,
-		};
-		
 		try {
 			
-			const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
+			const response = await Requester.sendRequestFor(3, {
+				url: `${Utils.sharedElectionHostRoot}/retrieve/${data.sharedElectionCode}${queryFromValuesToRetrieve}`,
+				cache: false,
+			}, {
+				requesterContainer: requestsContainer,
+				minimumRequestDelay: 150,
+				doLingerSpinner: true,
+			});
 			
 			data.mergeData(response.data);
 			
 		} catch (error) {
+			Requester.hideLoader(requestsContainer);
+			
 			return Promise.reject({error: error, at: "retrieve"});
 		}
 		
 	}
 	
 	if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
+		Requester.hideLoader(requestsContainer);
 		end_voting_session(data, false, beforeSwitchCallback);
 		return true;
 	}
@@ -836,26 +874,33 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 			
 			if (data.sharedElectionCode) {
 				
-				const ajaxSettings = {
-					url: `${Utils.sharedElectionHostRoot}/seat/${data.sharedElectionCode}`,
-					cache: false,
-				};
-				
 				try {
 					
-					const response = await Utils.sendRequestFor(3, ajaxSettings, requestsContainer, undefined, 150);
+					const response = await Requester.sendRequestFor(3, {
+						url: `${Utils.sharedElectionHostRoot}/seat/${data.sharedElectionCode}`,
+						cache: false,
+					}, {
+						requesterContainer: requestsContainer,
+						minimumRequestDelay: 150,
+					});
 					
 					data.mergeData(response.data);
 					
 				} catch (error) {
+					Requester.hideLoader(requestsContainer);
+					
 					return Promise.reject({error: error, at: "seat"});
 				}
 				
 			}
 			else {
+				Requester.hideLoader(requestsContainer);
 				data.numberOfSeatsTaken++;
 			}
 			
+		}
+		else {
+			Requester.hideLoader(requestsContainer);
 		}
 		
 	}
@@ -864,7 +909,13 @@ async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer,
 	
 }
 
-function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
+/**
+ * 
+ * @param {ElectionData} data 
+ * @param {boolean} [didSkipRemainings] 
+ * @param {() => *} [beforeSwitchCallback] 
+ */
+export function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
 	
 	document.getElementById("voting-toasts-container").classList.add("i-am-away");
 	
