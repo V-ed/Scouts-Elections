@@ -1,0 +1,16 @@
+{
+	// "javascript.implicitProjectConfig.checkJs": true,
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features",
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll": true
+		},
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": true
+		}
+	}
+}

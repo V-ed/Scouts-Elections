@@ -11,7 +11,7 @@ on:
       - 'dev'
 
 jobs:
-  test-html:
+  lint-html:
     runs-on: ubuntu-latest
     
     steps:
@@ -26,7 +26,7 @@ jobs:
     - name: Test index
       run: linthtml '**/*.html'
       
-  test-javascript:
+  lint-javascript:
     runs-on: ubuntu-latest
     
     steps:
@@ -37,7 +37,25 @@ jobs:
         
     - name: Install eslint
       run: npm install eslint -g
+      
+    - name: Install Typescript compiler
+      run: npm install typescript -g
+        
+    - name: Lint JS
+      run: eslint ./
+      
+  test-javascript:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1.4.2
+      with:
+        node-version: '12.x'
+      
+    - name: Install Typescript compiler
+      run: npm install typescript -g
         
     - name: Test JS
-      run: eslint ./
+      run: tsc -p jsconfig.json
       
