@@ -1,4 +1,6 @@
 import ElectionData from "./election-data.js";
+import FileLoader from "./file-loader.js";
+import Requester from "./requester.js";
 import Utils from "./utilities.js";
 import { setup_votes } from "./voting.js";
 
@@ -40,35 +42,34 @@ export function setup_setup() {
 	
 	const MAXIMUM_IMAGE_SIZE_MB = 2;
 	
-	Utils.create_file_loader("image-loader-zone", files => {
-		
-		const file = files[0];
-		
-		if (file.size > MAXIMUM_IMAGE_SIZE_MB * 1024 * 1024) {
-			return "L'image ne peut pas dépasser 2 MB! Veuillez utiliser une image plus petite ou optimiser l'image.";
-		}
-		
-		const reader  = new FileReader();
-		
-		reader.onloadend = function () {
-			set_preview_image(reader.result);
-		}
-		
-		if (file) {
-			reader.readAsDataURL(file);
-		} else {
-			remove_preview_image();
-		}
-		
-	}, items => {
-		const count = items.length;
-		
-		if (count > 1) {
-			return "Veuillez ne glisser qu'un seul fichier.";
-		}
-		else if (!items[0].type.match(/^image\/.+$/)) {
-			return "Le fichier n'est pas valide : seules les images sont acceptées.";
-		}
+	const databaseLoader = new FileLoader("image-loader-zone", {
+		doLoadFiles: files => {
+			
+			const file = files[0];
+			
+			if (file.size > MAXIMUM_IMAGE_SIZE_MB * 1024 * 1024) {
+				return "L'image ne peut pas dépasser 2 MB! Veuillez utiliser une image plus petite ou optimiser l'image.";
+			}
+			
+			const reader  = new FileReader();
+			
+			reader.addEventListener('loadend', () => set_preview_image(reader.result))
+			
+			if (file) {
+				return reader.readAsDataURL(file);
+			} else {
+				return remove_preview_image();
+			}
+			
+		},
+		doHandleItemsForErrors: items => {
+			if (items.length > 1) {
+				return "Veuillez ne glisser qu'un seul fichier.";
+			}
+			else if (!items[0].type.match(/^image\/.+$/)) {
+				return "Le fichier n'est pas valide : seules les images sont acceptées.";
+			}
+		},
 	});
 	
 	imagePreviewCloser.addEventListener("click", e => {
@@ -257,7 +258,7 @@ export function setup_setup() {
 		
 	}
 	
-	const submitSetupButton = document.getElementById("setup-submit-button");
+	const submitSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById("setup-submit-button"));
 	
 	submitSetupButton.addEventListener("click", e => {
 		e.preventDefault();
@@ -288,14 +289,12 @@ export function setup_setup() {
 		
 		const electionJSONData = electionData.getAsJSON();
 		
-		const ajaxSettings = {
+		Requester.sendRequest({
 			type: 'POST',
 			url: `${Utils.sharedElectionHostRoot}/create`,
 			data: electionJSONData,
 			cache: false,
-		};
-		
-		Utils.sendRequest(ajaxSettings, 'setup-create-election-modal-requester-container').then(response => {
+		}, 'setup-create-election-modal-requester-container').then(response => {
 			
 			if (!response.code) {
 				throw "Missing election code!";
@@ -337,7 +336,15 @@ export function setup_setup() {
 	
 	// Handle data validation
 	
-	const validateCandidate = function (data, input, isManual) {
+	
+	/**
+	 * 
+	 * @param {string} data 
+	 * @param {HTMLInputElement} input 
+	 * @param {boolean} isManual 
+	 * @returns {string | void}
+	 */
+	function validateCandidate(data, input, isManual) {
 		
 		const dataTrimmed = data.trim();
 		
@@ -382,7 +389,7 @@ export function setup_setup() {
 		
 	}
 	
-	add_input_for_verification("db-name", data => {
+	add_input_for_verification("db-name", /** @param {string} data */ (data) => {
 		
 		if (data == "") {
 			return "Le nom de la base de données ne peut être vide.";
@@ -407,7 +414,7 @@ export function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-voters", data => {
+	add_input_for_verification("number-of-voters", /** @param {"" | number} data */ (data) => {
 		
 		if (data === "") {
 			return "Le nombre d'électeurs ne peut être vide.";
@@ -418,7 +425,7 @@ export function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-votes-minimum", (data, input, isManualVerification) => {
+	add_input_for_verification("number-of-votes-minimum", /** @param {"" | number} data */ (data, input, isManualVerification) => {
 		
 		let badData = undefined;
 		
@@ -448,7 +455,7 @@ export function setup_setup() {
 		}
 		
 	});
-	add_input_for_verification("number-of-votes-maximum", (data, input, isManualVerification) => {
+	add_input_for_verification("number-of-votes-maximum", /** @param {"" | number} data */ (data, input, isManualVerification) => {
 		
 		let badData = undefined;
 		
@@ -515,7 +522,7 @@ export function setup_setup() {
 /**
  * 
  * @param {string} inputId 
- * @param {*} [customValidator] 
+ * @param {CustomValidator} [customValidator] 
  */
 export function add_input_for_verification(inputId, customValidator) {
 	
@@ -652,7 +659,11 @@ export function verify_all_valid() {
 		
 		sharedValidityTimeout = setTimeout(() => {
 			
-			Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, setupSharedRequesterContainer, false, 150).then(() => {
+			Requester.sendRequest(`${Utils.sharedElectionHostRoot}`, {
+				requesterContainer: setupSharedRequesterContainer,
+				doHideContainerOnEnd: false,
+				minimumRequestDelay: 150,
+			}).then(() => {
 				
 				if (submitSetupButton.disabled) {
 					clearSharedVisuals();
@@ -674,9 +685,16 @@ export function verify_all_valid() {
 }
 
 /**
+ * @typedef {string | boolean | {isValid: boolean, reason: string}} ValidatorResult
+ */
+/**
+ * @typedef {(inputValue: string | number | "", inputElement: HTMLInputElement, isManualVerification?: boolean) => ValidatorResult | void} CustomValidator
+ */
+
+/**
  * 
  * @param {HTMLInputElement} inputElement 
- * @param {*} customValidator 
+ * @param {CustomValidator} customValidator 
  * @param {boolean} isManualVerification 
  * @param {HTMLElement} [elementToValidate] 
  */
@@ -693,7 +711,8 @@ export function verify_input(inputElement, customValidator, isManualVerification
 	const inputValue = inputElement.value;
 	
 	if (customValidator) {
-		const customResults = (inputElement.type == "number" || inputElement.inputMode == "numeric") && inputValue ? customValidator(parseInt(inputValue), inputElement, isManualVerification) : customValidator(inputValue, inputElement, isManualVerification);
+		const inputValueForCustom = (inputElement.type == "number" || inputElement.inputMode == "numeric") && inputValue ? parseInt(inputValue) : inputValue;
+		const customResults = customValidator(inputValueForCustom, inputElement, isManualVerification);
 		
 		if (typeof customResults == "string") {
 			isValid = false;

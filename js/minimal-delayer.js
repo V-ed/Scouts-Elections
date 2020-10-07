@@ -12,24 +12,37 @@ export class MinimalDelayer {
 	}
 	
 	/**
+	 * @typedef {{functionResult: T | null, delayPassed: number}} ExecutedResults
+	 * @template T
+	 */
+	
+	/**
 	 * 
-	 * @param {() => *} functionToExecute 
+	 * @param {() => T | null} [functionToExecute] 
+	 * @returns {Promise<ExecutedResults<T>>}
+	 * @template T
 	 */
 	async execute(functionToExecute) {
 		
 		/**
 		 * 
-		 * @param {() => *} functionToExecute 
-		 * @param {number} delayRemaining 
-		 * @param {(delayRemaining: number) => *} resolve 
-		 * @param {(reason: *) => *} reject 
+		 * @param {(results: ExecutedResults<T>) => void} resolve 
+		 * @param {(reason: *) => void} reject 
+		 * @param {(() => T | null)} [functionToExecute] 
+		 * @template T
 		 */
-		function doExecute(functionToExecute, delayRemaining, resolve, reject) {
+		const doExecute = (resolve, reject, functionToExecute) => {
 			try {
+				let functionResult = null;
+				
 				if (functionToExecute) {
-					functionToExecute();
+					functionResult = functionToExecute();
 				}
-				resolve(delayRemaining);
+				
+				resolve({
+					functionResult: functionResult,
+					delayPassed: Date.now() - this.targetDate,
+				});
 			} catch (error) {
 				reject(error);
 			}
@@ -37,15 +50,13 @@ export class MinimalDelayer {
 		
 		return new Promise((resolve, reject) => {
 			
-			const now = Date.now();
-			
-			const delayRemaining = this.targetDate - now;
+			const delayRemaining = this.targetDate - Date.now();
 			
 			if (delayRemaining > 0) {
-				setTimeout(() => doExecute(functionToExecute, delayRemaining, resolve, reject), delayRemaining);
+				setTimeout(() => doExecute(resolve, reject, functionToExecute), delayRemaining);
 			}
 			else {
-				doExecute(functionToExecute, delayRemaining, resolve, reject);
+				doExecute(resolve, reject, functionToExecute);
 			}
 			
 		});

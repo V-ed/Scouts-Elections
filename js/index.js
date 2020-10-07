@@ -1,6 +1,8 @@
 import ElectionData from "./election-data.js";
+import FileLoader from "./file-loader.js";
 import InputPartition from "./input-partitionner.js";
 import MinimalDelayer from "./minimal-delayer.js";
+import Requester from "./requester.js";
 import { setup_results } from "./results.js";
 import { setup_setup } from "./setup.js";
 import switch_view from "./switcher.js";
@@ -56,7 +58,11 @@ function setup_index() {
 	
 	const minimumToastDelay = urlParams.has("code") ? new MinimalDelayer(1000) : undefined;
 	
-	Utils.sendRequest(`${Utils.sharedElectionHostRoot}`, 'home-join-requester-container', false, 150).then(() => {
+	Requester.sendRequest(`${Utils.sharedElectionHostRoot}`, {
+		requesterContainer: 'home-join-requester-container',
+		doHideContainerOnEnd: false,
+		minimumRequestDelay: 150,
+	}).then(() => {
 		
 		Utils.isServerAccessible = true;
 		
@@ -83,12 +89,10 @@ function setup_index() {
 			partitionnedInputs.forEach(input => input.disabled = true);
 			errorSpan.hidden = true;
 			
-			const ajaxSettings = {
+			const request = Requester.sendRequest({
 				url: `${Utils.sharedElectionHostRoot}/join/${code}`,
 				contentType: 'application/javascript; charset=UTF-16',
-			};
-			
-			let request = Utils.sendRequest(ajaxSettings, 'home-join-modal-requester-container');
+			}, 'home-join-modal-requester-container');
 			
 			request.then(response => {
 				
@@ -188,21 +192,24 @@ function setup_index() {
 		
 	});
 	
-	Utils.create_file_loader("database-loader-zone", load_file, items => {
-		const count = items.length;
-		
-		if (count > 1) {
-			return "Veuillez ne glisser qu'un seul fichier.";
-		}
-		else if (!is_file_json(items[0])) {
-			return "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.";
+	new FileLoader("database-loader-zone", {
+		doLoadFiles: load_file,
+		doHandleItemsForErrors: items => {
+			const count = items.length;
+			
+			if (count > 1) {
+				return "Veuillez ne glisser qu'un seul fichier.";
+			}
+			else if (items[0].type != "application/json") {
+				return "Le fichier n'est pas valide : seuls les fichiers \".json\" sont acceptés.";
+			}
 		}
 	});
 	
-	function is_file_json(file) {
-		return file.type == "application/json";
-	}
-	
+	/**
+	 * 
+	 * @param {File[]} files 
+	 */
 	async function load_file(files) {
 		
 		const file = files[0];
@@ -221,6 +228,10 @@ function setup_index() {
 		
 	}
 	
+	/**
+	 * 
+	 * @param {ElectionData} data 
+	 */
 	function route_data(data) {
 		
 		if (urlParams.has("code")) {
@@ -246,7 +257,7 @@ function setup_index() {
 		
 	}
 	
-	const preventDrag = e => {
+	const preventDrag = /** @param {DragEvent} e */ (e) => {
 		e.preventDefault();
 		e.dataTransfer.effectAllowed = "none";
 		e.dataTransfer.dropEffect = "none";
@@ -258,9 +269,9 @@ function setup_index() {
 	
 }
 
-const loader = document.querySelector('include-fragment');
+const fragmentLoader = document.querySelector('include-fragment');
 
-loader.addEventListener('load', () => {
+fragmentLoader.addEventListener('load', () => {
 	Utils.init();
 	
 	setup_index();

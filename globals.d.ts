@@ -5,7 +5,6 @@ import saveAs from 'file-saver';
 declare global {
 	const LZString: typeof LZString;
 	const ClipboardJS: typeof ClipboardJS;
-	const saveAs: typeof saveAs;
 	
 	// V-ed's Bootstrap InputSpinner
 	interface JQuery<TElement = HTMLElement> {

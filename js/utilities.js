@@ -1,6 +1,5 @@
 import ElectionData from "./election-data.js";
 import InputPartition from "./input-partitionner.js";
-import MinimalDelayer from "./minimal-delayer.js";
 
 class DataUtils {
 	
@@ -144,7 +143,13 @@ class DataUtils {
 			
 		});
 		
+		this.hideSharedCodes();
+		
 	}
+	
+	// ---------------------------------------------
+	// 				DATA DOWNLOAD
+	// ---------------------------------------------
 	
 	/**
 	 * 
@@ -167,9 +172,9 @@ class DataUtils {
 		
 		const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
 		
-		dbNameSuffix = dbNameSuffix || "";
+		const parsedDbNameSuffix = dbNameSuffix || "";
 		
-		const file = new File([stringData], `${dbName}${dbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
+		const file = new File([stringData], `${dbName}${parsedDbNameSuffix}.json`, {type: "application/json;charset=utf-8"});
 		saveAs(file);
 		
 		this.didDownloadDb = true;
@@ -177,161 +182,23 @@ class DataUtils {
 		
 	}
 	
-	/**
-	 * File loader initiator and utility functions
-	 * @param {*} $file_zone 
-	 * @param {*} error 
-	 */
-	show_loader_error($file_zone, error) {
-		
-		$file_zone.addClass("bg-danger");
-		
-		$file_zone[0].dataset.content = error;
-		$file_zone[0].dataset.haderror = "";
-		$file_zone.popover("show");
-		
-	}
-	
-	/**
-	 * 
-	 * @param {*} $file_zone 
-	 */
-	clear_loader_errors($file_zone) {
-		
-		$file_zone.removeClass("bg-danger");
-		$file_zone.popover("hide");
-		if ($file_zone.attr("data-content")) {
-			$file_zone.attr("data-content", "");
-		}
-		delete $file_zone[0].dataset.haderror;
-		
-	}
-	
-	/**
-	 * 
-	 * @param {*} formId 
-	 * @param {*} loadFilesFn 
-	 * @param {*} [handleItemsForErrorsFn] 
-	 * @param {*} [showLoaderErrorFn] 
-	 * @param {*} [clearErrorsFn] 
-	 */
-	create_file_loader(formId, loadFilesFn, handleItemsForErrorsFn, showLoaderErrorFn, clearErrorsFn) {
-		
-		if (!showLoaderErrorFn) {
-			showLoaderErrorFn = this.show_loader_error;
-		}
-		if (!clearErrorsFn) {
-			clearErrorsFn = this.clear_loader_errors;
-		}
-		
-		const $jqueryElem = $(`#${formId}`);
-		
-		if (this.isAdvancedUpload) {
-			
-			$jqueryElem.addClass("has-advanced-upload");
-			
-			$jqueryElem.on("drag dragstart dragend dragover dragenter dragleave drop", e => {
-				e.preventDefault();
-				e.stopPropagation();
-			})
-			.on("dragover dragenter", e => {
-				
-				if ($jqueryElem.hasClass("loader-is-dragover") || ($jqueryElem.hasClass("bg-danger") && $jqueryElem.hasClass("loader-is-dragover"))) {
-					return;
-				}
-				
-				// @ts-ignore
-				if ($(e.relatedTarget).parents("#database-loader-zone").length) {
-					return;
-				}
-				
-				let error = undefined;
-				
-				// @ts-ignore
-				const isNotFile = Array.from(e.originalEvent.dataTransfer.items).some(item => item.kind != "file");
-				
-				if (isNotFile) {
-					error = "Seuls des fichiers sont acceptés dans cette zone.";
-				}
-				else {
-					// @ts-ignore
-					error = handleItemsForErrorsFn(e.originalEvent.dataTransfer.items);
-				}
-				
-				if (error) {
-					showLoaderErrorFn($jqueryElem, error);
-				}
-				else {
-					clearErrorsFn($jqueryElem);
-				}
-				
-				$jqueryElem.addClass("loader-is-dragover");
-				
-			})
-			.on("dragleave dragend drop", e => {
-				
-				// @ts-ignore
-				if ($(e.relatedTarget).parents(`#${formId}`).length) {
-					return;
-				}
-				
-				$jqueryElem.removeClass("loader-is-dragover");
-				// @ts-ignore
-				if (e.handleObj.type != "drop"){
-					clearErrorsFn($jqueryElem);
-				}
-				
-			})
-			.on("drop", async e => {
-				if (!("haderror" in $jqueryElem[0].dataset)) {
-					
-					const result = await loadFilesFn(e.originalEvent.dataTransfer.files, $jqueryElem);
-					
-					if (result) {
-						showLoaderErrorFn($jqueryElem, result);
-					}
-					
-				}
-			});
-			
-		}
-		
-		const databaseLoaderInput = $jqueryElem.find("input.loader-file")[0];
-		databaseLoaderInput.addEventListener("change", e => {
-			
-			// @ts-ignore
-			const error = handleItemsForErrorsFn(databaseLoaderInput.files);
-			
-			if (error) {
-				showLoaderErrorFn($jqueryElem, error);
-				// @ts-ignore
-				databaseLoaderInput.value = "";
-			}
-			else {
-				// @ts-ignore
-				loadFilesFn(e.target.files, $jqueryElem);
-			}
-			
-		});
-		databaseLoaderInput.addEventListener("click", () => {
-			clearErrorsFn($jqueryElem);
-		});
-		
-	}
+	// ---------------------------------------------
+	// 				IMAGE HANDLING
+	// ---------------------------------------------
 	
 	/**
 	 * Load image on all elements matching under given view id
-	 * @param {*} viewId 
-	 * @param {*} imageData 
+	 * @param {string} viewId 
+	 * @param {string} imageData 
 	 */
 	initialize_images(viewId, imageData) {
 		
 		if (imageData) {
 			const uncompressedImage = LZString.decompressFromUTF16(imageData);
-			this.viewImageIterator(viewId, true, imageElem => imageElem.src = uncompressedImage);
+			this.viewImageIterator(viewId, imageElem => imageElem.src = uncompressedImage);
 		}
 		else {
-			this.viewImageIterator(viewId, false, container => {
+			this.viewImageContainerIterator(viewId, container => {
 				container.classList.add("d-none");
 				container.classList.remove("d-flex");
 			});
@@ -341,44 +208,99 @@ class DataUtils {
 	
 	/**
 	 * 
-	 * @param {*} viewId 
+	 * @param {string} viewId 
 	 */
 	uninitialize_images(viewId) {
-		this.viewImageIterator(viewId, true, imageElem => imageElem.src = "");
+		this.viewImageIterator(viewId, imageElem => imageElem.src = "");
 	}
 	
-	viewImageIterator(viewId, iterateOnImages, iteratorFn) {
+	/**
+	 * 
+	 * @param {string} viewId 
+	 * @param {(imageElem: HTMLImageElement) => *} iteratorFn 
+	 */
+	viewImageIterator(viewId, iteratorFn) {
 		
 		const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
 		
-		if (iterateOnImages) {
+		imageContainers.forEach(container => {
 			
-			imageContainers.forEach(container => {
-				
-				const imageElems = container.querySelectorAll("img");
-				
-				imageElems.forEach(imageElem => iteratorFn(imageElem));
-				// imageElem.src = imageData
-			});
+			const imageElems = container.querySelectorAll("img");
 			
-		}
-		else {
-			
-			imageContainers.forEach(container => iteratorFn(container));
-			
-			// container.classList.add("d-none");
-			// container.classList.remove("d-flex");
-		}
+			imageElems.forEach(imageElem => iteratorFn(imageElem));
+			// imageElem.src = imageData
+		});
 		
 	}
 	
 	/**
+	 * 
+	 * @param {string} viewId 
+	 * @param {(container: Element) => *} iteratorFn 
+	 */
+	viewImageContainerIterator(viewId, iteratorFn) {
+		
+		const imageContainers = document.getElementById(viewId).querySelectorAll("div.election-group-image");
+		
+		imageContainers.forEach(container => iteratorFn(container));
+		
+	}
+	
+	// ---------------------------------------------
+	// 				SHARED ELECTIONS
+	// ---------------------------------------------
+	
+	/**
+	 * 
+	 */
+	hideSharedCodes() {
+		document.querySelectorAll(".shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, true));
+		document.querySelectorAll(".non-shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, false));
+	}
+	
+	/**
+	 * 
+	 * @param {string} sharedElectionCode 
+	 */
+	showSharedCode(sharedElectionCode) {
+		document.querySelectorAll(".shared-election-code").forEach(elem => elem.textContent = sharedElectionCode);
+		document.querySelectorAll(".shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, false));
+		document.querySelectorAll(".non-shared-election-container").forEach(/** @param {HTMLElement} elem */ (elem) => this.handleSharedCodeHiddenStatus(elem, true));
+	}
+	
+	/**
+	 * 
+	 * @param {HTMLElement} element
+	 * @param {boolean} doHide
+	 */
+	handleSharedCodeHiddenStatus(element, doHide) {
+		
+		element.hidden = doHide;
+		
+		if (element.classList.contains("d-flex")) {
+			element.classList.remove("d-flex");
+			element.setAttribute("data-shared-did-flex", "true");
+		}
+		else if (element.getAttribute("data-shared-did-flex") == "true") {
+			element.classList.add("d-flex");
+			element.removeAttribute("data-shared-did-flex");
+		}
+		
+	}
+	
+	// ---------------------------------------------
+	// 				COMMON UTILITIES
+	// ---------------------------------------------
+	
+	/**
 	 * Set bootstrap labels to not focus input on click
-	 * @param {*} labels 
+	 * @param {HTMLLabelElement | HTMLLabelElement[] | NodeListOf<HTMLLabelElement>} labels 
 	 */
 	set_label_non_clickable(labels) {
 		
-		Array.from(labels).forEach(label => {
+		const labelsArray = labels instanceof NodeList ? Array.from(labels) : Array.isArray(labels) ? labels : [labels];
+		
+		labelsArray.forEach(label => {
 			
 			label.addEventListener("click", e => {
 				e.preventDefault();
@@ -389,153 +311,29 @@ class DataUtils {
 	}
 	
 	/**
-	 * Send requests and handle UI spinners
-	 * @param {*} ajaxSettings 
-	 * @param {*} requesterContainerOptions 
-	 * @param {*} [doHideContainerOnEnd] 
-	 * @param {*} [minimumRequestDelay] 
-	 */
-	async sendRequest(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
-		
-		const isRequesterOptionsComplex = requesterContainerOptions.constructor == Object;
-		
-		let requesterContainer = isRequesterOptionsComplex ? requesterContainerOptions.container : requesterContainerOptions;
-		
-		const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
-		
-		doHideContainerOnEnd = doHideContainerOnEnd !== false;
-		
-		if (typeof ajaxSettings == 'string') {
-			ajaxSettings = {
-				url: ajaxSettings
-			};
-		}
-		
-		if (!('type' in ajaxSettings)) {
-			ajaxSettings.type = 'GET';
-		}
-		if (!('contentType' in ajaxSettings)) {
-			ajaxSettings.contentType = 'application/json';
-		}
-		
-		let requesterSpinners = undefined;
-		let requesterSuccessIcons = undefined;
-		let requesterErrorIcons = undefined;
-		
-		if (requesterContainer) {
-			
-			if (typeof requesterContainer == 'string') {
-				requesterContainer = document.getElementById(requesterContainer);
-			}
-			
-			requesterSpinners = Array.from(requesterContainer.getElementsByClassName("requester-spinner"));
-			requesterSuccessIcons = Array.from(requesterContainer.getElementsByClassName("requester-success-icon"));
-			requesterErrorIcons = Array.from(requesterContainer.getElementsByClassName("requester-alert-icon"));
-			
-			requesterSpinners.forEach(elem => elem.hidden = false);
-			requesterSuccessIcons.forEach(elem => elem.hidden = true);
-			requesterErrorIcons.forEach(elem => elem.hidden = true);
-			
-			requesterContainer.hidden = false;
-			
-			if (isRequesterOptionsComplex && requesterContainerOptions.onContainerShownFunc) {
-				requesterContainerOptions.onContainerShownFunc(requesterContainer);
-			}
-			
-		}
-		
-		let request = new Promise(function (resolve, reject) {
-			
-			$.ajax(ajaxSettings).done(function() {
-				
-				delayer.execute(() => resolve.apply(null, arguments));
-				
-			}).fail(function() {
-				
-				delayer.execute(() => reject.apply(null, arguments));
-				
-			});
-			
-		});
-		
-		if (!requesterContainer) {
-			// Return plain request since no UI container was specified
-			return request;
-		}
-		else {
-			
-			// Return request with added default behaviors for handling spinners / response icons
-			return request.then(response => {
-				if (!doHideContainerOnEnd) {
-					requesterSuccessIcons.forEach(elem => elem.hidden = false);
-				}
-				
-				return Promise.resolve(response);
-			})
-			.catch(error => {
-				if (!doHideContainerOnEnd) {
-					requesterErrorIcons.forEach(elem => elem.hidden = false);
-				}
-				
-				return Promise.reject(error);
-			})
-			.finally(() => {
-				requesterSpinners.forEach(elem => elem.hidden = true);
-				
-				if (doHideContainerOnEnd) {
-					requesterContainer.hidden = true;
-				}
-			});
-			
-		}
-		
-	}
-	
-	/**
 	 * 
-	 * @param {number | string} numberOfTries 
-	 * @param {*} ajaxSettings 
-	 * @param {*} requesterContainerOptions 
-	 * @param {boolean} [doHideContainerOnEnd] 
-	 * @param {number} [minimumRequestDelay] 
+	 * @param {HTMLElementGetter | T} element
+	 * @param {(element: T) => HTMLElement | void} [getElementOtherwise]
+	 * @return {HTMLElement | void}
+	 * @template T
 	 */
-	async sendRequestFor(numberOfTries, ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, minimumRequestDelay) {
-		
-		numberOfTries = typeof numberOfTries == 'string' ? parseInt(numberOfTries) : numberOfTries;
-		
-		if (numberOfTries <= 0) {
-			throw "The number of tries should be bigger than 0!";
+	getHTMLElement(element, getElementOtherwise) {
+		if (element instanceof HTMLElement) {
+			return element;
 		}
-		
-		const delayer = new MinimalDelayer(minimumRequestDelay ? minimumRequestDelay : 250);
-		
-		for (let attemptCount = 1; attemptCount <= numberOfTries; attemptCount++) {
-			
-			try {
-				
-				const response = await this.sendRequest(ajaxSettings, requesterContainerOptions, doHideContainerOnEnd, 0);
-				
-				await delayer.wait();
-				
-				return response;
-				
-			}
-			catch (error) {
-				
-				// If the attempt count is full or the request was successfull but the server returned an error, stop trying
-				if (attemptCount == numberOfTries || error.readyState == 4) {
-					throw error;
-				}
-				
-			}
-			
+		else if (typeof element == 'string') {
+			return document.getElementById(element);
 		}
-		
-		throw "Wait a second... how did you even get here? My method is flawed...";
-		
+		else if (getElementOtherwise) {
+			return getElementOtherwise(element);
+		}
 	}
 	
 }
+
+/**
+ * @typedef {string | HTMLElement} HTMLElementGetter
+ */
 
 export const Utils = new DataUtils();
 

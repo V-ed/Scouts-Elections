@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'dev'
+  pull_request:
+    branches:
+      - 'master'
+      - 'dev'
+
+jobs:
+  test-html:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1.4.2
+      with:
+        node-version: '12.x'
+        
+    - name: Install LintHTML
+      run: npm install @linthtml/linthtml -g
+        
+    - name: Test index
+      run: linthtml '**/*.html'
+      
+  test-javascript:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1.4.2
+      with:
+        node-version: '12.x'
+        
+    - name: Install eslint
+      run: npm install eslint -g
+        
+    - name: Test JS
+      run: eslint ./
+      
