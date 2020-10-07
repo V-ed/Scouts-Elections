@@ -69,7 +69,7 @@ class DataUtils {
         // Miscellaneous
         // --------------------------------
 		
-        this.set_label_non_clickable(document.querySelectorAll('label.col-form-label'));
+        this.setLabelNonClickable(document.querySelectorAll('label.col-form-label'));
 		
         InputPartition.init(document.querySelectorAll('div.row.input-partition'));
 		
@@ -138,7 +138,7 @@ class DataUtils {
     /**
 	 *
 	 */
-    should_download_data() {
+    shouldDownloadData() {
         if (this.isDownloadDisabled) {
             return false;
         }
@@ -150,7 +150,7 @@ class DataUtils {
 	 * @param {string | ElectionData} data
 	 * @param {string} [dbNameSuffix]
 	 */
-    download_data(data, dbNameSuffix) {
+    downloadData(data, dbNameSuffix) {
         const stringData = data instanceof ElectionData ? data.getAsJSON() : data;
 		
         const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
@@ -174,7 +174,7 @@ class DataUtils {
 	 * @param {string} viewId
 	 * @param {string} imageData
 	 */
-    initialize_images(viewId, imageData) {
+    initializeImages(viewId, imageData) {
         if (imageData) {
             const uncompressedImage = LZString.decompressFromUTF16(imageData);
 
@@ -191,7 +191,7 @@ class DataUtils {
 	 *
 	 * @param {string} viewId
 	 */
-    uninitialize_images(viewId) {
+    uninitializeImages(viewId) {
         this.viewImageIterator(viewId, imageElem => imageElem.src = '');
     }
 	
@@ -269,7 +269,7 @@ class DataUtils {
 	 * Set bootstrap labels to not focus input on click
 	 * @param {HTMLLabelElement | HTMLLabelElement[] | NodeListOf<HTMLLabelElement>} labels
 	 */
-    set_label_non_clickable(labels) {
+    setLabelNonClickable(labels) {
         const labelsArray = labels instanceof NodeList ? Array.from(labels) : Array.isArray(labels) ? labels : [labels];
 		
         labelsArray.forEach(label => {

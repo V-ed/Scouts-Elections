@@ -23,11 +23,8 @@ jobs:
     - name: Install npm packages
       run: npm ci
         
-    - name: Install LintHTML
-      run: npm install @linthtml/linthtml -g
-        
     - name: Test index
-      run: linthtml '**/*.html'
+      run: npm run lint-html
       
   lint-javascript:
     runs-on: ubuntu-latest
@@ -40,15 +37,9 @@ jobs:
         
     - name: Install npm packages
       run: npm ci
-      
-    - name: Install eslint
-      run: npm install eslint -g
-      
-    - name: Install Typescript compiler
-      run: npm install typescript -g
         
     - name: Lint JS
-      run: eslint ./
+      run: npm run lint-javascript
       
   test-javascript:
     runs-on: ubuntu-latest
@@ -61,10 +52,7 @@ jobs:
       
     - name: Install npm packages
       run: npm ci
-      
-    - name: Install Typescript compiler
-      run: npm install typescript -g
         
     - name: Test JS
-      run: tsc -p jsconfig.json
+      run: npm run test-javascript
       

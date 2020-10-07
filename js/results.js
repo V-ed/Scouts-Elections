@@ -1,4 +1,4 @@
-import ElectionData from './election-data.js';
+import ElectionData from './election-data.js'; //eslint-disable-line no-unused-vars
 import Requester from './requester.js';
 import switchView from './switcher.js';
 import Utils from './utilities.js';
@@ -10,7 +10,7 @@ import { autoDownloadData } from './voting.js';
  * @param {boolean} [didSkipRemainings]
  */
 export function setupPostVoting(data, didSkipRemainings) {
-    Utils.initialize_images('post-shared-voting-page', data.groupImage);
+    Utils.initializeImages('post-shared-voting-page', data.groupImage);
     
     const sharedPostVoteButtonVerify = /** @type {HTMLButtonElement} */ (document.getElementById('shared-post-votes-verify'));
     const sharedPostVoteButtonGo = /** @type {HTMLButtonElement} */ (document.getElementById('shared-post-votes-go'));
@@ -44,7 +44,6 @@ export function setupPostVoting(data, didSkipRemainings) {
         return intervalId;
     }
     
-    /** @type {number | undefined} */
     let autoClickVerifyTimer = undefined;
     
     const sharedPostVotesSkippedErrorDiv = document.getElementById('post-shared-voting-skipped-error-div');
@@ -104,7 +103,7 @@ export function setupPostVoting(data, didSkipRemainings) {
         
         setupResults(data);
         
-        Utils.uninitialize_images('voting-page');
+        Utils.uninitializeImages('voting-page');
     });
     
     sharedPostVoteButtonVerify.addEventListener('click', async () => {
@@ -156,7 +155,7 @@ export function setupPostVoting(data, didSkipRemainings) {
             
             setupResults(data);
             
-            Utils.uninitialize_images('voting-page');
+            Utils.uninitializeImages('voting-page');
         } catch (error) {
             const messageToShow = error.status == 400 ? `Le code ${data.sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
             
@@ -185,7 +184,7 @@ export function setupPostVoting(data, didSkipRemainings) {
             
             setupResults(data);
             
-            Utils.uninitialize_images('voting-page');
+            Utils.uninitializeImages('voting-page');
         } catch (error) {
             const messageToShow = error.status == 400 ? `Le code ${data.sharedElectionCode} n'est pas sur le serveur. Un autre appareil a probablement déjà supprimer les données du serveur! Vous pouvez cependant utiliser l'option de voir les résultats localement.` : errorInternetErrorMessage;
             
@@ -216,7 +215,7 @@ export function setupResults(data, didSkipRemainings) {
  * @param {boolean} [didSkipRemainings]
  */
 export function setupPreResultsPage(data, didSkipRemainings) {
-    Utils.initialize_images('pre-results-page', data.groupImage);
+    Utils.initializeImages('pre-results-page', data.groupImage);
     
     const preResultsSubmitButton = /** @type {HTMLButtonElement} */ (document.getElementById('pre-results-submit-button'));
     
@@ -230,7 +229,7 @@ export function setupPreResultsPage(data, didSkipRemainings) {
         if (data.validatePassword(password)) {
             switchView('results-page', () => setupResultsPage(data, didSkipRemainings));
             
-            Utils.uninitialize_images('pre-results-page');
+            Utils.uninitializeImages('pre-results-page');
         } else {
             passwordInput.classList.add('is-invalid');
             preResultsSubmitButton.disabled = true;
@@ -244,12 +243,11 @@ export function setupPreResultsPage(data, didSkipRemainings) {
 }
 
 /**
- *
  * @param {ElectionData} data
- * @param {boolean} [didSkipRemainings]
+ * @param {boolean} [_didSkipRemainings]
  */
-export function setupResultsPage(data, didSkipRemainings) {
-    Utils.initialize_images('results-page', data.groupImage);
+export function setupResultsPage(data, _didSkipRemainings) {
+    Utils.initializeImages('results-page', data.groupImage);
     
     const resultsTableBody = document.getElementById('results-body');
     
@@ -341,7 +339,7 @@ export function setupResultsPage(data, didSkipRemainings) {
     downloadDbButton.addEventListener('click', e => {
         e.preventDefault();
         
-        Utils.download_data(data.getAsJSON(true));
+        Utils.downloadData(data.getAsJSON(true));
     });
     
     const homepageButton = document.getElementById('results-homepage-button');
@@ -349,7 +347,7 @@ export function setupResultsPage(data, didSkipRemainings) {
     homepageButton.addEventListener('click', () => {
         let canReload = true;
         
-        if (Utils.should_download_data()) {
+        if (Utils.shouldDownloadData()) {
             canReload = confirm('La base de données n\'est pas enregistrée. Êtes vous sûr de vouloir continuer?');
         }
         

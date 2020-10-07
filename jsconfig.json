@@ -7,7 +7,8 @@
 			"es6",
 			"es2018.promise"
 		],
-		"checkJs": true
+		"checkJs": true,
+		"moduleResolution": "node"
 	},
 	"exclude": [
 		"**/libraries/**/*",

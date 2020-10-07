@@ -23,7 +23,7 @@ export function setupSetup() {
      *
      * @param {string | ArrayBuffer} imageData
      */
-    function set_preview_image(imageData) {
+    function setPreviewImage(imageData) {
         const imageSrc = typeof imageData == 'string' ? imageData : (new TextDecoder('utf-8')).decode(imageData);
         
         imagePreview.src = imageSrc;
@@ -32,7 +32,7 @@ export function setupSetup() {
         groupImageData = imageSrc;
     }
     
-    function remove_preview_image() {
+    function removePreviewImage() {
         imagePreview.src = './images/no_image.png';
         imagePreviewCloser.disabled = true;
         $(imagePreviewCloser).popover('hide');
@@ -41,7 +41,7 @@ export function setupSetup() {
     
     const MAXIMUM_IMAGE_SIZE_MB = 2;
     
-    const databaseLoader = new FileLoader('image-loader-zone', {
+    new FileLoader('image-loader-zone', {
         doLoadFiles: files => {
             const file = files[0];
             
@@ -51,12 +51,12 @@ export function setupSetup() {
             
             const reader = new FileReader();
             
-            reader.addEventListener('loadend', () => set_preview_image(reader.result));
+            reader.addEventListener('loadend', () => setPreviewImage(reader.result));
             
             if (file) {
                 return reader.readAsDataURL(file);
             } else {
-                return remove_preview_image();
+                return removePreviewImage();
             }
         },
         doHandleItemsForErrors: items => {
@@ -71,7 +71,7 @@ export function setupSetup() {
     imagePreviewCloser.addEventListener('click', e => {
         e.preventDefault();
         
-        remove_preview_image();
+        removePreviewImage();
     });
     
     const pswVisibilityToggler = /** @type {HTMLInputElement} */ (document.getElementById('password-visible'));
@@ -252,7 +252,7 @@ export function setupSetup() {
         setupVotes(data, () => {
             window.removeEventListener('beforeunload', preventDataLoss);
             
-            Utils.uninitialize_images('setup-page');
+            Utils.uninitializeImages('setup-page');
         });
     });
     
@@ -291,7 +291,7 @@ export function setupSetup() {
                 
                 window.removeEventListener('beforeunload', preventDataLoss);
                 
-                Utils.uninitialize_images('setup-page');
+                Utils.uninitializeImages('setup-page');
             }, 'setup-create-election-modal-requester-container');
         })
             .catch(_error => {
@@ -366,7 +366,7 @@ export function setupSetup() {
             return 'Le nom de la base de données ne peut pas terminer avec un point.';
         }
         
-        const illegalCharRegex = /^[^\\/:\*\?"<>\|]+$/;
+        const illegalCharRegex = /^[^\\/:*?"<>|]+$/;
 
         if (!illegalCharRegex.test(data)) {
             return 'Le nom de la base de données contient actuellement au moins un caractère invalide.';

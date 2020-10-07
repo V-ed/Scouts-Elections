@@ -1,4 +1,4 @@
-import ElectionData from './election-data.js';
+import ElectionData from './election-data.js'; //eslint-disable-line no-unused-vars
 import Requester from './requester.js';
 import { setupPostVoting, setupResults } from './results.js';
 import switchView from './switcher.js';
@@ -8,8 +8,8 @@ import Utils from './utilities.js';
 let onKeyUpEventBefore;
 
 export const autoDownloadData = function() {
-    if (Utils.should_download_data()) {
-        Utils.download_data(this.data, '_en_cours');
+    if (Utils.shouldDownloadData()) {
+        Utils.downloadData(this.data, '_en_cours');
     }
 };
 
@@ -28,13 +28,13 @@ export async function setupVotes(data, beforeSwitchCallback, requestContainer, d
             beforeSwitchCallback();
         }
         
-        switchView('pre-voting-page', () => setup_pre_voting_session(data));
+        switchView('pre-voting-page', () => setupPreVotingSession(data));
     } else {
         let didSkipVotingPage = false;
         
         if (data.sharedElectionCode) {
             try {
-                didSkipVotingPage = await voting_go_to_next_voter(data, true, requestContainer, true, undefined, beforeSwitchCallback);
+                didSkipVotingPage = await votingGoToNextVoter(data, true, requestContainer, true, undefined, beforeSwitchCallback);
             } catch (error) {
                 return Promise.reject(error.error);
             }
@@ -45,14 +45,14 @@ export async function setupVotes(data, beforeSwitchCallback, requestContainer, d
                 beforeSwitchCallback();
             }
             
-            switchView('voting-page', () => setup_voting_session(data));
+            switchView('voting-page', () => setupVotingSession(data));
         }
         
         return Promise.resolve(didSkipVotingPage);
     }
 }
 
-export function setup_pre_voting_session(data) {
+export function setupPreVotingSession(data) {
     if (Utils.isTouchDevice) {
         document.getElementById('pre-voting-touchscreen-reminder').hidden = false;
     }
@@ -90,7 +90,7 @@ export function setup_pre_voting_session(data) {
             try {
                 preVotingRequestErrorRow.hidden = true;
                 
-                didSkipVotingPage = await voting_go_to_next_voter(data, true, {
+                didSkipVotingPage = await votingGoToNextVoter(data, true, {
                     container: 'pre-voting-requester-container',
                     onContainerShownFunc: () => preVotingSubmitButton.scrollIntoView(),
                 }, false);
@@ -125,10 +125,10 @@ export function setup_pre_voting_session(data) {
         }
         
         if (!didSkipVotingPage) {
-            switchView('voting-page', () => setup_voting_session(data));
+            switchView('voting-page', () => setupVotingSession(data));
         }
         
-        Utils.uninitialize_images('pre-voting-page');
+        Utils.uninitializeImages('pre-voting-page');
     }
     
     preVotingSubmitButton.addEventListener('click', async () => {
@@ -139,15 +139,15 @@ export function setup_pre_voting_session(data) {
         preVotingSubmitButton.disabled = false;
     });
     
-    Utils.initialize_images('pre-voting-page', data.groupImage);
+    Utils.initializeImages('pre-voting-page', data.groupImage);
 }
 
 /**
  *
  * @param {ElectionData} data
  */
-export function setup_voting_session(data) {
-    Utils.initialize_images('voting-page', data.groupImage);
+export function setupVotingSession(data) {
+    Utils.initializeImages('voting-page', data.groupImage);
     
     Utils.dbIsDirty = true;
     
@@ -226,7 +226,7 @@ export function setup_voting_session(data) {
             }
             
             // @ts-ignore
-            vote_for_candidate(parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidateindex), e.detail.step);
+            voteForCandidate(parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidateindex), e.detail.step);
             
             inputs.forEach(input => input.max = (maxNumberOfVotesLeft + parseInt(/** @type {string} */ ($(input).val()))).toString());
             
@@ -247,7 +247,7 @@ export function setup_voting_session(data) {
             button.addEventListener('click', e => {
                 e.preventDefault();
                 
-                vote_for_candidate(parseInt(button.dataset.candidateindex), 1);
+                voteForCandidate(parseInt(button.dataset.candidateindex), 1);
                 
                 button.hidden = true;
                 document.getElementById(`unvote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
@@ -266,7 +266,7 @@ export function setup_voting_session(data) {
             button.addEventListener('click', e => {
                 e.preventDefault();
                 
-                vote_for_candidate(parseInt(button.dataset.candidateindex), -1);
+                voteForCandidate(parseInt(button.dataset.candidateindex), -1);
                 
                 button.hidden = true;
                 document.getElementById(`vote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
@@ -283,7 +283,7 @@ export function setup_voting_session(data) {
      * @param {number} index
      * @param {number} step
      */
-    function vote_for_candidate(index, step) {
+    function voteForCandidate(index, step) {
         if (step > 0) {
             data.voteCandidate(index, step);
         } else if (step < 0) {
@@ -408,7 +408,7 @@ export function setup_voting_session(data) {
         e.preventDefault();
         
         if (e.key == ' ' || e.keyCode == 32) {
-            go_to_next_voter(data);
+            goToNextVoter(data);
         }
     };
     
@@ -416,25 +416,17 @@ export function setup_voting_session(data) {
         let timer;
         const touchDuration = 500;
         
-        function touchStart() {
-            timer = setTimeout(onLongTouch, touchDuration);
-        }
-        
-        function touchEnd() {
-            if (timer) {
-                clearTimeout(timer);
-            }
-        }
-        
-        function onLongTouch() {
-            go_to_next_voter(data);
-        }
-        
         const touchSkippers = document.querySelectorAll('#voting-voted-overlay .touch-skipper');
         
         touchSkippers.forEach(skipper => {
-            skipper.addEventListener('touchstart', touchStart);
-            skipper.addEventListener('touchend', touchEnd);
+            skipper.addEventListener('touchstart', () => {
+                timer = setTimeout(() => goToNextVoter(data), touchDuration);
+            });
+            skipper.addEventListener('touchend', () => {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+            });
         });
     }
     
@@ -448,7 +440,10 @@ export function setup_voting_session(data) {
     
     let doPrepareToastTimer = true;
     
-    function prepare_toast_timer(timeout) {
+    /**
+     * @param {number} [timeout]
+     */
+    function prepareToastTimer(timeout) {
         timeout = timeout || 1500;
         
         doPrepareToastTimer = true;
@@ -467,7 +462,7 @@ export function setup_voting_session(data) {
      *
      * @param {ElectionData} data
      */
-    function show_remaining_count_toast(data) {
+    function showRemainingCountToast(data) {
         votersRemainingCountToast.innerText = `${data.numberOfVoters - data.numberOfVoted} électeur(s) restant(s) sur ${data.numberOfVoters}`;
         
         if (!seatsRemainingCountToast.hidden) {
@@ -484,7 +479,7 @@ export function setup_voting_session(data) {
         $(toastElement).toast('show');
         
         $(toastElement).on('shown.bs.toast', () => {
-            prepare_toast_timer();
+            prepareToastTimer();
         });
     }
     
@@ -502,14 +497,15 @@ export function setup_voting_session(data) {
      *
      * @param {ElectionData} data
      */
-    async function go_to_next_voter(data) {
+    async function goToNextVoter(data) {
+        // eslint-disable-next-line no-underscore-dangle
         if (($(overlayErrorModal).data('bs.modal') || {})._isShown) {
             return false;
         }
         
         if (toastTimerId) {
             if (!skipSharedVotesButton.hasAttribute('aria-describedby')) {
-                prepare_toast_timer();
+                prepareToastTimer();
             }
             
             return false;
@@ -528,7 +524,7 @@ export function setup_voting_session(data) {
         let didFinishElection = false;
         
         try {
-            didFinishElection = await voting_go_to_next_voter(data, false, 'voting-requester-container', false, isVoteFinished);
+            didFinishElection = await votingGoToNextVoter(data, false, 'voting-requester-container', false, isVoteFinished);
         } catch (error) {
             let message = 'Une erreur imprévue est survenue.';
             
@@ -552,7 +548,7 @@ export function setup_voting_session(data) {
             return false;
         }
         
-        show_remaining_count_toast(data);
+        showRemainingCountToast(data);
         
         if (isVoteFinished) {
             isVoteFinished = false;
@@ -575,7 +571,7 @@ export function setup_voting_session(data) {
         if (data.votesCurrentCandidateIndexes) {
             updateVotes();
         } else {
-            go_to_next_voter(data);
+            goToNextVoter(data);
         }
     });
     
@@ -592,22 +588,22 @@ export function setup_voting_session(data) {
             }
         }
         
-        go_to_next_voter(data);
+        goToNextVoter(data);
     });
     
     $(toastElement).on('hidden.bs.toast', () => {
         toastContainer.classList.add('i-am-away');
     });
     
-    function execute_local_skip_votes(data) {
+    function executeLocalSkipVotes(data) {
         data.hasSkipped = true;
         
-        end_voting_session(data);
+        endVotingSession(data);
     }
     
     const skipVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById('voting-skip-button'));
     
-    skipVotesButton.addEventListener('click', () => execute_local_skip_votes(data));
+    skipVotesButton.addEventListener('click', () => executeLocalSkipVotes(data));
     
     const sharedElectionSkipRequestErrorDiv = /** @type {HTMLElement} */ (document.getElementById('shared-election-skip-request-error-toast'));
     
@@ -625,10 +621,10 @@ export function setup_voting_session(data) {
             
             data.mergeData(response.data);
             
-            end_voting_session(data, true);
+            endVotingSession(data, true);
             
             doPrepareToastTimer = true;
-            prepare_toast_timer(0);
+            prepareToastTimer(0);
             
             $(toastElement).toast('hide');
             $(toastElement).off('shown.bs.toast');
@@ -657,14 +653,14 @@ export function setup_voting_session(data) {
             skipSharedVotesConfirmButton.addEventListener('click', executeConfirmedSharedSkipVotes);
         }).on('hidden.bs.popover', function() {
             if (doPrepareToastTimer) {
-                prepare_toast_timer();
+                prepareToastTimer();
             }
         });
     
     document.getElementById('shared-election-skip-request-error-local-button').addEventListener('click', () => {
         data.setSharedElectionCode(undefined);
         
-        execute_local_skip_votes(data);
+        executeLocalSkipVotes(data);
     });
 }
 
@@ -677,7 +673,7 @@ export function setup_voting_session(data) {
  * @param {boolean} [isVoteFinished]
  * @param {() => *} [beforeSwitchCallback]
  */
-export async function voting_go_to_next_voter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
+export async function votingGoToNextVoter(data, doForceNewVoter, requestsContainer, doSkipRetrievingElectionData, isVoteFinished, beforeSwitchCallback) {
     if (data.sharedElectionCode && !doSkipRetrievingElectionData) {
         const valuesToRetrieve = [
             'numberOfSeatsTaken', 'numberOfVoted', 'hasSkipped'
@@ -710,7 +706,7 @@ export async function voting_go_to_next_voter(data, doForceNewVoter, requestsCon
     
     if ((doForceNewVoter || isVoteFinished) && (data.hasSkipped || data.numberOfSeatsTaken == data.numberOfVoters)) {
         Requester.hideLoader(requestsContainer);
-        end_voting_session(data, false, beforeSwitchCallback);
+        endVotingSession(data, false, beforeSwitchCallback);
         return true;
     } else if (doForceNewVoter || isVoteFinished) {
         if (data.sharedElectionCode) {
@@ -746,7 +742,7 @@ export async function voting_go_to_next_voter(data, doForceNewVoter, requestsCon
  * @param {boolean} [didSkipRemainings]
  * @param {() => *} [beforeSwitchCallback]
  */
-export function end_voting_session(data, didSkipRemainings, beforeSwitchCallback) {
+export function endVotingSession(data, didSkipRemainings, beforeSwitchCallback) {
     document.getElementById('voting-toasts-container').classList.add('i-am-away');
     
     if (beforeSwitchCallback) {
@@ -761,5 +757,5 @@ export function end_voting_session(data, didSkipRemainings, beforeSwitchCallback
     
     document.body.onkeyup = onKeyUpEventBefore;
     
-    Utils.uninitialize_images('voting-page');
+    Utils.uninitializeImages('voting-page');
 }

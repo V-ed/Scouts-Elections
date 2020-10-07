@@ -7,18 +7,21 @@
 		}
 	},
 	"extends": [
-		"eslint:recommended",
-		"plugin:jsdoc/recommended"
+		"eslint:recommended"
 	],
 	"plugins": [
-		"jsdoc"
 	],
 	"env": {
 		"es6": true,
-		"browser": true
+		"browser": true,
+		"node": true,
+		"commonjs": true,
+		"jquery": true
 	},
 	"globals": {
-		"$": "readonly"
+		"LZString": "readonly",
+		"saveAs": "readonly",
+		"ClipboardJS": "readonly"
 	},
 	"rules": {
 		"no-trailing-spaces": ["error", { "skipBlankLines": true }],

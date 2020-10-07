@@ -9,12 +9,18 @@ import switchView from './switcher.js';
 import Utils from './utilities.js';
 import { setupVotes } from './voting.js';
 
+/**
+ *
+ */
 function setupIndex() {
     const newElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-new-button'));
     const joinElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-join-button'));
     
     // Javascript enabled, enable inputs...
     
+    /**
+     *
+     */
     function enableHomePageInputs() {
         newElectionsButton.disabled = false;
         const loaderFileInput = /** @type {HTMLInputElement} */ (document.getElementById('loader-file-input'));
