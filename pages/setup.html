@@ -76,7 +76,7 @@
 		<div class="col-12 col-md-6">
 			<div id="image-loader-zone" class="loader is-popable-hover" data-placement="bottom">
 				<div class="loader-input">
-					<input id="image-loader-input" class="loader-file" type="file" name="file" accept="image/*" />
+					<input id="image-loader-input" class="loader-file" type="file" name="file" accept="image/*">
 					<label for="image-loader-input" class="h-100 w-100 p-3 m-0 text-center"><strong>Cliquez dans cette boite pour choisir une image de groupe (optionnelle)</strong><span class="loader-dragndrop"> ou glissez la ici</span>.</label>
 				</div>
 			</div>
@@ -114,7 +114,7 @@
 	</div>
 	<div class="row mt-1 mt-md-0 mb-4 mx-auto justify-content-center d-flex flex-md-row flex-row-reverse">
 		<div class="mt-2 mt-md-0 col-auto px-3 px-md-0">				
-			<button id="candidate-add" class="btn btn-secondary mx-auto mx-md-0" data-candidatecount="1">Ajouter Candidat</button>
+			<button id="candidate-add" class="btn btn-secondary mx-auto mx-md-0" type="button" data-candidatecount="1">Ajouter Candidat</button>
 		</div>
 		<div class="mt-2 mt-md-0 mr-md-0 ml-md-5 col-auto px-3 px-md-0">
 			<button type="button" id="candidate-remove-all" class="btn btn-warning mx-auto mx-md-0" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Cette action est irréversible. Êtes-vous sûr de vouloir enlever tous les candidats?</p><button type='button' id='candidate-remove-all-confirm' class='btn btn-danger mx-auto'>Confirmer</button></div>" disabled>Enlever tous les candidats</button>
@@ -126,7 +126,7 @@
 		</div>
 		<div class="col-12 col-md-6 mt-3 mt-md-0 d-flex">
 			
-			<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
+			<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" type="button" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
 			<div id="setup-shared-submit-requester-container" class="requester-container ml-3 align-self-center" hidden>
 				<div class="requester-spinner spinner-border is-popable-hover" role="status" data-placement="top" data-content="Vérification de l'accès au serveur de partage d'élection...">
 					<span class="sr-only">Chargement...</span>

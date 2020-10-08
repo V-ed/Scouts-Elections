@@ -1,6 +1,16 @@
 {
   "elements": [
-    "html5"
+    "html5",
+    {
+      "img": {
+        "attributes": {
+          "src": [
+            "/.+/",
+            ""
+          ]
+        }
+      }
+    }
   ],
   "extends": [
     "html-validate:recommended"
@@ -8,6 +18,7 @@
   "rules": {
     "no-trailing-whitespace": "off",
     "no-inline-style": "off",
-    "wcag/h37": "off"
+    "wcag/h37": "off",
+    "wcag/h32": "off"
   }
 }
