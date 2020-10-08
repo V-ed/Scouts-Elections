@@ -7,7 +7,7 @@
 			
 			<div class="mb-auto mt-sm-5">
 				<div class="my-3 mt-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
-					<img src="" class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+					<img src class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
 				</div>
 			</div>
 			
@@ -24,7 +24,7 @@
 							<div class="card-body d-flex flex-column">
 								<h5 class="card-title">Aller aux résultats localement</h5>
 								<p class="card-text">Cette action permet de ne pas attendre après les autres appareils et voir directement les résultats présentement en mémoire.<br><a href="" data-toggle="modal" data-target="#shared-post-votes-skip-wait-modal">En&nbsp;savoir&nbsp;plus</a></p>
-								<button id="shared-post-votes-skip-wait" class="btn btn-primary mt-auto">Appuyez moi!</button>
+								<button type="button" id="shared-post-votes-skip-wait" class="btn btn-primary mt-auto">Appuyez moi!</button>
 							</div>
 						</div>
 						<div class="modal fade" id="shared-post-votes-skip-wait-modal" tabindex="-1" role="dialog" aria-labelledby="shared-post-votes-skip-wait-modal-title" aria-hidden="true">
@@ -51,10 +51,14 @@
 						<div class="card h-100">
 							<div class="card-body d-flex flex-column">
 								<h5 class="card-title">Vérifier si l'élection est terminée</h5>
-								<p class="card-text">
-									<p>Cette action permet de faire une requête au server pour vérifier si tous les votes sont complétés pour l'élection.</p>
-									<span>Une vérification automatique sera effectuée à chaque 30 secondes!</span>
-								</p>
+								<div class="card-text mb-3">
+									<div class="mb-3">
+										<span>Cette action permet de faire une requête au server pour vérifier si tous les votes sont complétés pour l'élection.</span>
+									</div>
+									<div>
+										<span>Une vérification automatique sera effectuée à chaque 30 secondes!</span>
+									</div>
+								</div>
 								<div class="mt-auto d-flex flex-column">
 									<div class="d-flex align-items-center justify-content-start">
 										<span>Indicateur élection terminé&nbsp;:</span>
@@ -69,7 +73,7 @@
 										</div>
 									</div>
 									<span id="shared-post-votes-verify-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
-									<button id="shared-post-votes-verify" class="btn btn-primary flex-fill mt-2">Appuyez moi!<span id="shared-post-verify-auto-click-timer"></span></button>
+									<button id="shared-post-votes-verify" class="btn btn-primary flex-fill mt-2" type="button">Appuyez moi!<span id="shared-post-verify-auto-click-timer"></span></button>
 								</div>
 							</div>
 						</div>
@@ -81,14 +85,16 @@
 								<p class="card-text">Cette action permet de télécharger les données les plus récentes des votes et d'aller aux résultats.</p>
 								<div class="mt-auto d-flex flex-column">
 									<span id="shared-post-votes-go-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
-									<button id="shared-post-votes-go" class="btn btn-primary d-flex align-items-center justify-content-center" disabled>
-										<span>Appuyez moi!</span>
+									<div class="d-flex flex-row">
+										<button id="shared-post-votes-go" class="btn btn-primary d-flex flex-fill align-items-center justify-content-center" type="button" disabled>
+											<span>Appuyez moi!</span>
+										</button>
 										<div id="post-shared-votes-go-requester-container" class="requester-container ml-3 align-self-center" hidden>
 											<div class="requester-spinner spinner-border" role="status">
 												<span class="sr-only">Chargement...</span>
 											</div>
 										</div>
-									</button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -100,14 +106,16 @@
 								<p class="card-text">Cette action permet de télécharger les données les plus récentes des votes et d'aller aux résultats, ainsi que de supprimer les données du serveur.<br><a href="" data-toggle="modal" data-target="#shared-post-votes-go-and-delete-modal">En&nbsp;savoir&nbsp;plus</a></p>
 								<div class="mt-auto d-flex flex-column">
 									<span id="shared-post-votes-go-and-delete-error-span" class="text-danger" hidden>Une erreur de requête est survenue, veuillez vérifier votre accès Internet ou utilisez l'option de voir les résultats localement!</span>
-									<button id="shared-post-votes-go-and-delete" class="btn btn-primary d-flex align-items-center justify-content-center" disabled>
-										<span>Appuyez moi!</span>
+									<div class="d-flex flex-row">
+										<button id="shared-post-votes-go-and-delete" class="btn btn-primary d-flex flex-fill align-items-center justify-content-center" type="button" disabled>
+											<span>Appuyez moi!</span>
+										</button>
 										<div id="post-shared-votes-go-and-delete-requester-container" class="requester-container ml-3 align-self-center" hidden>
 											<div class="requester-spinner spinner-border" role="status">
 												<span class="sr-only">Chargement...</span>
 											</div>
 										</div>
-									</button>
+									</div>
 								</div>
 							</div>
 						</div>

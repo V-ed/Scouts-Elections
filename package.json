@@ -1,0 +1,36 @@
+{
+  "name": "scouts-elections",
+  "version": "1.0.0",
+  "description": "This static website is a program that lets our Scouts group create Elections to determine which leaders will be in our subgroups.",
+  "main": "js/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "lint-html": "html-validate \"{,!(node_modules)/**/}*.html\"",
+    "lint-javascript": "eslint ./",
+    "lint-javascript-fix": "eslint ./ --fix",
+    "test-javascript": "tsc -p jsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/V-ed/Scouts-Elections.git"
+  },
+  "author": "Guillaume Marcoux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/V-ed/Scouts-Elections/issues"
+  },
+  "homepage": "https://github.com/V-ed/Scouts-Elections#readme",
+  "devDependencies": {
+    "@types/bootstrap": "^4.5.0",
+    "@types/clipboard": "^2.0.1",
+    "@types/file-saver": "^2.0.1",
+    "@types/jquery": "^3.5.2",
+    "@types/lz-string": "^1.3.34",
+    "eslint": "^7.10.0",
+    "html-validate": "^3.3.0",
+    "popper.js": "^1.16.1",
+    "typescript": "^4.0.3"
+  }
+}

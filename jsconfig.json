@@ -2,11 +2,17 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "es6",
-		"lib": ["dom", "es6", "es2018.promise"],
-		"checkJs": true
+		"lib": [
+			"dom",
+			"es6",
+			"es2018.promise"
+		],
+		"checkJs": true,
+		"moduleResolution": "node"
 	},
 	"exclude": [
+		"**/libraries/**/*",
 		"node_modules",
 		"**/node_modules/*"
-	],
+	]
 }
