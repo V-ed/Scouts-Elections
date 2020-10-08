@@ -23,7 +23,7 @@ jobs:
     - name: Install npm packages
       run: npm ci
         
-    - name: Test index
+    - name: Test HTML
       run: npm run lint-html
       
   lint-javascript:

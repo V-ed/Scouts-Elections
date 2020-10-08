@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "lint-html": "html-validate {,!(node_modules)/**/}*.html",
+    "lint-html": "html-validate \"{,!(node_modules)/**/}*.html\"",
     "lint-javascript": "eslint ./",
     "lint-javascript-fix": "eslint ./ --fix",
     "test-javascript": "tsc -p jsconfig.json"
