@@ -21,8 +21,8 @@ export class FileLoader {
 		const defaultOptions = {
 			doLoadFiles: fileLoaderOptions.doLoadFiles,
 			doHandleItemsForErrors: undefined,
-			showLoaderErrorFn: this.showError,
-			clearErrorsFn: this.clearErrors,
+			showLoaderErrorFn: this.showError.bind(this),
+			clearErrorsFn: this.clearErrors.bind(this),
 		};
 		
 		const options = {...defaultOptions, ...fileLoaderOptions};
