@@ -5,12 +5,16 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "chrome",
-			"request": "attach",
-			"name": "Attach to Chrome",
+            "name": "Launch and attach to Microsoft Edge",
+            "type": "edge",
+            "request": "attach",
+			// "url": "http://localhost:5500/",
 			"port": 9222,
+			"timeout": 20000,
 			"webRoot": "${workspaceFolder}",
-			"urlFilter": "http://localhost:5500*"
-		}
+			"urlFilter": "localhost:5500*",
+			"preLaunchTask": "Live Server: Go Online",
+			"postDebugTask": "Live Server: Go Offline"
+        }
 	]
 }

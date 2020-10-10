@@ -1,5 +1,5 @@
 {
-	// "javascript.implicitProjectConfig.checkJs": true,
+	"javascript.implicitProjectConfig.checkJs": true,
 	"[json]": {
 		"editor.defaultFormatter": "vscode.json-language-features",
 		"editor.formatOnSave": true,
