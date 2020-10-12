@@ -1,12 +1,12 @@
 import ElectionData from './election-data.js';
-import FileLoader from './file-loader.js';
-import InputPartition from './input-partitionner.js';
-import MinimalDelayer from './minimal-delayer.js';
-import Requester from './requester.js';
+import FileLoader from './my-libs/file-loader.js';
+import InputPartition from './my-libs/input-partitionner.js';
+import MinimalDelayer from './my-libs/minimal-delayer.js';
+import Requester from './my-libs/requester.js';
 import { setupResults } from './results.js';
 import { setupSetup } from './setup.js';
 import switchView from './switcher.js';
-import Utils from './utilities.js';
+import Utils from './utils/utilities.js';
 import { setupVotes } from './voting.js';
 
 const newElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-new-button'));

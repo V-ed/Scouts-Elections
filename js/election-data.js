@@ -1,4 +1,4 @@
-import Utils from './utilities.js';
+import Utils from './utils/utilities.js';
 
 /**
  * @typedef Candidate

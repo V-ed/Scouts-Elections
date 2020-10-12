@@ -1,13 +1,8 @@
-import ElectionData from './election-data.js';
-import InputPartition from './input-partitionner.js';
+import ElectionData from '../election-data.js';
+import InputPartition from '../my-libs/input-partitionner.js';
 
 class DataUtils {
     constructor() {
-        this.isAdvancedUpload = (() => {
-            const divElement = document.createElement('div');
-
-            return !this.isTouchDevice && (('draggable' in divElement) || ('ondragstart' in divElement && 'ondrop' in divElement)) && 'FormData' in window && 'FileReader' in window;
-        })();
         this.resetVars();
     }
 	
@@ -278,28 +273,7 @@ class DataUtils {
             });
         });
     }
-	
-    /**
-	 *
-	 * @param {HTMLElementGetter | T} element
-	 * @param {(element: T) => HTMLElement | void} [getElementOtherwise]
-	 * @return {HTMLElement | void}
-	 * @template T
-	 */
-    getHTMLElement(element, getElementOtherwise) {
-        if (element instanceof HTMLElement) {
-            return element;
-        } else if (typeof element == 'string') {
-            return document.getElementById(element);
-        } else if (getElementOtherwise) {
-            return getElementOtherwise(element);
-        }
-    }
 }
-
-/**
- * @typedef {string | HTMLElement} HTMLElementGetter
- */
 
 export const Utils = new DataUtils();
 

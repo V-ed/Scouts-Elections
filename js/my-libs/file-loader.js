@@ -1,4 +1,4 @@
-import Utils from './utilities.js';
+import { getHTMLElement } from './js-enhanced.js';
 
 /**
  * @typedef FileLoaderOptions
@@ -11,10 +11,17 @@ import Utils from './utilities.js';
 export class FileLoader {
     /**
      *
-     * @param {import("./utilities.js").HTMLElementGetter} loaderZone The form element that defines the loader
+     * @param {import('./js-enhanced.js').HTMLElementGetter} loaderZone The form element that defines the loader
      * @param {FileLoaderOptions} fileLoaderOptions
      */
     constructor(loaderZone, fileLoaderOptions) {
+        this.isTouchEnabled = 'ontouchstart' in document.documentElement;
+        this.isAdvancedUpload = (() => {
+            const divElement = document.createElement('div');
+            
+            return !this.isTouchEnabled && (('draggable' in divElement) || ('ondragstart' in divElement && 'ondrop' in divElement)) && 'FormData' in window && 'FileReader' in window;
+        })();
+        
         /** @type {Required<FileLoaderOptions>} */
         const defaultOptions = {
             doLoadFiles: fileLoaderOptions.doLoadFiles,
@@ -25,7 +32,7 @@ export class FileLoader {
         
         const options = {...defaultOptions, ...fileLoaderOptions};
         
-        const htmlLoaderZone = Utils.getHTMLElement(loaderZone);
+        const htmlLoaderZone = getHTMLElement(loaderZone);
         
         if (!htmlLoaderZone) {
             throw 'Loader Zone element provided does not exists!';
@@ -33,7 +40,7 @@ export class FileLoader {
         
         this.zone = $(htmlLoaderZone);
         
-        if (Utils.isAdvancedUpload) {
+        if (this.isAdvancedUpload) {
             this.zone.addClass('has-advanced-upload');
             
             this.zone.on('drag dragstart dragend dragover dragenter dragleave drop', e => {

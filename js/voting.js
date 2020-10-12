@@ -1,8 +1,8 @@
 import ElectionData from './election-data.js'; //eslint-disable-line no-unused-vars
-import Requester from './requester.js';
+import Requester from './my-libs/requester.js';
 import { setupPostVoting, setupResults } from './results.js';
 import switchView from './switcher.js';
-import Utils from './utilities.js';
+import Utils from './utils/utilities.js';
 
 /** @type {(ev: KeyboardEvent) => *} */
 let onKeyUpEventBefore;
@@ -17,7 +17,7 @@ export const autoDownloadData = function() {
  *
  * @param {ElectionData} data
  * @param {() => *} [beforeSwitchCallback]
- * @param {string | HTMLElement | import("./requester.js").RequestContainerOption} [requestContainer]
+ * @param {string | HTMLElement | import("./my-libs/requester.js").RequestContainerOption} [requestContainer]
  * @param {boolean} [doForceShowPreVotingPage]
  */
 export async function setupVotes(data, beforeSwitchCallback, requestContainer, doForceShowPreVotingPage) {
@@ -362,7 +362,7 @@ export function setupVotingSession(data) {
     
     /**
      *
-     * @param {import("./requester.js").RequestContainer} [requestContainer]
+     * @param {import("./my-libs/requester.js").RequestContainer} [requestContainer]
      */
     async function updateVotes(requestContainer) {
         if (data.sharedElectionCode) {
@@ -668,7 +668,7 @@ export function setupVotingSession(data) {
  *
  * @param {ElectionData} data
  * @param {boolean} doForceNewVoter
- * @param {import("./requester.js").RequestContainer} requestsContainer
+ * @param {import("./my-libs/requester.js").RequestContainer} requestsContainer
  * @param {boolean} [doSkipRetrievingElectionData]
  * @param {boolean} [isVoteFinished]
  * @param {() => *} [beforeSwitchCallback]
