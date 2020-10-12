@@ -4,12 +4,14 @@
 		{
 			"label": "Live Server: Go Online",
 			"type": "shell",
-			"command": "${input:startServer}"
+			"command": "${input:startServer}",
+			"problemMatcher": []
 		},
 		{
 			"label": "Live Server: Go Offline",
 			"type": "shell",
-			"command": "${input:stopServer}"
+			"command": "${input:stopServer}",
+			"problemMatcher": []
 		},
 	],
 	"inputs": [
