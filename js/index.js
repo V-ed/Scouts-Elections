@@ -9,28 +9,27 @@ import switchView from './switcher.js';
 import Utils from './utilities.js';
 import { setupVotes } from './voting.js';
 
+const newElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-new-button'));
+
+const urlParams = new URLSearchParams(window.location.search);
+
+/**
+ *
+ */
+function enableHomePageInputs() {
+    newElectionsButton.disabled = false;
+    const loaderFileInput = /** @type {HTMLInputElement} */ (document.getElementById('loader-file-input'));
+    
+    loaderFileInput.disabled = false;
+    document.getElementById('database-loader-zone').classList.remove('loader-disabled');
+}
+
 /**
  *
  */
 function setupIndex() {
-    const newElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-new-button'));
-    const joinElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-join-button'));
-    
     // Javascript enabled, enable inputs...
     
-    /**
-     *
-     */
-    function enableHomePageInputs() {
-        newElectionsButton.disabled = false;
-        const loaderFileInput = /** @type {HTMLInputElement} */ (document.getElementById('loader-file-input'));
-        
-        loaderFileInput.disabled = false;
-        document.getElementById('database-loader-zone').classList.remove('loader-disabled');
-    }
-    
-    const urlParams = new URLSearchParams(window.location.search);
-        
     if (!urlParams.has('code')) {
         enableHomePageInputs();
     } else {
@@ -65,67 +64,7 @@ function setupIndex() {
     }).then(() => {
         Utils.isServerAccessible = true;
         
-        joinElectionsButton.disabled = false;
-        
-        const codeElem = /** @type {HTMLButtonElement} */ (document.getElementById('fullCodeValue'));
-        
-        const modalButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-join-election-modal-button'));
-        
-        const errorSpan = document.getElementById('home-join-modal-error-span');
-        
-        const partitionnedInputs = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll('input[data-partition-for-id=\'fullCodeValue\']')));
-        
-        codeElem.addEventListener('input', () => {
-            modalButton.disabled = codeElem.value.length !== 6;
-            errorSpan.hidden = true;
-        });
-        
-        modalButton.addEventListener('click', async () => {
-            const code = codeElem.value.toUpperCase();
-            
-            modalButton.disabled = true;
-            partitionnedInputs.forEach(input => input.disabled = true);
-            errorSpan.hidden = true;
-            
-            const request = Requester.sendRequest({
-                url: `${Utils.sharedElectionHostRoot}/join/${code}`,
-                contentType: 'application/javascript; charset=UTF-16',
-            }, 'home-join-modal-requester-container');
-            
-            request.then(response => {
-                const data = ElectionData.fromJSON(response.data);
-                
-                data.setSharedElectionCode(code);
-                
-                return setupVotes(data, () => {
-                    $('#home-join-election-modal').modal('hide');
-                    
-                    errorSpan.hidden = true;
-                }, 'home-join-modal-requester-container');
-            }).catch(response => {
-                if (response.status == 400) {
-                    errorSpan.textContent = 'Ce code n\'existe pas. Veuillez réessayer!';
-                } else {
-                    errorSpan.textContent = 'Une erreur imprévue est survenue, veuillez réessayer!';
-                }
-                
-                errorSpan.hidden = false;
-            }).finally(() => {
-                modalButton.disabled = false;
-                partitionnedInputs.forEach(input => input.disabled = false);
-            });
-        });
-        
-        // If URL contains the query to set the code, directly open the modal to join a shared election
-        
-        if (urlParams.has('code')) {
-            enableHomePageInputs();
-            
-            joinElectionsButton.click();
-            
-            // And set the content to that code
-            InputPartition.setContentFor(document.getElementById('join-election-input-partition-root'), urlParams.get('code'));
-        }
+        setupJoinSharedElection();
     }).catch(_error => {
         if (urlParams.has('code')) {
             enableHomePageInputs();
@@ -223,6 +162,75 @@ function setupIndex() {
     window.addEventListener('dragenter', preventDrag);
     window.addEventListener('dragover', preventDrag);
     window.addEventListener('drop', preventDrag);
+}
+
+/**
+ *
+ */
+function setupJoinSharedElection() {
+    const joinElectionsButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-join-button'));
+    
+    joinElectionsButton.disabled = false;
+    
+    const codeElem = /** @type {HTMLButtonElement} */ (document.getElementById('fullCodeValue'));
+    
+    const modalButton = /** @type {HTMLButtonElement} */ (document.getElementById('home-join-election-modal-button'));
+    
+    const errorSpan = document.getElementById('home-join-modal-error-span');
+    
+    const partitionnedInputs = Array.from(/** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll('input[data-partition-for-id=\'fullCodeValue\']')));
+    
+    codeElem.addEventListener('input', () => {
+        modalButton.disabled = codeElem.value.length !== 6;
+        errorSpan.hidden = true;
+    });
+    
+    modalButton.addEventListener('click', async () => {
+        const code = codeElem.value.toUpperCase();
+        
+        modalButton.disabled = true;
+        partitionnedInputs.forEach(input => input.disabled = true);
+        errorSpan.hidden = true;
+        
+        const request = Requester.sendRequest({
+            url: `${Utils.sharedElectionHostRoot}/join/${code}`,
+            contentType: 'application/javascript; charset=UTF-16',
+        }, 'home-join-modal-requester-container');
+        
+        request.then(response => {
+            const data = ElectionData.fromJSON(response.data);
+            
+            data.setSharedElectionCode(code);
+            
+            return setupVotes(data, () => {
+                $('#home-join-election-modal').modal('hide');
+                
+                errorSpan.hidden = true;
+            }, 'home-join-modal-requester-container');
+        }).catch(response => {
+            if (response.status == 400) {
+                errorSpan.textContent = 'Ce code n\'existe pas. Veuillez réessayer!';
+            } else {
+                errorSpan.textContent = 'Une erreur imprévue est survenue, veuillez réessayer!';
+            }
+            
+            errorSpan.hidden = false;
+        }).finally(() => {
+            modalButton.disabled = false;
+            partitionnedInputs.forEach(input => input.disabled = false);
+        });
+    });
+    
+    // If URL contains the query to set the code, directly open the modal to join a shared election
+    
+    if (urlParams.has('code')) {
+        enableHomePageInputs();
+        
+        joinElectionsButton.click();
+        
+        // And set the content to that code
+        InputPartition.setContentFor(document.getElementById('join-election-input-partition-root'), urlParams.get('code'));
+    }
 }
 
 const fragmentLoader = document.querySelector('include-fragment');
