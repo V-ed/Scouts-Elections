@@ -155,7 +155,7 @@ class DataUtils {
         const parsedDbNameSuffix = dbNameSuffix || '';
         
         const file = new File([stringData], `${dbName}${parsedDbNameSuffix}.json`, {type: 'application/json;charset=utf-8'});
-
+        
         saveAs(file);
         
         this.didDownloadDb = true;
@@ -174,7 +174,7 @@ class DataUtils {
     initializeImages(viewId, imageData) {
         if (imageData) {
             const uncompressedImage = LZString.decompressFromUTF16(imageData);
-
+            
             this.viewImageIterator(viewId, imageElem => imageElem.src = uncompressedImage);
         } else {
             this.viewImageContainerIterator(viewId, container => {
