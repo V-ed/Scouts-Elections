@@ -355,27 +355,27 @@ export function setupSetup() {
     
     addInputForVerification('db-name', /** @param {string} data */ (data) => {
         if (data == '') {
-            return 'Le nom de la base de données ne peut être vide.';
+            return `Le titre de l'élection ne peut être vide.`;
         }
         
         if (data.length > 50) {
-            return 'Le nom de la base de données doit être inférieur ou égal à 50 caractères de longueur.';
+            return `Le titre de l'élection doit être inférieur ou égal à 50 caractères de longueur.`;
         }
         
         if (data.endsWith('.')) {
-            return 'Le nom de la base de données ne peut pas terminer avec un point.';
+            return `Le titre de l'élection ne peut pas terminer avec un point.`;
         }
         
         const illegalCharRegex = /^[^\\/:*?"<>|]+$/;
 
         if (!illegalCharRegex.test(data)) {
-            return 'Le nom de la base de données contient actuellement au moins un caractère invalide.';
+            return `Le titre de l'élection contient actuellement au moins un caractère invalide.`;
         }
         
         const reservedFileRegex = /^(nul|prn|con|(lpt|com)[0-9])(\.|$)/i;
 
         if (reservedFileRegex.test(data)) {
-            return 'Le nom de la base de données ne peut pas être un nom réservé au système.';
+            return `Le titre de l'élection ne peut pas être un nom réservé au système.`;
         }
     });
     addInputForVerification('number-of-voters', /** @param {"" | number} data */ (data) => {

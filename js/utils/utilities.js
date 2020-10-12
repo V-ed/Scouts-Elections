@@ -150,7 +150,7 @@ class DataUtils {
     downloadData(data, dbNameSuffix) {
         const stringData = data instanceof ElectionData ? data.getAsJSON() : data;
         
-        const dbName = data instanceof ElectionData ? data.dbName : JSON.parse(data).dbName;
+        const dbName = (data instanceof ElectionData ? data.dbName : /** @type {string} */ (JSON.parse(data).dbName)).replace(/s+/, '_');
         
         const parsedDbNameSuffix = dbNameSuffix || '';
         
