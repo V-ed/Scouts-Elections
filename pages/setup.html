@@ -120,24 +120,72 @@
 			<button type="button" id="candidate-remove-all" class="btn btn-warning mx-auto mx-md-0" data-placement="top" data-html="true" data-title="<div class='d-flex align-items-center justify-content-between'><span class='text-danger'>Êtes-vous sûr?</span><button type='button' class='btn btn-light px-1 py-0' tabindex='-1'><span aria-hidden='true'>&times;</span></button></div>" data-content="<div class='d-flex flex-column'><p>Cette action est irréversible. Êtes-vous sûr de vouloir enlever tous les candidats?</p><button type='button' id='candidate-remove-all-confirm' class='btn btn-danger mx-auto'>Confirmer</button></div>" disabled>Enlever tous les candidats</button>
 		</div>
 	</div>
-	<div class="row align-items-center">
-		<div class="col-12 col-md-6">
+	<div class="row mb-4 align-items-center">
+		<div class="col-12">
 			<button type="submit" id="setup-submit-button" class="btn btn-lg btn-block btn-primary" disabled>Créer l'Élection</button>
 		</div>
-		<div class="col-12 col-md-6 mt-3 mt-md-0 d-flex">
-			
-			<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" type="button" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
-			<div id="setup-shared-submit-requester-container" class="requester-container ml-3 align-self-center" hidden>
+	</div>
+	<div class="row align-items-center mb-2">
+		<div class="col-12 d-flex flex-row justify-content-center align-items-center">
+			<span>Vérification de l'accès au serveur :</span>
+			<div id="setup-shared-submit-requester-container" class="requester-container ml-2">
 				<div class="requester-spinner spinner-border is-popable-hover" role="status" data-placement="top" data-content="Vérification de l'accès au serveur de partage d'élection...">
 					<span class="sr-only">Chargement...</span>
 				</div>
-				<img class="requester-success-icon colorize-green is-popable-hover" src="./images/check.svg" alt="Succès" style="width: 2rem;" data-placement="top" data-content="Le serveur est accessible et la fonctionnalité est donc activée!" hidden>
-				<img class="requester-alert-icon colorize-red is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et la fonctionnalitée est donc désactivée. Veuillez vous assurer d'être connecté à l'internet!" hidden>
+				<img class="requester-success-icon colorize-green is-popable-hover" src="./images/check.svg" alt="Succès" style="width: 2rem;" data-placement="top" data-content="Le serveur est accessible et les fonctionnalités sont donc activées!" hidden>
+				<img class="requester-alert-icon colorize-red is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et les fonctionnalitées sont donc désactivées. Veuillez vous assurer d'être connecté à l'internet!" hidden>
 			</div>
-			
+		</div>
+	</div>
+	<div class="row align-items-center">
+		<div class="col-12 col-md-6 d-flex">
+			<button id="setup-virtual-submit-button" class="btn btn-lg btn-primary flex-fill" type="button" data-toggle="modal" data-target="#setup-create-virtual-election-modal" onclick="return false;" disabled>Créer comme Élection Virtuelle</button>
+		</div>
+		<div class="col-12 col-md-6 d-flex mt-3 mt-md-0">
+			<button id="setup-shared-submit-button" class="btn btn-lg btn-primary flex-fill" type="button" data-toggle="modal" data-target="#setup-create-election-modal" onclick="return false;" disabled>Créer comme Élection Partagée</button>
 		</div>
 	</div>
 </form>
+
+<div class="modal fade" id="setup-create-virtual-election-modal" tabindex="-1" role="dialog" aria-labelledby="setup-create-virtual-election-modal-title" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="setup-create-virtual-election-modal-title">Créer une Élection Virtuelle</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body text-left">
+				<p class="h3">Avertissement</p>
+				<p>Pour utiliser cette fonctionnalitée, un accès Internet est requis puisque les élections virtuelles utilisent un serveur pour compiler les résultats des votes.</p>
+				<p class="font-weight-bold">Acceptez vous que les données de votre élection soient envoyées à ce serveur?</p>
+				<p class="text-danger">Le mot de passe sera aussi envoyé au serveur&nbsp;:&nbsp;assurez vous de ne pas utiliser de mot de passe confidentiel!</p>
+				<span><a href="./election-partagee-info.html" target="_blank">En savoir plus</a></span>
+				<div id="setup-create-virtual-election-modal-error" hidden>
+					<hr>
+					<span id="setup-create-virtual-election-modal-error-span" class="text-danger">Une erreur imprévue est survenue, veuillez réessayer ou débutez une élection régulière!</span>
+				</div>
+			</div>
+			<div class="modal-footer">
+				
+				<div class="d-flex">
+						
+					<div id="setup-create-virtual-election-modal-requester-container" class="requester-container mr-3 align-self-center h-100">
+						<div class="requester-spinner spinner-border" role="status" hidden>
+							<span class="sr-only">Chargement...</span>
+						</div>
+					</div>
+					
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Refuser</button>
+					<button id="setup-create-virtual-election-modal-button" type="button" class="btn btn-primary acceptance-form-div-accept-button ml-1">Accepter</button>
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
 
 <div class="modal fade" id="setup-create-election-modal" tabindex="-1" role="dialog" aria-labelledby="setup-create-election-modal-title" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">

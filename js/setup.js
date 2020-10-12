@@ -9,15 +9,26 @@ let setupInputs = {};
  * @type {EventTarget | undefined}
  */
 let textFieldHadFocus = undefined;
+    
+/**
+ * @type {string}
+ */
+let groupImageData = undefined;
 
 export function setupSetup() {
+    const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-create-election-modal-button'));
+    const setupSharedRequesterContainer = document.getElementById('setup-shared-submit-requester-container');
+    
+    Requester.sendRequest(`${Utils.sharedElectionHostRoot}`, {
+        requesterContainer: setupSharedRequesterContainer,
+        doHideContainerOnEnd: false,
+        minimumRequestDelay: 100,
+    }).then(() => {
+        Utils.isServerAccessible = true;
+    }).catch(_error => {});
+    
     const imagePreview = /** @type {HTMLImageElement} */ (document.getElementById('setup-preview-image'));
     const imagePreviewCloser = /** @type {HTMLButtonElement} */ (document.getElementById('setup-preview-image-closer'));
-    
-    /**
-     * @type {string}
-     */
-    let groupImageData = undefined;
     
     /**
      *
@@ -257,7 +268,6 @@ export function setupSetup() {
     });
     
     const errorDiv = document.getElementById('setup-create-election-modal-error');
-    const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-create-election-modal-button'));
     
     submitSharedSetupButton.addEventListener('click', async e => {
         e.preventDefault();
@@ -562,8 +572,6 @@ export function addInputForVerification(inputId, customValidator) {
     }, 100));
 }
 
-let sharedValidityTimeout = undefined;
-
 export function verifyAllValid() {
     let isValid = true;
     
@@ -576,41 +584,12 @@ export function verifyAllValid() {
     }
     
     const submitSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-submit-button'));
+    const submitVirtualSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-virtual-submit-button'));
     const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-shared-submit-button'));
     
     submitSetupButton.disabled = !isValid;
-    
-    const setupSharedRequesterContainer = document.getElementById('setup-shared-submit-requester-container');
-    
-    function clearSharedVisuals() {
-        clearTimeout(sharedValidityTimeout);
-        
-        setupSharedRequesterContainer.hidden = true;
-        
-        submitSharedSetupButton.disabled = true;
-    }
-    
-    if (!isValid) {
-        clearSharedVisuals();
-    } else if (submitSharedSetupButton.disabled) {
-        clearTimeout(sharedValidityTimeout);
-        
-        sharedValidityTimeout = setTimeout(() => {
-            Requester.sendRequest(`${Utils.sharedElectionHostRoot}`, {
-                requesterContainer: setupSharedRequesterContainer,
-                doHideContainerOnEnd: false,
-                minimumRequestDelay: 150,
-            }).then(() => {
-                if (submitSetupButton.disabled) {
-                    clearSharedVisuals();
-                } else {
-                    Utils.isServerAccessible = true;
-                    
-                    submitSharedSetupButton.disabled = false;
-                }
-            }).catch(_error => {});
-        }, 250);
-    }
+    submitVirtualSetupButton.disabled = !(Utils.isServerAccessible && isValid);
+    submitSharedSetupButton.disabled = !(Utils.isServerAccessible && isValid);
 }
 
 /**
@@ -711,7 +690,7 @@ export function preventDataLoss() {
     
     if (isOneCandidateIsEntered) {
         // @ts-ignore
-        event.returnValue = 'Il y au moins un candidat d\'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?';
+        // event.returnValue = 'Il y au moins un candidat d\'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?';
     }
 }
 
