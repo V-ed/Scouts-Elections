@@ -1,7 +1,7 @@
 import ElectionData from './election-data.js'; //eslint-disable-line no-unused-vars
-import Requester from './requester.js';
+import Requester from './my-libs/requester.js';
 import switchView from './switcher.js';
-import Utils from './utilities.js';
+import Utils from './utils/utilities.js';
 import { autoDownloadData } from './voting.js';
 
 /**

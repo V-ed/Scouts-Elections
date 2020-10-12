@@ -1,5 +1,5 @@
 import MinimalDelayer from './minimal-delayer.js';
-import Utils from './utilities.js';
+import { getHTMLElement } from './js-enhanced.js';
 
 /**
  * @param {Partial<RequestOptions> | string} [requestOptions]
@@ -32,7 +32,7 @@ class RequestSender {
     async sendRequest(ajaxSettings, requestOptions) {
         const options = createRequestOptions(requestOptions);
         
-        const finalRequesterContainer = options.requesterContainer && Utils.getHTMLElement(options.requesterContainer, elem => Utils.getHTMLElement(elem.container));
+        const finalRequesterContainer = options.requesterContainer && getHTMLElement(options.requesterContainer, elem => getHTMLElement(elem.container));
         
         const delayer = new MinimalDelayer(options.minimumRequestDelay);
         
@@ -158,7 +158,7 @@ class RequestSender {
      * @returns {RequestContainerElements | void}
      */
     getContainerElements(requesterContainer) {
-        const finalRequesterContainer = requesterContainer && Utils.getHTMLElement(requesterContainer, elem => Utils.getHTMLElement(elem.container));
+        const finalRequesterContainer = requesterContainer && getHTMLElement(requesterContainer, elem => getHTMLElement(elem.container));
         
         if (finalRequesterContainer) {
             return {

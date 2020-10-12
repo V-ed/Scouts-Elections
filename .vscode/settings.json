@@ -11,6 +11,8 @@
 		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 		"editor.codeActionsOnSave": {
 			"source.fixAll.eslint": true
-		}
+		},
+		"editor.insertSpaces": true,
+		"editor.detectIndentation": false
 	}
 }

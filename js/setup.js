@@ -1,7 +1,7 @@
 import ElectionData from './election-data.js';
-import FileLoader from './file-loader.js';
-import Requester from './requester.js';
-import Utils from './utilities.js';
+import FileLoader from './my-libs/file-loader.js';
+import Requester from './my-libs/requester.js';
+import Utils from './utils/utilities.js';
 import { setupVotes } from './voting.js';
 
 let setupInputs = {};
