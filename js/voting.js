@@ -3,6 +3,7 @@ import Requester from './my-libs/requester.js';
 import { setupPostVoting, setupResults } from './results.js';
 import switchView from './switcher.js';
 import Utils from './utils/utilities.js';
+import { VotingSession } from './voting-session.js';
 
 /** @type {(ev: KeyboardEvent) => *} */
 let onKeyUpEventBefore;
@@ -147,169 +148,21 @@ export function setupPreVotingSession(data) {
  * @param {ElectionData} data
  */
 export function setupVotingSession(data) {
-    Utils.initializeImages('voting-page', data.groupImage);
+    const votingSession = new VotingSession(data);
     
     Utils.dbIsDirty = true;
     
     onKeyUpEventBefore = document.body.onkeyup;
     
+    votingSession.initializeVotingComponents();
+    
     const isMultipleSameCandidateAllowed = data.allowMultipleSameCandidate || false;
-    
-    let minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
-    let maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
-    
-    let cardsHtml = '';
-    
-    for (let i = 1; i <= data.candidates.length; i++) {
-        const candidateIndex = i - 1;
-        
-        const candidateData = data.candidates[candidateIndex];
-        
-        let inputHtml;
-        
-        if (isMultipleSameCandidateAllowed) {
-            inputHtml = `<input type="number" class="spinner" value="0" min="0" max="${maxNumberOfVotesLeft}" step="1" data-step-max="1" data-candidateindex="${candidateIndex}"/>`;
-        } else {
-            inputHtml = `
-                <button id="vote-candidate-${i}" type="button" class="btn btn-primary" data-candidateindex="${candidateIndex}">Voter</button>
-                <button id="unvote-candidate-${i}" type="button" class="btn btn-danger" data-candidateindex="${candidateIndex}" hidden>Enlever Vote</button>
-            `;
-        }
-        
-        cardsHtml += `
-        <div class="col-6 col-md-4 col-lg-3 p-2">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">${candidateData.name}</h5>
-                    ${inputHtml}
-                </div>
-            </div>
-        </div>`;
-    }
-    
-    const cardsContainer = document.getElementById('cards-container');
-    
-    $(cardsContainer).append(`<div class="row d-flex justify-content-center px-2 px-md-0">${cardsHtml}</div>`);
     
     const voteRemainingCounter = document.getElementById('voting-remaining-count');
     const voteRemainingCounterMin = document.getElementById('voting-remaining-count-min');
     const voteRemainingCounterMax = document.getElementById('voting-remaining-count-max');
     
-    if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-        voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
-        
-        document.getElementById('voting-remaining-text-absolute').hidden = false;
-    } else {
-        voteRemainingCounterMin.textContent = minNumberOfVotesLeft.toString();
-        voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
-        
-        document.getElementById('voting-remaining-text-multiple').hidden = false;
-    }
-    
     const submitVotesButton = /** @type {HTMLButtonElement} */ (document.getElementById('voting-submit-button'));
-    
-    if (minNumberOfVotesLeft == 0) {
-        submitVotesButton.disabled = false;
-        submitVotesButton.classList.remove('btn-secondary');
-        submitVotesButton.classList.add('btn-success');
-    }
-    
-    if (isMultipleSameCandidateAllowed) {
-        const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll('div#voting-page input.spinner[type=\'number\']'));
-        
-        $(inputs).inputSpinner({disabledInput: true, inputClass: 'font-weight-bold', buttonsClass: 'btn-secondary'});
-        
-        $(inputs).on('change', e => {
-            // @ts-ignore
-            if (!e.detail || !e.detail.step) {
-                return;
-            }
-            
-            // @ts-ignore
-            voteForCandidate(parseInt((/** @type {HTMLElement} */ (e.currentTarget)).dataset.candidateindex), e.detail.step);
-            
-            inputs.forEach(input => input.max = (maxNumberOfVotesLeft + parseInt(/** @type {string} */ ($(input).val()))).toString());
-            
-            if (maxNumberOfVotesLeft == 0) {
-                const nonSelectedInput = Array.from(inputs).filter(input => $(input).val() == 0);
-
-                nonSelectedInput.forEach(input => input.readOnly = true);
-            } else {
-                const readonlyInputs = Array.from(inputs).filter(input => input.readOnly);
-
-                readonlyInputs.forEach(input => input.readOnly = false);
-            }
-        });
-    } else {
-        const votingButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('button[id^=vote-candidate-]'));
-        
-        votingButtons.forEach(button => {
-            button.addEventListener('click', e => {
-                e.preventDefault();
-                
-                voteForCandidate(parseInt(button.dataset.candidateindex), 1);
-                
-                button.hidden = true;
-                document.getElementById(`unvote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
-                
-                if (maxNumberOfVotesLeft == 0) {
-                    const nonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('button[id^=vote-candidate-]:not([hidden])'));
-                    
-                    nonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = true);
-                }
-            });
-        });
-        
-        const unvoteButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('button[id^=unvote-candidate-]'));
-        
-        unvoteButtons.forEach(button => {
-            button.addEventListener('click', e => {
-                e.preventDefault();
-                
-                voteForCandidate(parseInt(button.dataset.candidateindex), -1);
-                
-                button.hidden = true;
-                document.getElementById(`vote-candidate-${parseInt(button.dataset.candidateindex) + 1}`).hidden = false;
-                
-                const disabledNonVotedCandidatesButtons = /** @type {NodeListOf<HTMLButtonElement>} */ (document.querySelectorAll('button[id^=vote-candidate-][disabled]'));
-                
-                disabledNonVotedCandidatesButtons.forEach(nonVotedButton => nonVotedButton.disabled = false);
-            });
-        });
-    }
-    
-    /**
-     *
-     * @param {number} index
-     * @param {number} step
-     */
-    function voteForCandidate(index, step) {
-        if (step > 0) {
-            data.voteCandidate(index, step);
-        } else if (step < 0) {
-            data.unvoteCandidate(index, -step);
-        }
-        
-        minNumberOfVotesLeft = minNumberOfVotesLeft - step;
-        maxNumberOfVotesLeft = maxNumberOfVotesLeft - step;
-        
-        if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-            voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
-        } else {
-            voteRemainingCounterMin.textContent = (minNumberOfVotesLeft >= 0 ? minNumberOfVotesLeft : 0).toString();
-            voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
-        }
-        
-        submitVotesButton.disabled = minNumberOfVotesLeft > 0;
-        
-        if (submitVotesButton.disabled) {
-            submitVotesButton.classList.add('btn-secondary');
-            submitVotesButton.classList.remove('btn-success');
-        } else {
-            submitVotesButton.classList.remove('btn-secondary');
-            submitVotesButton.classList.add('btn-success');
-        }
-    }
     
     let isVoteFinishing = false;
     let isVoteFinished = false;
@@ -319,16 +172,15 @@ export function setupVotingSession(data) {
     function resetVotingState() {
         data.resetCandidateVotes();
         
-        minNumberOfVotesLeft = data.numberOfVotePerVoterMin;
-        maxNumberOfVotesLeft = data.numberOfVotePerVoterMax;
+        votingSession.resetNumberOfVotesLeft();
         
-        if (minNumberOfVotesLeft == maxNumberOfVotesLeft) {
-            voteRemainingCounter.textContent = minNumberOfVotesLeft.toString();
+        if (data.numberOfVotePerVoterMin == data.numberOfVotePerVoterMax) {
+            voteRemainingCounter.textContent = data.numberOfVotePerVoterMin.toString();
             
             document.getElementById('voting-remaining-text-absolute').hidden = false;
         } else {
-            voteRemainingCounterMin.textContent = minNumberOfVotesLeft.toString();
-            voteRemainingCounterMax.textContent = maxNumberOfVotesLeft.toString();
+            voteRemainingCounterMin.textContent = data.numberOfVotePerVoterMin.toString();
+            voteRemainingCounterMax.textContent = data.numberOfVotePerVoterMax.toString();
             
             document.getElementById('voting-remaining-text-multiple').hidden = false;
         }
@@ -337,7 +189,7 @@ export function setupVotingSession(data) {
             const inputs = /** @type {NodeListOf<HTMLInputElement>} */ (document.querySelectorAll('input.spinner[type=\'number\']'));
             
             inputs.forEach(input => {
-                input.max = maxNumberOfVotesLeft.toString();
+                input.max = data.numberOfVotePerVoterMax.toString();
                 input.readOnly = false;
                 $(input).val(0);
             });
