@@ -1,7 +1,9 @@
 import ElectionData from './election-data.js';
 import FileLoader from './my-libs/file-loader.js';
 import Requester from './my-libs/requester.js';
+import switchView from './switcher.js';
 import Utils from './utils/utilities.js';
+import { setupVotingLinks } from './virtual/virtual-post-setup.js';
 import { setupVotes } from './voting.js';
 
 let setupInputs = {};
@@ -16,6 +18,7 @@ let textFieldHadFocus = undefined;
 let groupImageData = undefined;
 
 export function setupSetup() {
+    const submitVirtualSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-create-virtual-election-modal-button'));
     const submitSharedSetupButton = /** @type {HTMLButtonElement} */ (document.getElementById('setup-create-election-modal-button'));
     const setupSharedRequesterContainer = document.getElementById('setup-shared-submit-requester-container');
     
@@ -267,12 +270,57 @@ export function setupSetup() {
         });
     });
     
-    const errorDiv = document.getElementById('setup-create-election-modal-error');
+    const errorVirtualDiv = document.getElementById('setup-create-election-modal-error');
+    
+    submitVirtualSetupButton.addEventListener('click', async e => {
+        e.preventDefault();
+        
+        errorVirtualDiv.hidden = true;
+        
+        submitVirtualSetupButton.disabled = true;
+        
+        const electionData = createData();
+        
+        const electionJSONData = electionData.getAsJSON();
+        
+        Requester.sendRequest({
+            type: 'POST',
+            url: `${Utils.sharedElectionHostRoot}/create-virtual`,
+            data: electionJSONData,
+            cache: false,
+        }, 'setup-create-virtual-election-modal-requester-container').then(response => {
+            if (!response.code) {
+                throw 'Missing election code!';
+            }
+            
+            // electionData.mergeData(response.data);
+            
+            const data = ElectionData.fromJSON(response.data);
+            
+            data.setSharedElectionCode(response.code);
+            
+            return switchView('virtual-links-page', () => {
+                Utils.uninitializeImages('setup-page');
+                
+                $('#setup-create-virtual-election-modal').modal('hide');
+                
+                window.removeEventListener('beforeunload', preventDataLoss);
+                
+                setupVotingLinks(data);
+            });
+        }).catch(_error => {
+            errorVirtualDiv.hidden = false;
+        }).finally(() => {
+            submitVirtualSetupButton.disabled = false;
+        });
+    });
+    
+    const errorSharedDiv = document.getElementById('setup-create-election-modal-error');
     
     submitSharedSetupButton.addEventListener('click', async e => {
         e.preventDefault();
         
-        errorDiv.hidden = true;
+        errorSharedDiv.hidden = true;
         
         submitSharedSetupButton.disabled = true;
         
@@ -290,7 +338,7 @@ export function setupSetup() {
                 throw 'Missing election code!';
             }
             
-            electionData.mergeData(response.data);
+            // electionData.mergeData(response.data);
             
             const data = ElectionData.fromJSON(response.data);
             
@@ -303,13 +351,11 @@ export function setupSetup() {
                 
                 Utils.uninitializeImages('setup-page');
             }, 'setup-create-election-modal-requester-container');
-        })
-            .catch(_error => {
-                errorDiv.hidden = false;
-            })
-            .finally(() => {
-                submitSharedSetupButton.disabled = false;
-            });
+        }).catch(_error => {
+            errorSharedDiv.hidden = false;
+        }).finally(() => {
+            submitSharedSetupButton.disabled = false;
+        });
     });
     
     const inputs = document.querySelectorAll('div#setup-page input.spinner[type=\'number\']');

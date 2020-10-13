@@ -7,9 +7,11 @@ import Cookies from '../libraries/js.cookie.min.mjs';
 
 const urlParams = new URLSearchParams(window.location.search);
 
+const isAdmin = urlParams.get('as') == 'admin';
+
+const loadingMainText = document.getElementById('loading-main-text');
+
 function setupVirtualElection() {
-    const loadingMainText = document.getElementById('loading-main-text');
-    
     if (!urlParams.has('code')) {
         const noCodeErrorText = document.getElementById('no-code-error');
         
@@ -17,27 +19,47 @@ function setupVirtualElection() {
     } else {
         const virtualElectionCode = urlParams.get('code');
         
-        const electionCookie = Cookies.get(`election_${virtualElectionCode}`);
+        setupVoter(virtualElectionCode);
+    }
+}
+
+/**
+ *
+ * @param {string} virtualElectionCode
+ */
+function setupVoter(virtualElectionCode) {
+    const electionCookie = Cookies.get(`election_${virtualElectionCode}`);
+    
+    if (!isAdmin && electionCookie) {
+        loadingMainText.innerText = 'Vous avez déjà voté pour cette élection! Merci! :)';
+    } else {
+        let url = `${Utils.sharedElectionHostRoot}/join-virtual/${virtualElectionCode}`;
         
-        if (electionCookie) {
-            loadingMainText.innerText = 'Vous avez déjà voté pour cette élection! Merci! :)';
-        } else {
-            const request = Requester.sendRequest({
-                url: `${Utils.sharedElectionHostRoot}/join-virtual/${virtualElectionCode}`,
-                contentType: 'application/javascript; charset=UTF-16',
-            }, {
-                requesterContainer: 'home-loading-requester-container',
-                minimumRequestDelay: 500,
-            });
-            
-            request.then(response => {
-                handleJoinSuccessResponse(response, virtualElectionCode);
-            }).catch(() => {
+        if (isAdmin) {
+            url = `${url}?admin`;
+        }
+        
+        const request = Requester.sendRequest({
+            url: url,
+            contentType: 'application/javascript; charset=UTF-16',
+        }, {
+            requesterContainer: 'home-loading-requester-container',
+            minimumRequestDelay: 500,
+        });
+        
+        request.then(response => {
+            handleJoinSuccessResponse(response, virtualElectionCode);
+        }).catch(error => {
+            if (error.status == 400) {
+                const nonExistingCodeErrorText = document.getElementById('non-existing-code-error');
+                
+                nonExistingCodeErrorText.hidden = false;
+            } else {
                 const serverErrorText = document.getElementById('server-error');
                 
                 serverErrorText.hidden = false;
-            });
-        }
+            }
+        });
     }
 }
 
@@ -52,7 +74,11 @@ function handleJoinSuccessResponse(response, virtualElectionCode) {
     
     data.setSharedElectionCode(virtualElectionCode);
     
-    switchView('voting-page', () => setupVirtualVotingSession(data));
+    if (isAdmin) {
+        // url = `${url}?admin`;
+    } else {
+        switchView('voting-page', () => setupVirtualVotingSession(data));
+    }
 }
 
 function addLoaderElementToVotingPage() {
