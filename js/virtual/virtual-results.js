@@ -141,6 +141,8 @@ export function setupResultsPage(data) {
         candidateObject.selectedState = candidateState;
         
         if (syncActive) {
+            syncActive = false;
+            
             const jsonCandidate = JSON.stringify(candidateObject);
             
             clearTimeout(timeoutRef);
@@ -152,7 +154,10 @@ export function setupResultsPage(data) {
                 cache: false,
             }, {minimumRequestDelay: 0});
             
-            response.then(updateTable).catch(handleSyncError);
+            response.then(_response => {
+                updateTable;
+                syncActive = true;
+            }).catch(handleSyncError);
         }
     });
     
@@ -184,13 +189,12 @@ export function setupResultsPage(data) {
     });
     
     function updateTable() {
-        timeoutRef = setTimeout(() => {
+        timeoutRef = setTimeout(function() {
             const request = requestElectionData(data.sharedElectionCode, 'retrieve-virtual');
             
             request.then(response => {
-                fillTable(response.data);
-                
                 if (syncActive) {
+                    fillTable(response.data);
                     // eslint-disable-next-line no-unused-vars
                     updateTable();
                 }
