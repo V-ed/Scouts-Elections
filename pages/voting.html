@@ -8,8 +8,10 @@
 	
 	<div class="mb-auto">
 		
-		<div id="cards-container" class="w-100 mb-3">
-			<!-- Will be filled dynamically with candidates cards -->
+		<div class="w-100 mb-3">
+			<div id="cards-container" class="row d-flex justify-content-center px-2 px-md-0">
+				<!-- Will be filled dynamically with candidates cards -->
+			</div>
 		</div>
 		
 		<div class="w-100">
@@ -21,7 +23,10 @@
 				<br>
 				Nombre de vote maximum restant : <span id="voting-remaining-count-max" class="font-weight-bold"></span>
 			</p>
-			<button type="button" id="voting-submit-button" class="btn btn-secondary btn-lg btn-block" disabled>Enregistrer</button>
+			<div id="voting-submit-button-div">
+				<button type="button" id="voting-submit-button" class="btn btn-secondary btn-lg btn-block" disabled>Enregistrer</button>
+			</div>
+			<div id="voting-under-submit-button-div" hidden></div>
 		</div>
 		
 	</div>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Élections Scoutes</title>
+	
+	<link rel="icon" href="./images/envelope.png">
+	
+	<link rel="stylesheet" href="./css/libraries/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+	<link rel="stylesheet" href="./css/svg-color-filters.css">
+	
+	<script src="./js/libraries/jquery-3.4.1.min.js"></script>
+	<script src="./js/libraries/popper.min.js"></script>
+	<script src="./js/libraries/bootstrap.min.js"></script>
+	
+	<script src="./js/libraries/bootstrap-input-spinner.min.js"></script>
+	<script src="./js/libraries/lz-string.min.js"></script>
+	
+	<script src="./js/virtual/virtual.js" type="module" defer></script>
+	<script src="./js/libraries/include-fragment-element.js" type="module"></script>
+</head>
+
+<body class="d-flex">
+	
+	<div id="voting-voted-overlay" class="position-fixed w-100 h-100 d-flex non-selectable">
+		
+		<div class="touch-skipper w-100 h-50 fixed-top"></div>
+		
+		<div class="m-auto text-center">
+			<img id="success-img" src="./images/success.png" width="25%" class="m-auto img-drop-shadow">
+			<h1 class="display-1">Votes envoyés!</h1>
+			<h2 class="display-3">Merci!</h2>
+			<h3 class="display-5 font-italic">Vous pouvez maintenant fermer cette page.</h3>
+		</div>
+		
+	</div>
+	
+	<div id="views" class="container py-3">
+		
+		<div id="loading-page" class="text-center">
+			
+			<div class="d-flex justify-content-center align-items-center flex-column h-100">
+				
+				<h1 id="loading-main-text" class="display-3 pt-5 pb-5">Chargement de l'élection virtuelle...</h1>
+				
+				<noscript>
+					<div class="mb-5">
+						<h3 class="display-4 text-danger" style="font-size: 3rem">Javascript a besoin d'être activé! Veuillez activer Javascript, utiliser un autre navigateur ou contactez votre animateur responsable!</h3>
+					</div>
+				</noscript>
+				
+				<div id="home-loading-requester-container" class="requester-container" style="transform: scale(3);" hidden>
+					<div class="requester-spinner spinner-border is-popable-hover" role="status" data-placement="top" data-content="Vérification de l'accès au serveur...">
+						<span class="sr-only">Chargement...</span>
+					</div>
+					<img class="requester-success-icon colorize-green is-popable-hover" src="./images/check.svg" alt="Succès" style="width: 2rem;" data-placement="top" data-content="Le serveur est accessible et la fonctionnalité est donc activée!" hidden>
+					<img class="requester-alert-icon colorize-red is-popable-hover" src="./images/alert-octagon.svg" alt="Avertissement" style="width: 2rem;" data-placement="top" data-content="Le serveur n'est pas accessible et la fonctionnalitée est donc désactivée. Veuillez vous assurer d'être connecté à l'internet!" hidden>
+				</div>
+				
+				<div id="no-code-error" class="mt-5" hidden>
+					<span class="h3 text-danger">Le code ne fut pas trouvé dans le lien. Assurez-vous de bien copier le lien fournit!</span>
+				</div>
+				
+				<div id="non-existing-code-error" class="mt-5" hidden>
+					<span class="h3 text-danger">Le code fournit n'est pas dans le serveur: est-ce que l'élection est bel et bien créée?</span>
+				</div>
+				
+				<div id="server-error" class="mt-5" hidden>
+					<span class="h3 text-danger">Le serveur d'élection n'est pas disponible, veuillez réessayer dans quelques minutes...</span>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+		<div id="voting-page" hidden>
+			<include-fragment src="pages/voting.html"></include-fragment>
+		</div>
+		
+		<div id="pre-results-page" hidden>
+			<include-fragment src="pages/pre-results.html"></include-fragment>
+		</div>
+		
+		<div id="results-page" hidden>
+			<include-fragment src="pages/virtual-results.html"></include-fragment>
+		</div>
+		
+	</div>
+	
+</body>
+
+</html>

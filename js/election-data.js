@@ -41,6 +41,13 @@ export class ElectionData {
         this.sharedElectionCode = undefined;
     }
     
+    get numberOfVotes() {
+        return {
+            min: this.numberOfVotePerVoterMin,
+            max: this.numberOfVotePerVoterMax
+        };
+    }
+    
     /**
      *
      * @param {boolean} [excludeSharedElectionCode]

@@ -1,0 +1,53 @@
+<div class="d-flex flex-column h-100">
+	
+	<h2 class="display-2 pt-2 pt-md-5 text-center">Liens vers élections virtuelle</h2>
+	
+	<div class="flex-grow-1">
+		<div class="h-100 d-flex flex-column justify-content-center">
+			
+			<div class="mb-auto mt-sm-5">
+				<div class="my-3 mt-sm-0 text-center d-flex align-items-center justify-content-center election-group-image">
+					<img src class="img-fluid" alt="Image preview..." style="height: 20vw; max-height: 200px;">
+				</div>
+			</div>
+			
+			<div class="container-fluid pb-md-5 mb-auto">
+				
+				<div class="row flex-column mb-5">
+					<p class="h3 text-center">Voici le code de votre élection virtuelle : <u style="font-family: monospace;"><span class="shared-election-code h2 text-primary"></span></u>.</p>
+				</div>
+				
+				<div class="row flex-column mb-3">
+					<span>Partagez ce lien pour accéder à la séance de vote de cette élection virtuelle :</span>
+					<div class="input-group">
+						<input type="text" id="voting-links-voting-link" class="form-control" readonly>
+						<div class="input-group-append">
+							<button class="btn btn-outline-secondary copy-button is-popable" type="button" data-clipboard-target="#voting-links-voting-link" data-placement="top" data-popup-clip-success-msg="Lien copié!" data-popup-clip-error-msg="Une erreur est survenue lors de la copie du lien. Veuillez réessayer ou copier manuellement!">
+								<img src="./images/clippy.svg">
+							</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row flex-column mb-3">
+					<span>Utilisez / Partagez ce lien pour accéder aux résultats de cette élection virtuelle :</span>
+					<div class="input-group">
+						<input type="text" id="voting-links-results-link" class="form-control" readonly>
+						<div class="input-group-append">
+							<button class="btn btn-outline-secondary copy-button is-popable" type="button" data-clipboard-target="#voting-links-results-link" data-placement="top" data-popup-clip-success-msg="Lien copié!" data-popup-clip-error-msg="Une erreur est survenue lors de la copie du lien. Veuillez réessayer ou copier manuellement!">
+								<img src="./images/clippy.svg">
+							</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row text-center mt-5 justify-content-center">
+					<a href="" id="voting-links-go-to-results-link" class="btn btn-primary" target="_blank">Accéder aux résultats de l'élection virtuelle</a>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+	
+</div>
