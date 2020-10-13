@@ -155,7 +155,8 @@ function setupVirtualVotingSession(data) {
         
         response.then(() => {
             votingOverlay.classList.add('active');
-            document.cookie = `election_${data.sharedElectionCode}=true`;
+            
+            Cookies.set(`election_${data.sharedElectionCode}`, 'true', {expires: 14});
         }).catch(_error => {
             votingUnderSubmitButtonDiv.hidden = false;
             Requester.hideLoader(requestContainer);
