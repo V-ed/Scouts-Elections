@@ -81,7 +81,7 @@ function setupVoter(virtualElectionCode) {
 function handleJoinSuccessResponse(response, virtualElectionCode) {
     Utils.isServerAccessible = true;
     
-    if (response.isElectionFinished) {
+    if (response.isElectionFinished && !response.data) {
         const electionEndedWarningText = document.getElementById('election-ended-warning');
         
         loadingMainText.hidden = true;
