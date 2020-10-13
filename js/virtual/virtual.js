@@ -81,14 +81,21 @@ function setupVoter(virtualElectionCode) {
 function handleJoinSuccessResponse(response, virtualElectionCode) {
     Utils.isServerAccessible = true;
     
-    const data = ElectionData.fromJSON(response.data);
-    
-    data.setSharedElectionCode(virtualElectionCode);
-    
-    if (isAdmin) {
-        setupResults(data);
+    if (response.isElectionFinished) {
+        const electionEndedWarningText = document.getElementById('election-ended-warning');
+        
+        loadingMainText.hidden = true;
+        electionEndedWarningText.hidden = false;
     } else {
-        switchView('voting-page', () => setupVirtualVotingSession(data));
+        const data = ElectionData.fromJSON(response.data);
+        
+        data.setSharedElectionCode(virtualElectionCode);
+        
+        if (isAdmin) {
+            setupResults(data);
+        } else {
+            switchView('voting-page', () => setupVirtualVotingSession(data));
+        }
     }
 }
 
