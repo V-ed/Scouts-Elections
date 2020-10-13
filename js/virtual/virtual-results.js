@@ -188,6 +188,8 @@ export function setupResultsPage(data) {
         stopSyncButton.disabled = true;
     });
     
+    const numberOfVotedSpan = /** @type {HTMLSpanElement} */ (document.getElementById('number-of-voted'));
+    
     function updateTable() {
         timeoutRef = setTimeout(function() {
             const request = requestElectionData(data.sharedElectionCode, 'retrieve-virtual');
@@ -195,6 +197,9 @@ export function setupResultsPage(data) {
             request.then(response => {
                 if (syncActive) {
                     fillTable(response.data);
+                    
+                    numberOfVotedSpan.innerText = response.voterCount;
+                    
                     // eslint-disable-next-line no-unused-vars
                     updateTable();
                 }
