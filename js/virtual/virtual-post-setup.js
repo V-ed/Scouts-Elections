@@ -10,7 +10,9 @@ export function setupVotingLinks(data) {
     const virtualElectionVotingLinkSpan = /** @type {HTMLInputElement} */ (document.getElementById('voting-links-voting-link'));
     const virtualElectionResultsLinkSpan = /** @type {HTMLInputElement} */ (document.getElementById('voting-links-results-link'));
     
-    const codeUrl = `${window.location.protocol}//${window.location.hostname}${window.location.pathname != '/' ? window.location.pathname : ''}${window.location.port ? ':' + window.location.port : ''}/virtual.html?code=${data.sharedElectionCode}`;
+    const baseUrl = `${window.location.protocol}//${window.location.hostname}${window.location.pathname != '/' ? window.location.pathname : ''}${window.location.port ? ':' + window.location.port : ''}`;
+    
+    const codeUrl = `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}virtual.html?code=${data.sharedElectionCode}`;
     const codeResultsUrl = `${codeUrl}&as=admin`;
     
     virtualElectionVotingLinkSpan.value = codeUrl;
