@@ -98,9 +98,7 @@ export class ElectionData {
      */
     voteCandidate(index, count) {
         if (typeof this.votesCurrentCandidateIndexes == 'undefined') {
-            /**
-             * @type {number[]}
-             */
+            /** @type {number[]} */
             this.votesCurrentCandidateIndexes = [];
         }
         

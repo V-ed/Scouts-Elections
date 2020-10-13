@@ -323,7 +323,7 @@ export function setupResultsPage(data, _didSkipRemainings) {
     });
     
     const legendToggler = /** @type {HTMLLinkElement} */ (document.querySelector('a[data-toggle=\'collapse\'][data-target=\'#results-click-explications\']'));
-
+    
     $('#results-click-explications').on('hidden.bs.collapse', function () {
         legendToggler.textContent = 'Plus';
     });
