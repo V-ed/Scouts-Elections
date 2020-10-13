@@ -50,6 +50,10 @@ export class VotingSession {
         
         Utils.initializeImages('voting-page', this.data.groupImage);
         
+        const votingTitleSpan = document.getElementById('voting-title');
+        
+        votingTitleSpan.innerText = this.data.dbName;
+        
         const isMultipleSameCandidateAllowed = this.data.allowMultipleSameCandidate || false;
         
         this.resetNumberOfVotesLeft();
