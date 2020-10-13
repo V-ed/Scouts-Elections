@@ -690,7 +690,7 @@ export function preventDataLoss() {
     
     if (isOneCandidateIsEntered) {
         // @ts-ignore
-        // event.returnValue = 'Il y au moins un candidat d\'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?';
+        event.returnValue = 'Il y au moins un candidat d\'inscrit - continuer le rechargement de la page va le(s) perdre. Êtes vous sûr de vouloir continuer?';
     }
 }
 
