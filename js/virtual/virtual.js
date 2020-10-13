@@ -4,6 +4,7 @@ import switchView from '../switcher.js';
 import Utils from '../utils/utilities.js';
 import { VotingSession } from '../voting-session.js';
 import Cookies from '../libraries/js.cookie.min.mjs';
+import { setupResults } from './virtual-results.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -26,6 +27,25 @@ function setupVirtualElection() {
 /**
  *
  * @param {string} virtualElectionCode
+ * @param {'join-virtual' | 'retrieve-virtual'} path
+ * @param {Partial<import('../my-libs/requester.js').RequestOptions> | string} [requestOptions]
+ */
+export function requestElectionData(virtualElectionCode, path, requestOptions) {
+    let url = `${Utils.sharedElectionHostRoot}/${path}/${virtualElectionCode}`;
+    
+    if (isAdmin) {
+        url = `${url}?admin`;
+    }
+    
+    return Requester.sendRequest({
+        url: url,
+        contentType: 'application/javascript; charset=UTF-16',
+    }, requestOptions);
+}
+
+/**
+ *
+ * @param {string} virtualElectionCode
  */
 function setupVoter(virtualElectionCode) {
     const electionCookie = Cookies.get(`election_${virtualElectionCode}`);
@@ -33,16 +53,7 @@ function setupVoter(virtualElectionCode) {
     if (!isAdmin && electionCookie) {
         loadingMainText.innerText = 'Vous avez déjà voté pour cette élection! Merci! :)';
     } else {
-        let url = `${Utils.sharedElectionHostRoot}/join-virtual/${virtualElectionCode}`;
-        
-        if (isAdmin) {
-            url = `${url}?admin`;
-        }
-        
-        const request = Requester.sendRequest({
-            url: url,
-            contentType: 'application/javascript; charset=UTF-16',
-        }, {
+        const request = requestElectionData(virtualElectionCode, 'join-virtual', {
             requesterContainer: 'home-loading-requester-container',
             minimumRequestDelay: 500,
         });
@@ -75,7 +86,7 @@ function handleJoinSuccessResponse(response, virtualElectionCode) {
     data.setSharedElectionCode(virtualElectionCode);
     
     if (isAdmin) {
-        // url = `${url}?admin`;
+        setupResults(data);
     } else {
         switchView('voting-page', () => setupVirtualVotingSession(data));
     }

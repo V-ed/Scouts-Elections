@@ -65,8 +65,12 @@
 					<span class="h3 text-danger">Le code ne fut pas trouvé dans le lien. Assurez-vous de bien copier le lien fournit!</span>
 				</div>
 				
+				<div id="non-existing-code-error" class="mt-5" hidden>
+					<span class="h3 text-danger">Le code fournit n'est pas dans le serveur: est-ce que l'élection est bel et bien créée?</span>
+				</div>
+				
 				<div id="server-error" class="mt-5" hidden>
-					<span class="text-danger">Le serveur d'élection n'est pas disponible, veuillez réessayer dans quelques minutes...</span>
+					<span class="h3 text-danger">Le serveur d'élection n'est pas disponible, veuillez réessayer dans quelques minutes...</span>
 				</div>
 				
 			</div>
@@ -82,7 +86,7 @@
 		</div>
 		
 		<div id="results-page" hidden>
-			<include-fragment src="pages/results.html"></include-fragment>
+			<include-fragment src="pages/virtual-results.html"></include-fragment>
 		</div>
 		
 	</div>
