@@ -12,28 +12,30 @@ on:
 
 jobs:
   lint-html:
+    name: "Lint HTML"
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1.4.2
+    - uses: actions/setup-node@v2.1.4
       with:
-        node-version: '12.x'
+        node-version: '14'
         
     - name: Install npm packages
       run: npm ci
         
-    - name: Test HTML
+    - name: Lint HTML
       run: npm run lint-html
       
   lint-javascript:
+    name: "Lint JS"
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1.4.2
+    - uses: actions/setup-node@v2.1.4
       with:
-        node-version: '12.x'
+        node-version: '14'
         
     - name: Install npm packages
       run: npm ci
@@ -42,13 +44,14 @@ jobs:
       run: npm run lint-javascript
       
   test-javascript:
+    name: "Test JS"
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1.4.2
+    - uses: actions/setup-node@v2.1.4
       with:
-        node-version: '12.x'
+        node-version: '14'
       
     - name: Install npm packages
       run: npm ci
