@@ -111,11 +111,11 @@ Code is in English because code should always be in English.
 
 - Guillaume Marcoux ([V-ed](https://github.com/V-ed)) - Owner
 
-See also the list of [contributors](https://github.com/V-ed/Scouts-Elections/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/205stelzear/elections/contributors) who participated in this project.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details
 
-[reset-state]: https://github.com/V-ed/Scouts-Elections/issues/43
+[reset-state]: https://github.com/205stelzear/elections/issues/43
 [shared-election-server-info]: https://v-ed.github.io/Scouts-Elections/election-partagee-info.html

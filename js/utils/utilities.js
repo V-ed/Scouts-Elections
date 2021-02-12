@@ -77,7 +77,7 @@ class DataUtils {
             }, 500);
         });
         
-        // Workaround to fix Chrome's device orientation issue : https://github.com/V-ed/Scouts-Elections/issues/65
+        // Workaround to fix Chrome's device orientation issue : https://github.com/205stelzear/elections/issues/65
         
         // @ts-ignore
         if (window.chrome) {

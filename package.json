@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/V-ed/Scouts-Elections.git"
+    "url": "git+https://github.com/205stelzear/elections.git"
   },
   "author": "Guillaume Marcoux",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/V-ed/Scouts-Elections/issues"
+    "url": "https://github.com/205stelzear/elections/issues"
   },
-  "homepage": "https://github.com/V-ed/Scouts-Elections#readme",
+  "homepage": "https://github.com/205stelzear/elections#readme",
   "devDependencies": {
     "@types/bootstrap": "^4.5.0",
     "@types/clipboard": "^2.0.1",
