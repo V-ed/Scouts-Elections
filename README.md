@@ -10,6 +10,7 @@ Since we don't want to know who voted for who, there is no need to "register", b
 Therefore, after a voter's vote, an overlay shows on the voting page, preventing any further actions until the special input is pressed, which will reset the page to allow for the next voter to actually vote.
 
 There is two way to trigger that special input :
+
 - When using a keyboard, you can use the current default keybinding of `space`
 - When having a touchscreen, you also have the ability to long press the top half portion of the overlay
   - This input is only available in the overlay that appears when someone voted, and can therefore not be triggered in the voting page
@@ -118,4 +119,4 @@ See also the list of [contributors](https://github.com/205stelzear/elections/con
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details
 
 [reset-state]: https://github.com/205stelzear/elections/issues/43
-[shared-election-server-info]: https://v-ed.github.io/Scouts-Elections/election-partagee-info.html
+[shared-election-server-info]: https://205stelzear.github.io/elections/election-partagee-info.html
